@@ -1,0 +1,16 @@
+{
+	"auth": {
+		"moviebot3a182ba93a182ba9": {
+			"service": "Cognito",
+			"providerPlugin": "awscloudformation",
+			"dependsOn": []
+		}
+	},
+	"interactions": {
+		"Testbot": {
+			"service": "Lex",
+			"providerPlugin": "awscloudformation",
+			"build": true
+		}
+	}
+}

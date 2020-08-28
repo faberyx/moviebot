@@ -1,0 +1,26 @@
+{
+    "resourceName": "Testbot",
+    "botName": "TestBOT",
+    "intents": [
+        {
+            "slots": [
+                {
+                    "name": "Location",
+                    "type": "AMAZON.Book",
+                    "prompt": "What City",
+                    "required": true,
+                    "customType": false
+                }
+            ],
+            "utterances": [
+                "Book a hoter",
+                "Book a car"
+            ],
+            "intentName": "ChatTest",
+            "newSlotTypes": []
+        }
+    ],
+    "outputVoice": false,
+    "sessionTimeout": 5,
+    "coppa": false
+}
