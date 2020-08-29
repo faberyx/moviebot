@@ -1,6 +1,6 @@
 /** @jsx createElement */
-import { createElement } from "react";
-import { Route, Redirect } from "react-router-dom";
+import { createElement, FC, useEffect } from "react";
+import { Route, Redirect, RouteComponentProps } from "react-router-dom";
 
 /** Helpers */
 import { validateToken } from "../Utils/validation";
@@ -8,17 +8,29 @@ import { validateToken } from "../Utils/validation";
 /** Constants */
 import { AuthKey } from "../Utils/constants";
 
-export const PrivateRoute = ({
-  component: Component,
-  ...rest
-}: any & { component: any }) => {
-  const checkUserAuth = validateToken(localStorage.getItem(AuthKey));
+type Props = {
+  Component: FC<RouteComponentProps>;
+  path: string;
+  exact?: boolean;
+};
 
+export const PrivateRoute = ({
+  Component,
+  path,
+  exact = false,
+}: Props): JSX.Element => {
+  const isAuthed = validateToken(localStorage.getItem(AuthKey));
+  console.log("IS AUTH>>", isAuthed);
+  useEffect(() => {
+    const isAuthed = validateToken(localStorage.getItem(AuthKey));
+    console.log("PrivateRoute MOUNT", isAuthed, Component, path);
+  });
   return (
     <Route
-      {...rest}
-      render={(props: JSX.IntrinsicAttributes) => {
-        return checkUserAuth ? (
+      exact={exact}
+      path={path}
+      render={(props: RouteComponentProps) =>
+        isAuthed ? (
           <Component {...props} />
         ) : (
           <Redirect
@@ -26,8 +38,8 @@ export const PrivateRoute = ({
               pathname: "/login",
             }}
           />
-        );
-      }}
+        )
+      }
     />
   );
 };

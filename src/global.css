@@ -1,3 +1,11 @@
 a {
   text-decoration: none;
+  color: #d4e157;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+body {
+  background: #eee;
 }

@@ -28,7 +28,7 @@ import Slide from "@material-ui/core/Slide";
 
 type Props = RouteComponentProps & {};
 
-export const RegisterContainer = (props: Props) => {
+export const PasswordResetContainer = (props: Props) => {
   const formData = {
     email: "",
     password: "",

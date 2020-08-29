@@ -202,7 +202,7 @@ export const ConfirmEmailContainer = (props: Props) => {
             disabled={loading}
             className={classes.submit}
           >
-            REsend Activation Code
+            Resend Activation Code
           </Button>
           <Grid container justify="flex-end">
             <Grid item>

@@ -11,8 +11,11 @@
         "@types/react-dom": "^16.9.0",
         "@types/react-router-dom": "^5.1.5",
         "aws-amplify": "^3.0.24",
+        "customize-cra": "^1.0.0",
+        "customize-cra-react-refresh": "^1.1.0",
         "jwt-decode": "^2.2.0",
         "react": "^16.13.1",
+        "react-app-rewired": "^2.1.6",
         "react-dom": "^16.13.1",
         "react-material-ui-form-validator": "^2.1.1",
         "react-router-dom": "^5.2.0",
@@ -20,10 +23,10 @@
         "typescript": "~3.7.2"
     },
     "scripts": {
-        "start": "react-scripts start",
-        "build": "react-scripts build",
-        "test": "react-scripts test",
-        "eject": "react-scripts eject"
+        "start": "react-app-rewired start",
+        "build": "react-app-rewired build",
+        "test": "react-app-rewired test",
+        "eject": "react-app-rewired eject"
     },
     "eslintConfig": {
         "extends": "react-app"

@@ -16,14 +16,12 @@ exports.handler = function(event, context) {
     let intentParams = [
         
         {
-            "name": "ChatTest",
+            "name": "Test",
             
             
             "sampleUtterances": [
             
-                "Book a hoter",
-            
-                "Book a car",
+                "Test",
             
             ],
         
@@ -35,9 +33,9 @@ exports.handler = function(event, context) {
                 
                 {
                     "name": "Location",
-                    "slotConstraint": "Required",
+                    "slotConstraint": "Optional",
                     "priority": 0,
-                    "slotType": "AMAZON.Book",
+                    "slotType": "AMAZON.Actor",
                     
                     "valueElicitationPrompt": {
                         "maxAttempts": 3,
@@ -54,7 +52,7 @@ exports.handler = function(event, context) {
         },
         
     ];
-    let botName = "TestBOT";
+    let botName = "MovieChatbot";
     if(process.env.ENV && process.env.ENV !== "NONE") {
       botName = botName + '_' + process.env.ENV;
     }
@@ -64,7 +62,7 @@ exports.handler = function(event, context) {
         "intents": [
         
             {
-                "intentName": "ChatTest",
+                "intentName": "Test",
                 "intentVersion": "$LATEST"
             },
         
@@ -246,7 +244,7 @@ function ensureLambdaFunctionAccess(intent){
 
         const params = {
             FunctionName: lambdaName,
-            StatementId: `Lex-${intent.name}`+ "d3f321a2",
+            StatementId: `Lex-${intent.name}`+ "cc4ef3a3",
             Action: 'lambda:InvokeFunction',
             Principal: 'lex.amazonaws.com',
             SourceArn: `arn:aws:lex:${region}:${accountId}:intent:${intent.name}:*`,

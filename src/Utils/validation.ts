@@ -1,6 +1,20 @@
 const jwtDecode = require("jwt-decode");
 
-export const validateToken = (token: any): boolean => {
+export type TokenData = {
+  auth_time: string;
+  client_id: string;
+  event_id: string;
+  exp: string;
+  iat: string;
+  iss: string;
+  jti: string;
+  scope: string;
+  sub: string;
+  token_use: string;
+  username: string;
+};
+
+export const validateToken = (token: string | null): boolean => {
   if (!token) {
     return false;
   }
@@ -12,8 +26,19 @@ export const validateToken = (token: any): boolean => {
   }
 };
 
+export const getToken = (token: string | null): TokenData | null => {
+  if (!token) {
+    return null;
+  }
+  try {
+    return jwtDecode(token);
+  } catch (e) {
+    return null;
+  }
+};
+
 export const validateEmail = (email: string) => {
-  const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
 };
 

@@ -87,13 +87,14 @@ export const LoginContainer = (props: Props) => {
       setLoading(true);
       try {
         const user = await Auth.signIn(values.email, values.password);
-        console.log(user);
+
         setLoading(false);
         localStorage.setItem(
           AuthKey,
           user.signInUserSession.accessToken.jwtToken
         );
-        props.history.push("/");
+        console.log(props.location);
+        window.location.href = "/";
       } catch (err) {
         console.log(err);
         setLoading(false);
@@ -175,7 +176,7 @@ export const LoginContainer = (props: Props) => {
 
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={3000}
+        autoHideDuration={login.type === "redirect" ? 1000 : 3000}
         open={login.loggedin}
         TransitionComponent={Slide}
         onClose={handleClose(login)}
