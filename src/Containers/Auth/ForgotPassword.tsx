@@ -5,10 +5,8 @@ import {
   ChangeEvent,
   FormEvent,
   SyntheticEvent,
-  useEffect,
-  MouseEvent,
 } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import {
   Grid,
   TextField,
@@ -16,7 +14,6 @@ import {
   Container,
   Avatar,
   Typography,
-  Link,
   Paper,
   Snackbar,
   LinearProgress,
@@ -26,7 +23,7 @@ import { Alert } from "@material-ui/lab";
 import { Auth } from "aws-amplify";
 import { makeStyles } from "@material-ui/core/styles";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { validateCode, validateEmail } from "../../Utils/validation";
+import { validateEmail } from "../../Utils/validation";
 import Slide from "@material-ui/core/Slide";
 
 type Props = RouteComponentProps & {};
@@ -40,6 +37,7 @@ export const ForgotPasswordContainer = (props: Props) => {
     success: false,
     confirmed: false,
     type: "",
+    email: "",
   };
   const classes = useStyles();
 
@@ -65,36 +63,19 @@ export const ForgotPasswordContainer = (props: Props) => {
     reason: SnackbarCloseReason
   ) => {
     if (value.type === "redirect") {
-      props.history.push(`/`);
+      props.history.push(`/resetpassword?email=${values.email}`);
     }
     setConf(confirmationData);
   };
 
-  const handleResend = async (event: MouseEvent<HTMLButtonElement>) => {
-    try {
-      await Auth.forgotPassword(values.email);
-      setConf({
-        message: "Code sent successfully! Please check your email..",
-        success: true,
-        confirmed: true,
-        type: "",
-      });
-    } catch (err) {
-      setConf({
-        message: `Impossible to send the activation code. ${
-          err.message || "Please try again.."
-        }`,
-        success: false,
-        confirmed: true,
-        type: err.code || "",
-      });
-    }
-  };
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     let errors = formData;
-    if (!values.email || !validateCode(values.email)) {
-      errors = { ...errors, email: "Invalid email!" };
+    if (!values.email || !validateEmail(values.email)) {
+      errors = {
+        ...errors,
+        email:
+          "Invalid password! Must contain at least 6 character, 1 uppercase and 1 special character",
+      };
     }
 
     event.preventDefault();
@@ -110,15 +91,18 @@ export const ForgotPasswordContainer = (props: Props) => {
           success: true,
           confirmed: true,
           type: "redirect",
+          email: values.email,
         });
+        setValues(formData);
       } catch (err) {
         setLoading(false);
         setConf({
-          message: `There was an error activating the user. ${
+          message: `There was an error resetting the password. ${
             err.message || "Please try again.."
           }`,
           success: false,
           confirmed: true,
+          email: "",
           type: err.code || "",
         });
         console.log(err);
@@ -134,8 +118,8 @@ export const ForgotPasswordContainer = (props: Props) => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
-          Confim Email
+        <Typography component="h1" variant="h5" style={{ padding: "20px" }}>
+          Forgot Password
         </Typography>
 
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
@@ -145,12 +129,13 @@ export const ForgotPasswordContainer = (props: Props) => {
                 variant="outlined"
                 required
                 fullWidth
+                onChange={handleChange("email")}
                 label="Email Address"
                 value={values.email}
-                disabled
               />
             </Grid>
           </Grid>
+
           <Button
             type="submit"
             fullWidth
@@ -159,24 +144,19 @@ export const ForgotPasswordContainer = (props: Props) => {
             disabled={loading}
             className={classes.submit}
           >
-            Activate
-          </Button>
-
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            color="secondary"
-            onClick={handleResend}
-            disabled={loading}
-            className={classes.submit}
-          >
-            Resend Activation Code
+            Reset Passowrd
           </Button>
           <Grid container justify="flex-end">
+            <Grid item xs>
+              <Link to="/login">I remember my password!</Link>
+            </Grid>
             <Grid item>
-              <Link href="/login" variant="body2">
-                Have you already activated? Sign in
+              <Link
+                to={`/resetpassword${
+                  values.email ? `email = ${values.email}` : ""
+                }`}
+              >
+                I already have a code!
               </Link>
             </Grid>
           </Grid>

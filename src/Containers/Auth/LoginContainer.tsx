@@ -88,12 +88,11 @@ export const LoginContainer = (props: Props) => {
       try {
         const user = await Auth.signIn(values.email, values.password);
 
-        setLoading(false);
         localStorage.setItem(
           AuthKey,
           user.signInUserSession.accessToken.jwtToken
         );
-        console.log(props.location);
+        setValues(formData);
         window.location.href = "/";
       } catch (err) {
         console.log(err);
@@ -117,8 +116,8 @@ export const LoginContainer = (props: Props) => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in
+        <Typography component="h1" variant="h5" style={{ padding: "20px" }}>
+          MovieBOT Sign in
         </Typography>
 
         <form onSubmit={handleSubmit} className={classes.form} noValidate>

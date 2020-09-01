@@ -130,6 +130,7 @@ export const ConfirmEmailContainer = (props: Props) => {
           confirmed: true,
           type: "redirect",
         });
+        setValues(formData);
       } catch (err) {
         setLoading(false);
         setConf({
@@ -153,7 +154,7 @@ export const ConfirmEmailContainer = (props: Props) => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography component="h1" variant="h5" style={{ padding: "20px" }}>
           Confim Email
         </Typography>
 

@@ -19,7 +19,7 @@ export const ChatSimpleMessage = ({
   const classes = useStyles(type)();
   return loading ? (
     <Grid container>
-      {type === "bot" && <Grid item xs={4}></Grid>}
+      {type === "human" && <Grid item xs={4}></Grid>}
       <Grid item xs={8}>
         <div className={classes.bubble}>
           <div className="dot-flashing"> </div>
@@ -29,11 +29,11 @@ export const ChatSimpleMessage = ({
     </Grid>
   ) : (
     <Grid container>
-      {type === "bot" && <Grid item xs={4}></Grid>}
+      {type === "human" && <Grid item xs={4}></Grid>}
       <Grid item xs={8}>
         <div className={classes.bubble}>{children}</div>
       </Grid>
-      {type === "human" && <Grid item xs={4}></Grid>}
+      {type === "bot" && <Grid item xs={4}></Grid>}
     </Grid>
   );
 };
@@ -41,7 +41,7 @@ export const ChatSimpleMessage = ({
 const useStyles = (type: "bot" | "human") =>
   makeStyles((theme) => ({
     bubble: {
-      backgroundColor: theme.palette.background.default,
+      backgroundColor: "#e8e8e8",
       color: theme.palette.text.primary,
       padding: "15px 25px",
       marginBottom: "25px",
@@ -49,9 +49,9 @@ const useStyles = (type: "bot" | "human") =>
       lineHeight: "1.1em",
       position: "relative",
       borderRight:
-        type === "bot" ? `8px solid ${theme.palette.secondary.light}` : 0,
+        type === "human" ? `5px solid ${theme.palette.secondary.light}` : 0,
       borderLeft:
-        type === "bot" ? 0 : `8px solid ${theme.palette.primary.light}`,
+        type === "human" ? 0 : `5px solid ${theme.palette.primary.light}`,
 
       borderRadius: "10px",
       "&::after": {
@@ -60,13 +60,13 @@ const useStyles = (type: "bot" | "human") =>
         paddingTop: "0px",
         position: "absolute",
         bottom: "-20px",
-        right: type === "bot" ? "10px" : "unset",
-        left: type === "bot" ? "unset" : "10px",
-        borderWidth: type === "bot" ? "30px 0 0 30px" : "30px 30px 0 0",
+        right: type === "human" ? "5px" : "unset",
+        left: type === "human" ? "unset" : "5px",
+        borderWidth: type === "human" ? "30px 0 0 30px" : "30px 30px 0 0",
         borderStyle: "solid",
         display: "block",
         width: "0",
-        borderColor: `${theme.palette.background.default} transparent`,
+        borderColor: `#e8e8e8 transparent`,
       },
     },
   }));

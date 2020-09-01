@@ -5,6 +5,7 @@ import {
   ChangeEvent,
   FormEvent,
   SyntheticEvent,
+  useEffect,
 } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import {
@@ -23,13 +24,18 @@ import { Alert } from "@material-ui/lab";
 import { Auth } from "aws-amplify";
 import { makeStyles } from "@material-ui/core/styles";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { validateEmail, validatePassword } from "../../Utils/validation";
+import {
+  validateEmail,
+  validatePassword,
+  validateCode,
+} from "../../Utils/validation";
 import Slide from "@material-ui/core/Slide";
 
 type Props = RouteComponentProps & {};
 
-export const PasswordResetContainer = (props: Props) => {
+export const ResetPasswordContainer = (props: Props) => {
   const formData = {
+    code: "",
     email: "",
     password: "",
     repeatPassword: "",
@@ -37,7 +43,7 @@ export const PasswordResetContainer = (props: Props) => {
   const registrationData = {
     message: "",
     success: false,
-    registered: false,
+    confirmed: false,
     type: "",
   };
   const classes = useStyles();
@@ -46,10 +52,30 @@ export const PasswordResetContainer = (props: Props) => {
   const [loading, setLoading] = useState(false);
   const [reg, setReg] = useState(registrationData);
 
+  useEffect(() => {
+    const email = props.location.search.split("=")[1];
+
+    if (!validateEmail(email)) {
+      setReg({
+        message: "Invalid email!!",
+        success: false,
+        confirmed: false,
+        type: "",
+      });
+      return;
+    }
+    setValues({
+      code: "",
+      email,
+      password: "",
+      repeatPassword: "",
+    });
+  }, [props.location.search]);
+
   const handleChange = (value: string) => (
     event: ChangeEvent<HTMLInputElement>
   ) => {
-    if (error.email || error.password || error.repeatPassword) {
+    if (error.code || error.password || error.repeatPassword) {
       setError(formData);
     }
     console.log(">", reg, reg === null);
@@ -62,12 +88,15 @@ export const PasswordResetContainer = (props: Props) => {
     reason: SnackbarCloseReason
   ) => {
     if (value.type === "redirect") {
-      props.history.push(`/confirm?email=${values.email}`);
+      props.history.push(`/login`);
     }
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     let errors = formData;
+    if (!values.code || !validateCode(values.code)) {
+      errors = { ...errors, code: "Invalid code" };
+    }
     if (!values.email || !validateEmail(values.email)) {
       errors = { ...errors, email: "Invalid email" };
     }
@@ -85,33 +114,35 @@ export const PasswordResetContainer = (props: Props) => {
     event.preventDefault();
 
     if (
+      error.code === "" &&
       error.email === "" &&
       error.password === "" &&
       errors.repeatPassword === ""
     ) {
       setLoading(true);
       try {
-        const signup = await Auth.signUp({
-          username: values.email,
-          password: values.password,
-        });
-        console.log(signup);
+        const resetPassword = await Auth.forgotPasswordSubmit(
+          values.email,
+          values.code,
+          values.password
+        );
+        console.log(resetPassword);
         setLoading(false);
         setReg({
-          message:
-            "Account created successfully, You have to activate your email now.. Redirecting you in a few!",
+          message: "Password reset successfully.. Redirecting you in a few!",
           success: true,
-          registered: true,
+          confirmed: true,
           type: "redirect",
         });
+        setValues(formData);
       } catch (err) {
         setLoading(false);
         setReg({
-          message: `There was an error registering the user. ${
+          message: `There was an error resetting the password. ${
             err.message || "Please try again.."
           }`,
           success: false,
-          registered: true,
+          confirmed: true,
           type: "",
         });
         console.log(err);
@@ -127,8 +158,8 @@ export const PasswordResetContainer = (props: Props) => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
-          Register
+        <Typography component="h1" variant="h5" style={{ padding: "20px" }}>
+          Reset Password
         </Typography>
 
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
@@ -138,12 +169,26 @@ export const PasswordResetContainer = (props: Props) => {
                 variant="outlined"
                 required
                 fullWidth
-                label="Email Address"
-                onChange={handleChange("email")}
+                label="Enter your email address"
+                onChange={handleChange("code")}
                 value={values.email}
                 error={error.email !== ""}
+                disabled={values.email !== ""}
                 helperText={error.email}
                 autoComplete="email"
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                variant="outlined"
+                required
+                fullWidth
+                label="Enter your verification code"
+                onChange={handleChange("code")}
+                value={values.code}
+                error={error.code !== ""}
+                helperText={error.code}
+                autoComplete="code"
               />
             </Grid>
             <Grid item xs={12}>
@@ -194,7 +239,7 @@ export const PasswordResetContainer = (props: Props) => {
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         autoHideDuration={reg.type === "redirect" ? 1000 : 3000}
-        open={reg.registered}
+        open={reg.confirmed}
         TransitionComponent={Slide}
         onClose={handleClose(reg)}
       >
