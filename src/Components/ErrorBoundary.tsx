@@ -1,10 +1,10 @@
 /** @jsx createElement */
-import { createElement, PureComponent } from "react";
+import { createElement, PureComponent } from 'react';
 
 export class ErrorBoundary extends PureComponent {
   state = {
     hasError: false,
-    errorMessage: "",
+    errorMessage: ''
   };
 
   componentDidCatch(error: any, info: any) {

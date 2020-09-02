@@ -1,12 +1,7 @@
 /** @jsx createElement */
-import { createElement, FC, useEffect } from "react";
-import { Route, Redirect, RouteComponentProps } from "react-router-dom";
-
-/** Helpers */
-import { validateToken } from "../Utils/validation";
-
-/** Constants */
-import { AuthKey } from "../Utils/constants";
+import { createElement, memo, FC, useEffect, useState, Fragment } from 'react';
+import { Route, Redirect, RouteComponentProps } from 'react-router-dom';
+import { Auth } from 'aws-amplify';
 
 type Props = {
   Component: FC<RouteComponentProps>;
@@ -14,32 +9,37 @@ type Props = {
   exact?: boolean;
 };
 
-export const PrivateRoute = ({
-  Component,
-  path,
-  exact = false,
-}: Props): JSX.Element => {
-  const isAuthed = validateToken(localStorage.getItem(AuthKey));
-  console.log("IS AUTH>>", isAuthed);
+export const PrivateRouteComponent = ({ Component, path, exact = false }: Props): JSX.Element => {
+  const [isLoggedIn, setLoggedIn] = useState<boolean | null>(null);
   useEffect(() => {
-    const isAuthed = validateToken(localStorage.getItem(AuthKey));
-    console.log("PrivateRoute MOUNT", isAuthed, Component, path);
-  });
+    Auth.currentSession()
+      .then((data) => {
+        console.log(data.isValid());
+        setLoggedIn(true);
+      })
+      .catch((err) => console.error(err));
+  }, []);
   return (
-    <Route
-      exact={exact}
-      path={path}
-      render={(props: RouteComponentProps) =>
-        isAuthed ? (
-          <Component {...props} />
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-            }}
-          />
-        )
-      }
-    />
+    <Fragment>
+      {isLoggedIn !== null && (
+        <Route
+          exact={exact}
+          path={path}
+          render={(props: RouteComponentProps) =>
+            isLoggedIn ? (
+              <Component {...props} />
+            ) : (
+              <Redirect
+                to={{
+                  pathname: '/login'
+                }}
+              />
+            )
+          }
+        />
+      )}
+    </Fragment>
   );
 };
+
+export const PrivateRoute = memo(PrivateRouteComponent);

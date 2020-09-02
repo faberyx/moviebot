@@ -1,21 +1,21 @@
 /** @jsx createElement */
-import { createElement } from "react";
-import { render } from "react-dom";
-import Amplify from "aws-amplify";
-import "./global.css";
+import { createElement } from 'react';
+import { render } from 'react-dom';
+import Amplify from 'aws-amplify';
+import './global.css';
 
 /** Amplify config */
-import awsconfig from "./aws-exports";
+import awsconfig from './aws-exports';
 
-import Routes from "./Navigation/Routes";
+import Routes from './Navigation/Routes';
 
 /** Service worker */
-import * as serviceWorker from "./serviceWorker";
+import * as serviceWorker from './serviceWorker';
 
 /** Configure amplify */
 Amplify.configure(awsconfig);
 
-render(<Routes />, document.getElementById("root"));
+render(<Routes />, document.getElementById('root'));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

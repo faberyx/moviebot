@@ -1,8 +1,8 @@
 /** @jsx createElement */
-import { createElement, MouseEvent } from "react";
-import { GridList, GridListTileBar, GridListTile } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { ResponseCard, CardButton } from "../interfaces/lexResponse";
+import { createElement, MouseEvent } from 'react';
+import { GridList, GridListTileBar, GridListTile } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { ResponseCard, CardButton } from '../interfaces/lexResponse';
 
 type Props = {
   responseCard?: ResponseCard;
@@ -12,9 +12,7 @@ type Props = {
 export const ChatGrid = ({ responseCard, onClick }: Props) => {
   const classes = useStyles();
 
-  const gridClickHandler = (buttons?: CardButton[]) => (
-    event: MouseEvent<HTMLLIElement>
-  ) => {
+  const gridClickHandler = (buttons?: CardButton[]) => (event: MouseEvent<HTMLLIElement>) => {
     if (buttons && buttons.length > 0 && buttons[0].value) {
       onClick(buttons[0].value);
     }
@@ -34,7 +32,7 @@ export const ChatGrid = ({ responseCard, onClick }: Props) => {
               subtitle={tile.subTitle}
               classes={{
                 root: classes.titleBar,
-                title: classes.title,
+                title: classes.title
               }}
             />
           </GridListTile>
@@ -46,8 +44,8 @@ export const ChatGrid = ({ responseCard, onClick }: Props) => {
 
 const useStyles = makeStyles((theme) => ({
   gridList: {
-    margin: "15px 0",
+    margin: '15px 0'
   },
   title: {},
-  titleBar: {},
+  titleBar: {}
 }));

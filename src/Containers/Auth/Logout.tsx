@@ -1,17 +1,15 @@
 /** @jsx createElement */
-import { createElement, useEffect } from "react";
-import { RouteComponentProps } from "react-router-dom";
-import { CircularProgress, Backdrop } from "@material-ui/core";
-import { Auth } from "aws-amplify";
-import { AuthKey } from "../../Utils/constants";
+import { createElement, useEffect } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { CircularProgress, Backdrop } from '@material-ui/core';
+import { Auth } from 'aws-amplify';
 
 type Props = RouteComponentProps & {};
 
-export const LogoutContainer = (props: Props) => {
+const LogoutContainer = (props: Props) => {
   useEffect(() => {
     Auth.signOut().then(() => {
-      localStorage.removeItem(AuthKey);
-      window.location.href = "/";
+      window.location.href = '/';
     });
   }, []);
 
@@ -21,3 +19,5 @@ export const LogoutContainer = (props: Props) => {
     </Backdrop>
   );
 };
+
+export default LogoutContainer;

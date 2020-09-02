@@ -1,8 +1,4 @@
-import {
-  PostTextCommandOutput,
-  ResponseCard as LexCard,
-  Button,
-} from "@aws-sdk/client-lex-runtime-service";
+import { PostTextCommandOutput, ResponseCard as LexCard, Button } from '@aws-sdk/client-lex-runtime-service';
 
 export interface LexResponse extends PostTextCommandOutput {}
 

@@ -1,46 +1,26 @@
 /** @jsx createElement */
-import {
-  createElement,
-  useState,
-  ChangeEvent,
-  FormEvent,
-  SyntheticEvent,
-  useEffect,
-  MouseEvent,
-} from "react";
-import { RouteComponentProps } from "react-router-dom";
-import {
-  Grid,
-  TextField,
-  Button,
-  Container,
-  Avatar,
-  Typography,
-  Link,
-  Paper,
-  Snackbar,
-  LinearProgress,
-  SnackbarCloseReason,
-} from "@material-ui/core";
-import { Alert } from "@material-ui/lab";
-import { Auth } from "aws-amplify";
-import { makeStyles } from "@material-ui/core/styles";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { validateCode, validateEmail } from "../../Utils/validation";
-import Slide from "@material-ui/core/Slide";
+import { createElement, useState, ChangeEvent, FormEvent, SyntheticEvent, useEffect, MouseEvent } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
+import { Grid, TextField, Button, Container, Avatar, Typography, Link, Paper, Snackbar, LinearProgress, SnackbarCloseReason } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
+import { Auth } from 'aws-amplify';
+import { makeStyles } from '@material-ui/core/styles';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { validateCode, validateEmail } from '../../Utils/validation';
+import Slide from '@material-ui/core/Slide';
 
 type Props = RouteComponentProps & {};
 
-export const ConfirmEmailContainer = (props: Props) => {
+const ConfirmEmailContainer = (props: Props) => {
   const formData = {
-    code: "",
-    email: "",
+    code: '',
+    email: ''
   };
   const confirmationData = {
-    message: "",
+    message: '',
     success: false,
     confirmed: false,
-    type: "",
+    type: ''
   };
   const classes = useStyles();
 
@@ -50,27 +30,25 @@ export const ConfirmEmailContainer = (props: Props) => {
   const [reg, setConf] = useState(confirmationData);
 
   useEffect(() => {
-    const email = props.location.search.split("=")[1];
+    const email = props.location.search.split('=')[1];
 
     if (!validateEmail(email)) {
       setConf({
-        message: "Invalid email!!",
+        message: 'Invalid email!!',
         success: false,
         confirmed: false,
-        type: "",
+        type: ''
       });
       return;
     }
     setValues({
-      code: "",
-      email,
+      code: '',
+      email
     });
   }, [props.location.search]);
 
   //----
-  const handleChange = (value: string) => (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (value: string) => (event: ChangeEvent<HTMLInputElement>) => {
     if (error.code) {
       setError(formData);
     }
@@ -79,11 +57,8 @@ export const ConfirmEmailContainer = (props: Props) => {
   };
 
   //--- CLOSE ALERT BANNER
-  const handleClose = (value: typeof confirmationData) => (
-    event: SyntheticEvent<any, Event>,
-    reason: SnackbarCloseReason
-  ) => {
-    if (value.type === "redirect") {
+  const handleClose = (value: typeof confirmationData) => (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+    if (value.type === 'redirect') {
       props.history.push(`/`);
     }
     setConf(confirmationData);
@@ -93,19 +68,17 @@ export const ConfirmEmailContainer = (props: Props) => {
     try {
       await Auth.resendSignUp(values.email);
       setConf({
-        message: "Code sent successfully! Please check your email..",
+        message: 'Code sent successfully! Please check your email..',
         success: true,
         confirmed: true,
-        type: "",
+        type: ''
       });
     } catch (err) {
       setConf({
-        message: `Impossible to send the activation code. ${
-          err.message || "Please try again.."
-        }`,
+        message: `Impossible to send the activation code. ${err.message || 'Please try again..'}`,
         success: false,
         confirmed: true,
-        type: err.code || "",
+        type: err.code || ''
       });
     }
   };
@@ -113,7 +86,7 @@ export const ConfirmEmailContainer = (props: Props) => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     let errors = formData;
     if (!values.code || !validateCode(values.code)) {
-      errors = { ...errors, code: "Invalid code!" };
+      errors = { ...errors, code: 'Invalid code!' };
     }
 
     event.preventDefault();
@@ -125,21 +98,19 @@ export const ConfirmEmailContainer = (props: Props) => {
 
         setLoading(false);
         setConf({
-          message: "Account activated successfully! Redirecting you in a few!",
+          message: 'Account activated successfully! Redirecting you in a few!',
           success: true,
           confirmed: true,
-          type: "redirect",
+          type: 'redirect'
         });
         setValues(formData);
       } catch (err) {
         setLoading(false);
         setConf({
-          message: `There was an error activating the user. ${
-            err.message || "Please try again.."
-          }`,
+          message: `There was an error activating the user. ${err.message || 'Please try again..'}`,
           success: false,
           confirmed: true,
-          type: err.code || "",
+          type: err.code || ''
         });
         console.log(err);
       }
@@ -154,55 +125,33 @@ export const ConfirmEmailContainer = (props: Props) => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5" style={{ padding: "20px" }}>
+        <Typography component="h1" variant="h5" style={{ padding: '20px' }}>
           Confim Email
         </Typography>
 
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                label="Email Address"
-                value={values.email}
-                disabled
-              />
+              <TextField variant="outlined" required fullWidth label="Email Address" value={values.email} disabled />
             </Grid>
             <Grid item xs={12}>
               <TextField
                 variant="outlined"
                 required
-                onChange={handleChange("code")}
+                onChange={handleChange('code')}
                 fullWidth
                 label="Enter confirmation code"
                 value={values.code}
-                error={error.code !== ""}
+                error={error.code !== ''}
                 helperText={error.code}
               />
             </Grid>
           </Grid>
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            color="primary"
-            disabled={loading}
-            className={classes.submit}
-          >
+          <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
             Activate
           </Button>
 
-          <Button
-            type="button"
-            fullWidth
-            variant="contained"
-            color="secondary"
-            onClick={handleResend}
-            disabled={loading}
-            className={classes.submit}
-          >
+          <Button type="button" fullWidth variant="contained" color="secondary" onClick={handleResend} disabled={loading} className={classes.submit}>
             Resend Activation Code
           </Button>
           <Grid container justify="flex-end">
@@ -214,18 +163,8 @@ export const ConfirmEmailContainer = (props: Props) => {
           </Grid>
         </form>
       </Paper>
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        autoHideDuration={3000}
-        open={reg.confirmed}
-        TransitionComponent={Slide}
-        onClose={handleClose(reg)}
-      >
-        <Alert
-          elevation={6}
-          variant="filled"
-          severity={reg.success ? "success" : "error"}
-        >
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={3000} open={reg.confirmed} TransitionComponent={Slide} onClose={handleClose(reg)}>
+        <Alert elevation={6} variant="filled" severity={reg.success ? 'success' : 'error'}>
           <strong>{reg.message}</strong>
         </Alert>
       </Snackbar>
@@ -235,23 +174,25 @@ export const ConfirmEmailContainer = (props: Props) => {
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    marginTop: theme.spacing(22),
+    marginTop: theme.spacing(22)
   },
   paper: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    padding: "30px 50px",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '30px 50px'
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
+    backgroundColor: theme.palette.primary.main
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(1)
   },
   submit: {
-    margin: theme.spacing(2, 0, 1),
-  },
+    margin: theme.spacing(2, 0, 1)
+  }
 }));
+
+export default ConfirmEmailContainer;
