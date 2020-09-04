@@ -25,7 +25,7 @@ export const ChatGrid = ({ responseCard, onClick }: Props) => {
       <GridList cellHeight={230} spacing={2} cols={3}>
         {list.map((tile, i) => (
           <GridListTile key={i} onClick={gridClickHandler(tile.buttons)}>
-            <img src={tile.imageUrl} alt={tile.title} />
+            <img src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${tile.imageUrl}`} alt={tile.title} />
             <GridListTileBar
               titlePosition="bottom"
               title={tile.title}

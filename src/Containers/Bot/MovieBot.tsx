@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, useEffect, useState, useRef, ReactNode, ChangeEvent, MouseEvent, FormEvent } from 'react';
+import { createElement, useEffect, useState, useRef, ChangeEvent, FormEvent } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 import { makeStyles, Container, Paper, InputBase, Divider, IconButton } from '@material-ui/core';
@@ -7,24 +7,17 @@ import SendIcon from '@material-ui/icons/Send';
 import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
 import ChatIcon from '@material-ui/icons/Chat';
 import { deepOrange } from '@material-ui/core/colors';
-import { ChatSimpleMessage } from '../../Components/ChatSimpleMessage';
-import { ChatGrid } from '../../Components/ChatGrid';
-import { ResponseCard, SessionAttributes } from '../../interfaces/lexResponse';
+import { SessionAttributes } from '../../interfaces/lexResponse';
 import { sendMessage, deleteSession } from '../../Utils/lexProvider';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
+import { Message } from '../../interfaces/message';
+import { MessageComposer } from '../../Components/MessageComposer';
+import { MovieDialogComponent } from '../../Components/MovieDialog';
 
 type Props = RouteComponentProps & {};
-
-type Message = {
-  message?: ReactNode;
-  type: 'bot' | 'human';
-  loading?: boolean;
-  card?: ResponseCard;
-  layout?: 'message' | 'card';
-};
 
 /*
  */
@@ -68,10 +61,8 @@ const MovieBotContainer = (props: Props) => {
   const handleCardClick = async (id?: string) => {
     if (id) {
       setInteraction((prevState) => prevState.concat({ loading: true, type: 'bot' }));
-      const response = await sendMessage(id, {
-        ...sessionAttributes,
-        state: 'movie_chosen',
-        movieId: id
+      const response = await sendMessage(id, undefined, {
+        movieid: id
       });
 
       if (response) {
@@ -80,6 +71,7 @@ const MovieBotContainer = (props: Props) => {
             message: response.message,
             card: response.responseCard,
             type: 'bot',
+            contentType: response.messageFormat,
             layout: response.responseCard ? 'card' : 'message'
           })
         );
@@ -98,7 +90,7 @@ const MovieBotContainer = (props: Props) => {
     { icon: <HelpOutlineIcon />, name: 'Help' }
   ];
 
-  const handleDial = (name: string) => async (event: MouseEvent<HTMLDivElement>) => {
+  const handleDial = (name: string) => async () => {
     switch (name) {
       case 'Logout':
         props.history.push('/logout');
@@ -115,12 +107,8 @@ const MovieBotContainer = (props: Props) => {
     }
   };
 
-  const handleDialClose = () => {
-    setDialOpen(false);
-  };
-
-  const handleDialOpen = () => {
-    setDialOpen(true);
+  const handleToggleDial = () => {
+    setDialOpen((prevstate) => !prevstate);
   };
 
   // **************************************************
@@ -146,14 +134,17 @@ const MovieBotContainer = (props: Props) => {
     setMessage('');
 
     event.preventDefault();
-
+    // SEND USER MESSAGE TO THE CHAT
     setInteraction((prevState) => prevState.concat({ message: message, type: 'human' }));
-
+    // SEND BOT LOADING MESSAGE
     setInteraction((prevState) => prevState.concat({ loading: true, type: 'bot' }));
+
+    // SCROLL TO BOTTOM OF THE CHATBOX
     setTimeout(() => {
       scroll();
     }, 21);
 
+    // GET THE RESPONSE FROM LEX
     const response = await sendMessage(message);
 
     if (response) {
@@ -166,6 +157,7 @@ const MovieBotContainer = (props: Props) => {
           message: response.message,
           card: response.responseCard,
           type: 'bot',
+          contentType: response.messageFormat,
           layout: response.responseCard ? 'card' : 'message'
         })
       );
@@ -184,21 +176,16 @@ const MovieBotContainer = (props: Props) => {
 
   return (
     <Container component="main" maxWidth="sm" className={classes.container}>
-      <SpeedDial icon={<SpeedDialIcon />} ariaLabel="SpeedDial tooltip example" className={classes.speedDial} onClose={handleDialClose} onOpen={handleDialOpen} open={dialOpen}>
+      <MovieDialogComponent id="10549" />
+      <SpeedDial icon={<SpeedDialIcon />} ariaLabel="SpeedDial tooltip example" className={classes.speedDial} onClick={handleToggleDial} open={dialOpen}>
         {actions.map((action) => (
           <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} tooltipOpen onClick={handleDial(action.name)} />
         ))}
       </SpeedDial>
       <Paper elevation={3} component="div" ref={chatBox} className={classes.chatbox}>
-        {interactionList.map((k, i) =>
-          k.layout === 'card' ? (
-            <ChatGrid key={i} responseCard={k.card} onClick={handleCardClick} />
-          ) : (
-            <ChatSimpleMessage key={i} type={k.type} loading={k.loading}>
-              {k.message}
-            </ChatSimpleMessage>
-          )
-        )}
+        {interactionList.map((k, i) => (
+          <MessageComposer key={i} onClick={handleCardClick} response={k} />
+        ))}
       </Paper>
       <Paper component="form" onSubmit={handleSubmit} className={classes.datainput}>
         <IconButton className={classes.iconButton} aria-label="menu">

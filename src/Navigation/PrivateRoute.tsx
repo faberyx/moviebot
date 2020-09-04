@@ -14,7 +14,7 @@ export const PrivateRouteComponent = ({ Component, path, exact = false }: Props)
   useEffect(() => {
     Auth.currentSession()
       .then((data) => {
-        console.log(data.isValid());
+        console.log('COGNITO', data);
         setLoggedIn(true);
       })
       .catch((err) => console.error(err));
