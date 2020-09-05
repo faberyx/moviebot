@@ -3,9 +3,13 @@ import { createElement, useMemo, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { PrivateRoute } from './PrivateRoute';
 import { ErrorBoundary } from '../Components/ErrorBoundary';
-import { CssBaseline, CircularProgress } from '@material-ui/core';
-import { orange, blue } from '@material-ui/core/colors';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import orange from '@material-ui/core/colors/orange';
+import blue from '@material-ui/core/colors/blue';
+
+import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
+import { ThemeProvider } from '@material-ui/core/styles';
 
 const ForgotPasswordContainer = lazy(() => import('../Containers/Auth/ForgotPassword'));
 const ResetPasswordContainer = lazy(() => import('../Containers/Auth/ResetPassword'));

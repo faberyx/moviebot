@@ -1,10 +1,19 @@
 /** @jsx createElement */
 import { createElement, useState, ChangeEvent, FormEvent, SyntheticEvent } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
-import { Grid, TextField, Button, Container, Avatar, Typography, Paper, Snackbar, LinearProgress, SnackbarCloseReason } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import Avatar from '@material-ui/core/Avatar';
+import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
+import Snackbar from '@material-ui/core/Snackbar';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { SnackbarCloseReason } from '@material-ui/core/Snackbar';
+import Alert from '@material-ui/lab/Alert';
 import { Auth } from 'aws-amplify';
-import { makeStyles } from '@material-ui/core/styles';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { validateEmail } from '../../Utils/validation';
 import Slide from '@material-ui/core/Slide';

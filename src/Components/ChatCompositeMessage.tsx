@@ -1,10 +1,8 @@
 /** @jsx createElement */
 import { createElement, Fragment } from 'react';
-import { Grid } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-
+import Grid from '@material-ui/core/Grid';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import './dots.css';
-import { CompositeResponse } from '../interfaces/compositeResponse';
 
 type Props = {
   response?: string;

@@ -1,7 +1,9 @@
 /** @jsx createElement */
 import { createElement, MouseEvent } from 'react';
-import { GridList, GridListTileBar, GridListTile } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import GridList from '@material-ui/core/GridList';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { ResponseCard, CardButton } from '../interfaces/lexResponse';
 
 type Props = {

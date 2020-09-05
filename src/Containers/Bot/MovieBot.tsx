@@ -1,16 +1,21 @@
 /** @jsx createElement */
 import { createElement, useEffect, useState, useRef, ChangeEvent, FormEvent } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
-
-import { makeStyles, Container, Paper, InputBase, Divider, IconButton } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
+import Container from '@material-ui/core/Container';
+import InputBase from '@material-ui/core/InputBase';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import SendIcon from '@material-ui/icons/Send';
 import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
 import ChatIcon from '@material-ui/icons/Chat';
-import { deepOrange } from '@material-ui/core/colors';
+import deepOrange from '@material-ui/core/colors/deepOrange';
 import { SessionAttributes } from '../../interfaces/lexResponse';
 import { sendMessage, deleteSession } from '../../Utils/lexProvider';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
-import { SpeedDial, SpeedDialAction } from '@material-ui/lab';
+import SpeedDial from '@material-ui/lab/SpeedDial';
+import SpeedDialAction from '@material-ui/lab/SpeedDialAction';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { Message } from '../../interfaces/message';
@@ -176,7 +181,7 @@ const MovieBotContainer = (props: Props) => {
 
   return (
     <Container component="main" maxWidth="sm" className={classes.container}>
-      <MovieDialogComponent id="10549" />
+      <MovieDialogComponent id="5" />
       <SpeedDial icon={<SpeedDialIcon />} ariaLabel="SpeedDial tooltip example" className={classes.speedDial} onClick={handleToggleDial} open={dialOpen}>
         {actions.map((action) => (
           <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} tooltipOpen onClick={handleDial(action.name)} />
