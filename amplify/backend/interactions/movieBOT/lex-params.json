@@ -1,21 +1,22 @@
 {
-    "resourceName": "lexMovieChatBot",
-    "botName": "MovieChatbot",
+    "resourceName": "movieBOT",
+    "botName": "MovieBOT",
     "intents": [
         {
             "slots": [
                 {
                     "name": "Location",
                     "type": "AMAZON.Actor",
-                    "prompt": "What City",
-                    "required": false,
+                    "prompt": "Wha",
+                    "required": true,
                     "customType": false
                 }
             ],
             "utterances": [
-                "Test"
+                "TEST",
+                "A"
             ],
-            "intentName": "Test",
+            "intentName": "TEST",
             "newSlotTypes": []
         }
     ],

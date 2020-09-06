@@ -34,6 +34,7 @@ const ForgotPasswordContainer = (props: Props) => {
   const classes = useStyles();
 
   const [values, setValues] = useState(formData);
+  const [email, setEmail] = useState('');
   const [error, setError] = useState(formData);
   const [loading, setLoading] = useState(false);
   const [reg, setConf] = useState(confirmationData);
@@ -50,7 +51,7 @@ const ForgotPasswordContainer = (props: Props) => {
   //--- CLOSE ALERT BANNER
   const handleClose = (value: typeof confirmationData) => (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
     if (value.type === 'redirect') {
-      props.history.push(`/resetpassword?email=${values.email}`);
+      props.history.push(`/resetpassword?email=${email}`);
     }
     setConf(confirmationData);
   };
@@ -79,6 +80,7 @@ const ForgotPasswordContainer = (props: Props) => {
           type: 'redirect',
           email: values.email
         });
+        setEmail(values.email);
         setValues(formData);
       } catch (err) {
         setLoading(false);

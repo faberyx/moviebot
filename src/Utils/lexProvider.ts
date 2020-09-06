@@ -70,7 +70,11 @@ export const sendMessage = async (message: string, sessionAttributes?: LexAttrib
     const postTextCommand = new PostTextCommand(params);
 
     // AWS LEX API CALL
-    return await client.send(postTextCommand);
+    const response = await client.send(postTextCommand);
+
+    console.log('SESSION', response.sessionAttributes);
+    console.log('SESSION-SLOTS', response.sessionAttributes && response.sessionAttributes.slots ? JSON.parse(response.sessionAttributes.slots) : '');
+    return response;
   } catch (err) {
     console.error(err);
     return null;

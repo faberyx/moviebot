@@ -26,7 +26,7 @@ const ChatGrid = ({ response, onClick }: Props) => {
       return [];
     }
     const responsePayload: MovieList[] = JSON.parse(response);
-    console.log(responsePayload);
+
     return responsePayload;
   };
 

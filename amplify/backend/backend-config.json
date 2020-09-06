@@ -1,22 +1,23 @@
 {
   "auth": {
-    "moviebot3a182ba93a182ba9": {
+    "moviebot6bf6f38f": {
       "service": "Cognito",
       "providerPlugin": "awscloudformation",
-      "dependsOn": []
-    }
-  },
-  "interactions": {
-    "lexMovieChatBot": {
-      "service": "Lex",
-      "providerPlugin": "awscloudformation",
-      "build": true
+      "dependsOn": [],
+      "customAuth": false
     }
   },
   "hosting": {
     "S3AndCloudFront": {
       "service": "S3AndCloudFront",
       "providerPlugin": "awscloudformation"
+    }
+  },
+  "interactions": {
+    "movieBOT": {
+      "service": "Lex",
+      "providerPlugin": "awscloudformation",
+      "build": true
     }
   }
 }

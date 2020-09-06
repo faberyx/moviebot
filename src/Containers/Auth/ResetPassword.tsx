@@ -140,7 +140,7 @@ const ResetPasswordContainer = (props: Props) => {
                 required
                 fullWidth
                 label="Enter your email address"
-                onChange={handleChange('code')}
+                onChange={handleChange('email')}
                 value={values.email}
                 error={error.email !== ''}
                 disabled={values.email !== ''}

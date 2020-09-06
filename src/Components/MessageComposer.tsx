@@ -12,7 +12,6 @@ type Props = {
 };
 
 const MessageComposerComponent = ({ response, onClick }: Props) => {
-  console.log(response);
   return response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found' ? (
     <ChatGridComponent response={response.message} onClick={onClick} />
   ) : response.contentType && response.contentType === 'CustomPayload' ? (

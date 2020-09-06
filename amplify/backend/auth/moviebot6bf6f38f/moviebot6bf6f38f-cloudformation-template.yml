@@ -46,10 +46,10 @@ Parameters:
                 
   defaultPasswordPolicy:
     Type: String
-            
+                
   passwordPolicyMinLength:
-    Type: String
-                      
+    Type: Number
+                  
   passwordPolicyCharacters:
     Type: CommaDelimitedList
               
@@ -74,33 +74,27 @@ Parameters:
   userpoolClientSetAttributes:
     Type: String
             
-  useDefault:
-    Type: String
-              
-  authSelections:
+  sharedId:
     Type: String
               
   resourceName:
     Type: String
+              
+  authSelections:
+    Type: String
+                                      
+  useDefault:
+    Type: String
                       
   usernameAttributes:
     Type: CommaDelimitedList
-        
-  userPoolGroups:
-    Type: String
-              
-  adminQueries:
-    Type: String
-            
+      
   triggers:
     Type: String
-                
-  hostedUI:
-    Type: String
-                    
+                      
   userPoolGroupList:
     Type: CommaDelimitedList
-                                    
+            
   parentStack:
     Type: String
                 
@@ -121,7 +115,7 @@ Resources:
   # Created to allow the UserPool SMS Config to publish via the Simple Notification Service during MFA Process
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, 'movieb3a182ba9_sns-role', !Join ['',[ 'sns', 'undefined', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, 'movieb6bf6f38f_sns-role', !Join ['',[ 'sns', '6bf6f38f', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
       AssumeRolePolicyDocument: 
         Version: "2012-10-17"
         Statement: 
@@ -133,10 +127,10 @@ Resources:
               - "sts:AssumeRole"
             Condition: 
               StringEquals:
-                sts:ExternalId: movieb3a182ba9_role_external_id
+                sts:ExternalId: movieb6bf6f38f_role_external_id
       Policies: 
         - 
-          PolicyName: movieb3a182ba9-sns-policy
+          PolicyName: movieb6bf6f38f-sns-policy
           PolicyDocument: 
             Version: "2012-10-17"
             Statement: 
@@ -175,8 +169,8 @@ Resources:
           MinimumLength: !Ref passwordPolicyMinLength
           RequireLowercase: false
           RequireNumbers: false
-          RequireSymbols: true
-          RequireUppercase: true
+          RequireSymbols: false
+          RequireUppercase: false
       
       UsernameAttributes: !Ref usernameAttributes
           
@@ -184,7 +178,7 @@ Resources:
       SmsVerificationMessage: !Ref smsVerificationMessage
       SmsConfiguration: 
         SnsCallerArn: !GetAtt SNSRole.Arn
-        ExternalId: movieb3a182ba9_role_external_id
+        ExternalId: movieb6bf6f38f_role_external_id
     
   
     
@@ -204,10 +198,7 @@ Resources:
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: movieb3a182ba9_app_clientWeb
-      
-      ReadAttributes: !Ref userpoolClientReadAttributes
-      WriteAttributes: !Ref userpoolClientWriteAttributes
+      ClientName: movieb6bf6f38f_app_clientWeb
       
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
       UserPoolId: !Ref UserPool
@@ -217,10 +208,7 @@ Resources:
   # Depends on UserPool for ID reference
     Type: "AWS::Cognito::UserPoolClient"
     Properties:
-      ClientName: movieb3a182ba9_app_client
-      
-      ReadAttributes: !Ref userpoolClientReadAttributes
-      WriteAttributes: !Ref userpoolClientWriteAttributes
+      ClientName: movieb6bf6f38f_app_client
       
       GenerateSecret: !Ref userpoolClientGenerateSecret
       RefreshTokenValidity: !Ref userpoolClientRefreshTokenValidity
@@ -231,7 +219,7 @@ Resources:
   # Created to execute Lambda which gets userpool app client config values
     Type: 'AWS::IAM::Role'
     Properties:
-      RoleName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',['upClientLambdaRole', 'undefined', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
+      RoleName: !If [ShouldNotCreateEnvResources, !Ref userpoolClientLambdaRole, !Join ['',['upClientLambdaRole', '6bf6f38f', !Select [3, !Split ['-', !Ref 'AWS::StackName']], '-', !Ref env]]]
       AssumeRolePolicyDocument:
         Version: '2012-10-17'
         Statement:
@@ -285,7 +273,7 @@ Resources:
   # Marked as depending on UserPoolClientRole for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: movieb3a182ba9_userpoolclient_lambda_iam_policy
+      PolicyName: movieb6bf6f38f_userpoolclient_lambda_iam_policy
       Roles: 
         - !Ref UserPoolClientRole
       PolicyDocument:
@@ -302,7 +290,7 @@ Resources:
   # Marked as depending on UserPoolClientLambdaPolicy for easier to understand CFN sequencing
     Type: 'AWS::IAM::Policy'
     Properties:
-      PolicyName: movieb3a182ba9_userpoolclient_lambda_log_policy
+      PolicyName: movieb6bf6f38f_userpoolclient_lambda_log_policy
       Roles: 
         - !Ref UserPoolClientRole
       PolicyDocument:
@@ -342,7 +330,7 @@ Resources:
   # Always created
     Type: AWS::Cognito::IdentityPool
     Properties: 
-      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'moviebot3a182ba93a182ba9_identitypool_0fb9e1e5', !Join ['',['moviebot3a182ba93a182ba9_identitypool_0fb9e1e5', '__', !Ref env]]]
+      IdentityPoolName: !If [ShouldNotCreateEnvResources, 'moviebot6bf6f38f_identitypool_6bf6f38f', !Join ['',['moviebot6bf6f38f_identitypool_6bf6f38f', '__', !Ref env]]]
       
       CognitoIdentityProviders:
         - ClientId:  !Ref UserPoolClient

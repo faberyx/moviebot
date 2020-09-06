@@ -1,20 +1,21 @@
 {
-    "dev": {
-        "awscloudformation": {
-            "AuthRoleName": "amplify-moviebot-dev-73839-authRole",
-            "UnauthRoleArn": "arn:aws:iam::921119069545:role/amplify-moviebot-dev-73839-unauthRole",
-            "AuthRoleArn": "arn:aws:iam::921119069545:role/amplify-moviebot-dev-73839-authRole",
-            "Region": "us-east-1",
-            "DeploymentBucketName": "amplify-moviebot-dev-73839-deployment",
-            "UnauthRoleName": "amplify-moviebot-dev-73839-unauthRole",
-            "StackName": "amplify-moviebot-dev-73839",
-            "StackId": "arn:aws:cloudformation:us-east-1:921119069545:stack/amplify-moviebot-dev-73839/1cd540e0-e8f9-11ea-845d-0e43f2110cc5",
-            "AmplifyAppId": "d2sfnjyn80vxk7"
-        },
-        "categories": {
-            "auth": {
-                "moviebot3a182ba93a182ba9": {}
-            }
-        }
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-moviebot-dev-231435-authRole",
+      "UnauthRoleArn": "arn:aws:iam::921119069545:role/amplify-moviebot-dev-231435-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::921119069545:role/amplify-moviebot-dev-231435-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-moviebot-dev-231435-deployment",
+      "UnauthRoleName": "amplify-moviebot-dev-231435-unauthRole",
+      "StackName": "amplify-moviebot-dev-231435",
+      "StackId": "arn:aws:cloudformation:us-east-1:921119069545:stack/amplify-moviebot-dev-231435/5a503690-f08e-11ea-8033-0e28043c5c55",
+      "AmplifyAppId": "d2zb6ehgh8ih5w"
+    },
+    "categories": {
+      "auth": {
+        "moviebot3a182ba93a182ba9": {},
+        "moviebot6bf6f38f": {}
+      }
     }
+  }
 }

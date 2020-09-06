@@ -16,12 +16,14 @@ exports.handler = function(event, context) {
     let intentParams = [
         
         {
-            "name": "Test",
+            "name": "TEST",
             
             
             "sampleUtterances": [
             
-                "Test",
+                "TEST",
+            
+                "A",
             
             ],
         
@@ -33,7 +35,7 @@ exports.handler = function(event, context) {
                 
                 {
                     "name": "Location",
-                    "slotConstraint": "Optional",
+                    "slotConstraint": "Required",
                     "priority": 0,
                     "slotType": "AMAZON.Actor",
                     
@@ -41,7 +43,7 @@ exports.handler = function(event, context) {
                         "maxAttempts": 3,
                         "messages": [
                             {
-                                "content": "What City",
+                                "content": "Wha",
                                 "contentType": "PlainText"
                             }
                         ]
@@ -52,7 +54,7 @@ exports.handler = function(event, context) {
         },
         
     ];
-    let botName = "MovieChatbot";
+    let botName = "MovieBOT";
     if(process.env.ENV && process.env.ENV !== "NONE") {
       botName = botName + '_' + process.env.ENV;
     }
@@ -62,7 +64,7 @@ exports.handler = function(event, context) {
         "intents": [
         
             {
-                "intentName": "Test",
+                "intentName": "TEST",
                 "intentVersion": "$LATEST"
             },
         
@@ -244,7 +246,7 @@ function ensureLambdaFunctionAccess(intent){
 
         const params = {
             FunctionName: lambdaName,
-            StatementId: `Lex-${intent.name}`+ "cc4ef3a3",
+            StatementId: `Lex-${intent.name}`+ "6f6f9a7e",
             Action: 'lambda:InvokeFunction',
             Principal: 'lex.amazonaws.com',
             SourceArn: `arn:aws:lex:${region}:${accountId}:intent:${intent.name}:*`,
