@@ -1,22 +1,22 @@
 {
-	"auth": {
-		"moviebot3a182ba93a182ba9": {
-			"service": "Cognito",
-			"providerPlugin": "awscloudformation",
-			"dependsOn": []
-		}
-	},
-	"interactions": {
-		"lexMovieChatBot": {
-			"service": "Lex",
-			"providerPlugin": "awscloudformation",
-			"build": true
-		}
-	},
-	"hosting": {
-		"S3AndCloudFront": {
-			"service": "S3AndCloudFront",
-			"providerPlugin": "awscloudformation"
-		}
-	}
+  "auth": {
+    "moviebot3a182ba93a182ba9": {
+      "service": "Cognito",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
+    }
+  },
+  "interactions": {
+    "lexMovieChatBot": {
+      "service": "Lex",
+      "providerPlugin": "awscloudformation",
+      "build": true
+    }
+  },
+  "hosting": {
+    "S3AndCloudFront": {
+      "service": "S3AndCloudFront",
+      "providerPlugin": "awscloudformation"
+    }
+  }
 }

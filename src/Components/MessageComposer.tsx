@@ -1,7 +1,7 @@
 /** @jsx createElement */
 import { createElement, memo } from 'react';
 import { Message } from '../interfaces/message';
-import { ChatGrid } from './ChatGrid';
+import { ChatGridComponent } from './ChatGrid';
 import { ChatSimpleMessage } from './ChatSimpleMessage';
 import { ChatCompositeMessage } from './ChatCompositeMessage';
 
@@ -12,8 +12,9 @@ type Props = {
 };
 
 const MessageComposerComponent = ({ response, onClick }: Props) => {
-  return response.layout === 'card' ? (
-    <ChatGrid responseCard={response.card} onClick={onClick} />
+  console.log(response);
+  return response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found' ? (
+    <ChatGridComponent response={response.message} onClick={onClick} />
   ) : response.contentType && response.contentType === 'CustomPayload' ? (
     <ChatCompositeMessage response={response.message} />
   ) : (

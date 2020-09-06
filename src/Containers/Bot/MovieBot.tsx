@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, useEffect, useState, useRef, ChangeEvent, FormEvent } from 'react';
+import { createElement, useEffect, useState, useRef, ChangeEvent, FormEvent, useMemo } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container';
@@ -11,7 +11,6 @@ import SendIcon from '@material-ui/icons/Send';
 import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
 import ChatIcon from '@material-ui/icons/Chat';
 import deepOrange from '@material-ui/core/colors/deepOrange';
-import { SessionAttributes } from '../../interfaces/lexResponse';
 import { sendMessage, deleteSession } from '../../Utils/lexProvider';
 import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
 import SpeedDial from '@material-ui/lab/SpeedDial';
@@ -46,9 +45,10 @@ const MovieBotContainer = (props: Props) => {
   const classes = useStyles();
   const chatBox = useRef<HTMLDivElement>();
   const [dialOpen, setDialOpen] = useState(false);
+  const [movieDetail, setMovieDetail] = useState<string | undefined>(undefined);
 
   const [message, setMessage] = useState<string>('');
-  const [sessionAttributes, setSessionAttributes] = useState<SessionAttributes | undefined>(undefined);
+  //const [sessionAttributes, setSessionAttributes] = useState<SessionAttributes | undefined>(undefined);
   const [interactionList, setInteraction] = useState<Message[]>([]);
 
   // **************************************************
@@ -60,29 +60,17 @@ const MovieBotContainer = (props: Props) => {
   };
 
   // **************************************************
-  //   MOVIE CARD CLICK HANDLER
+  //   MOVIE DETAILS MODAL
   // **************************************************
 
   const handleCardClick = async (id?: string) => {
     if (id) {
-      setInteraction((prevState) => prevState.concat({ loading: true, type: 'bot' }));
-      const response = await sendMessage(id, undefined, {
-        movieid: id
-      });
-
-      if (response) {
-        setInteraction((prevState) =>
-          prevState.slice(0, prevState.length - 1).concat({
-            message: response.message,
-            card: response.responseCard,
-            type: 'bot',
-            contentType: response.messageFormat,
-            layout: response.responseCard ? 'card' : 'message'
-          })
-        );
-      }
-      scroll();
+      setMovieDetail(id);
     }
+  };
+
+  const handleDialogClose = async () => {
+    setMovieDetail(undefined);
   };
 
   // **************************************************
@@ -153,7 +141,7 @@ const MovieBotContainer = (props: Props) => {
     const response = await sendMessage(message);
 
     if (response) {
-      setSessionAttributes(response.sessionAttributes);
+      // setSessionAttributes(response.sessionAttributes);
 
       // Log chatbot response
       console.log(response);
@@ -163,13 +151,18 @@ const MovieBotContainer = (props: Props) => {
           card: response.responseCard,
           type: 'bot',
           contentType: response.messageFormat,
+          sessionAttributes: response.sessionAttributes,
           layout: response.responseCard ? 'card' : 'message'
         })
       );
-      if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_select') {
+      if (response.sessionAttributes && response.sessionAttributes.total && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
+        let message = `I found something for you.. there are ${response.sessionAttributes!.total} more movies.., I can show you other results if you ask me..`;
+        if (parseInt(response.sessionAttributes!.offset, 10) > 4) {
+          message = `there are ${response.sessionAttributes!.total} more movies..`;
+        }
         setInteraction((prevState) =>
           prevState.concat({
-            message: 'You can click on a movie to have more information on a movie, or ask for more results..',
+            message,
             type: 'bot'
           })
         );
@@ -179,18 +172,18 @@ const MovieBotContainer = (props: Props) => {
     scroll();
   };
 
+  const interactions = useMemo(() => interactionList.map((k, i) => <MessageComposer key={i} onClick={handleCardClick} response={k} />), [interactionList]);
+
   return (
-    <Container component="main" maxWidth="sm" className={classes.container}>
-      <MovieDialogComponent id="5" />
+    <Container component="main" maxWidth="md" className={classes.container}>
+      {movieDetail && <MovieDialogComponent onDialogClose={handleDialogClose} id={movieDetail} />}
       <SpeedDial icon={<SpeedDialIcon />} ariaLabel="SpeedDial tooltip example" className={classes.speedDial} onClick={handleToggleDial} open={dialOpen}>
         {actions.map((action) => (
           <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} tooltipOpen onClick={handleDial(action.name)} />
         ))}
       </SpeedDial>
       <Paper elevation={3} component="div" ref={chatBox} className={classes.chatbox}>
-        {interactionList.map((k, i) => (
-          <MessageComposer key={i} onClick={handleCardClick} response={k} />
-        ))}
+        {interactions}
       </Paper>
       <Paper component="form" onSubmit={handleSubmit} className={classes.datainput}>
         <IconButton className={classes.iconButton} aria-label="menu">

@@ -1,3 +1,5 @@
+import { Auth } from 'aws-amplify';
+
 export type ApiResponse<RS, O = {}> = {
   fType?: string;
   subject?: string;
@@ -15,7 +17,7 @@ export enum ApiResponseType {
 
 const urlBase = 'https://hgtnbafey6.execute-api.us-east-1.amazonaws.com/moviestore/';
 
-export const apiFetch = <RS, RQ = {}, O = {}>(
+export const apiFetch = async <RS, RQ = {}, O = {}>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'DELETE' | null = null,
   params: string | null = null,
@@ -25,11 +27,12 @@ export const apiFetch = <RS, RQ = {}, O = {}>(
 ): Promise<ApiResponse<RS, O>> => {
   const retries = 1;
   const retryDelay = 1500;
-
+  const token = await Auth.currentSession();
   return new Promise<ApiResponse<RS, O>>((resolve, reject) => {
     const wrappedFetch = (attempt: number) => {
       try {
         const headers: Headers = new Headers();
+        headers.append('Authorization', token.getIdToken().getJwtToken());
         window
           .fetch(urlBase + url + (params || ''), {
             body: payload ? JSON.stringify(payload) : null,

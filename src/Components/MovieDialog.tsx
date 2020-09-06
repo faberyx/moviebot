@@ -6,18 +6,24 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Rating from '@material-ui/lab/Rating';
-
+import LocalMoviesIcon from '@material-ui/icons/LocalMovies';
+import RecentActorsIcon from '@material-ui/icons/RecentActors';
+import CameraIcon from '@material-ui/icons/Camera';
 import { apiFetch } from '../Utils/restCliet';
+import Card from '@material-ui/core/Card/Card';
+import CardHeader from '@material-ui/core/CardHeader/CardHeader';
+import CardContent from '@material-ui/core/CardContent/CardContent';
+import Hidden from '@material-ui/core/Hidden/Hidden';
 
 type Props = {
   id: string;
+  onDialogClose: () => void;
 };
 
 type Movie = {
@@ -32,10 +38,12 @@ type Movie = {
   release: Date;
   tagline: string;
   vote: number;
+  runtime: number;
   title: string;
+  originalTitle: string;
 };
 
-export const MovieDialogComponent = ({ id }: Props) => {
+export const MovieDialogComponent = ({ id, onDialogClose }: Props) => {
   const [movie, setMovie] = useState<Movie | undefined>();
 
   useEffect(() => {
@@ -57,42 +65,62 @@ export const MovieDialogComponent = ({ id }: Props) => {
   return (
     <Fragment>
       {movie ? (
-        <Dialog open maxWidth="md">
+        <Dialog open onClose={onDialogClose} maxWidth="md">
           <DialogContent className={classes.dialogContent}>
             <div className={classes.dialogData}>
               <Grid container spacing={10}>
-                <Grid item xs={5}>
-                  <div className={classes.imagediv}>
-                    <img src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.img}`} alt={movie.title} className={classes.image} />
-                    <div className={classes.rating}>
-                      <Rating name="half-rating" value={movie.vote} precision={0.5} disabled />
+                <Grid item sm={12} md={4}>
+                  <Hidden smDown>
+                    <div className={classes.imagediv}>
+                      <img
+                        onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')}
+                        src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.img}`}
+                        alt={movie.title}
+                        width="300"
+                        className={classes.image}
+                      />
+                      <div className={classes.rating}>
+                        <Rating name="half-rating" value={movie.vote / 2} precision={0.5} disabled />
+                      </div>
                     </div>
-                  </div>
+                  </Hidden>
                 </Grid>
-                <Grid item xs={7}>
-                  <Typography variant="h2" component="h1">
-                    {movie.title}
-                  </Typography>
+                <Grid item xs={12} md={8}>
+                  <Typography variant="h4">{movie.title}</Typography>
+                  {movie.originalTitle && movie.originalTitle !== movie.title && <Typography variant="h5">{movie.originalTitle}</Typography>}
                   <Typography variant="caption">{movie.tagline}</Typography>
-                  <List component="nav" aria-label="main mailbox folders">
-                    <ListItem>
-                      <ListItemIcon></ListItemIcon>
-                      <Typography variant="caption" gutterBottom>
-                        {movie.genre.split('|').join(', ')} - {movie.country} - {getDate(movie.release)}
+                  <Card className={classes.card}>
+                    <List component="nav" aria-label="main mailbox folders">
+                      <ListItem>
+                        <ListItemIcon>
+                          <LocalMoviesIcon color="secondary" />
+                        </ListItemIcon>
+                        <ListItemText>
+                          {movie.genre.split('|').join(', ')} - {movie.country} - {getDate(movie.release)} - {movie.runtime} min.
+                        </ListItemText>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemIcon>
+                          <CameraIcon color="secondary" />
+                        </ListItemIcon>
+                        <ListItemText secondaryTypographyProps={{ className: classes.secondary }} primary="Director" secondary={movie.director.split('|').join(', ')} />
+                      </ListItem>
+                      <ListItem>
+                        <ListItemIcon>
+                          <RecentActorsIcon color="secondary" />
+                        </ListItemIcon>
+                        <ListItemText secondaryTypographyProps={{ className: classes.secondary }} primary="Cast" secondary={movie.cast.split('|').join(', ')} />
+                      </ListItem>
+                    </List>
+                  </Card>
+                  <Card className={classes.card}>
+                    <CardHeader title="Overview" />
+                    <CardContent>
+                      <Typography variant="body2" component="p">
+                        {movie.overview}
                       </Typography>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText primary="Director" secondary={movie.director.split('|').join(', ')} />
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText primary="Cast" secondary={movie.cast.split('|').join(', ')} />
-                    </ListItem>
-                  </List>
-
-                  <Typography variant="body1">Overview</Typography>
-                  <Typography variant="caption" gutterBottom>
-                    {movie.overview}
-                  </Typography>
+                    </CardContent>
+                  </Card>
                 </Grid>
               </Grid>
             </div>
@@ -111,34 +139,37 @@ const useStyles = (img?: string) =>
   makeStyles((theme) => ({
     dialogData: {
       position: 'relative',
-      color: 'white',
+      color: '#ddd',
       overflow: 'hidden'
     },
     image: {
       borderRadius: '5px'
     },
+    card: {
+      background: 'rgba(0, 0, 0, 0.3)',
+      color: '#eee',
+      margin: theme.spacing(2, 0, 1)
+    },
+    secondary: {
+      color: '#999'
+    },
     imagediv: { width: '350px' },
     rating: {
-      position: 'absolute',
-      height: '50px',
+      height: '40px',
       width: '300px',
-      background: 'rgba(0, 0, 0, 0.7)',
-      top: 400,
-      borderBottomRightRadius: '5px',
-      borderBottomLeftRadius: '5px',
-      left: 0,
-      padding: '15px'
+      background: 'rgba(0, 0, 0, 0.3)',
+      borderRadius: '5px',
+      padding: '8px'
     },
     dialogContent: {
-      borderBottom: '1px solid rgba(23.53%, 10.78%, 10.78%, 1.00)',
-      backgroundPosition: 'right -300px top',
+      backgroundPosition: 'right -100px top',
       backgroundSize: 'cover',
       position: 'relative',
       backgroundRepeat: 'no-repeat',
-      backgroundImage: `url('//image.tmdb.org/t/p/w1920_and_h800_multi_faces/9kkzRKwGKTVWNFBMruCT3RKUrzx.jpg')`,
+      backgroundImage: `url('//image.tmdb.org/t/p/w1920_and_h800_multi_faces${img}')`,
       '&::before': {
         content: "''",
-        backgroundImage: `linear-gradient(to right, rgba(19.61%, 7.84%, 7.84%, 1.00) 150px, rgba(27.45%, 13.73%, 13.73%, 0.84) 100%)`,
+        backgroundImage: `linear-gradient(to right, rgb(7 7 14) 150px, rgb(34 35 71 / 69%) 100%)`,
         height: '100%',
         width: '100%',
         position: 'absolute',

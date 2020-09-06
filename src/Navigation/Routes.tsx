@@ -7,19 +7,17 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import orange from '@material-ui/core/colors/orange';
 import blue from '@material-ui/core/colors/blue';
-
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider } from '@material-ui/core/styles';
+import Backdrop from '@material-ui/core/Backdrop/Backdrop';
 
+// LAZY IMPORT ROUTES
 const ForgotPasswordContainer = lazy(() => import('../Containers/Auth/ForgotPassword'));
 const ResetPasswordContainer = lazy(() => import('../Containers/Auth/ResetPassword'));
 const LogoutContainer = lazy(() => import('../Containers/Auth/Logout'));
-
 const LoginContainer = lazy(() => import('../Containers/Auth/LoginContainer'));
-
 const RegisterContainer = lazy(() => import('../Containers/Auth/RegisterContainer'));
 const MovieBotContainer = lazy(() => import('../Containers/Bot/MovieBot'));
-
 const ConfirmEmailContainer = lazy(() => import('../Containers/Auth/ConfirmEmail'));
 
 function Routes() {
@@ -40,7 +38,13 @@ function Routes() {
     []
   );
   return (
-    <Suspense fallback={<CircularProgress color="inherit" />}>
+    <Suspense
+      fallback={
+        <Backdrop open>
+          <CircularProgress color="primary" />
+        </Backdrop>
+      }
+    >
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <ErrorBoundary>

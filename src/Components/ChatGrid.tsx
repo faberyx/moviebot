@@ -1,37 +1,53 @@
 /** @jsx createElement */
-import { createElement, MouseEvent } from 'react';
+import { createElement, MouseEvent, memo } from 'react';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { ResponseCard, CardButton } from '../interfaces/lexResponse';
 
 type Props = {
-  responseCard?: ResponseCard;
+  response?: string;
   onClick: (id?: string) => void;
 };
 
-export const ChatGrid = ({ responseCard, onClick }: Props) => {
+type MovieList = {
+  id: string;
+  title: string;
+  tagline: string;
+  img: string;
+  director: string;
+};
+
+const ChatGrid = ({ response, onClick }: Props) => {
   const classes = useStyles();
 
-  const gridClickHandler = (buttons?: CardButton[]) => (event: MouseEvent<HTMLLIElement>) => {
-    if (buttons && buttons.length > 0 && buttons[0].value) {
-      onClick(buttons[0].value);
+  const getMovieList = () => {
+    if (!response) {
+      return [];
     }
-    onClick();
+    const responsePayload: MovieList[] = JSON.parse(response);
+    console.log(responsePayload);
+    return responsePayload;
   };
 
-  const list = responseCard?.genericAttachments || [];
+  const gridClickHandler = (id: string) => (event: MouseEvent<HTMLLIElement>) => {
+    onClick(id);
+  };
+
   return (
     <div className={classes.gridList}>
-      <GridList cellHeight={230} spacing={2} cols={3}>
-        {list.map((tile, i) => (
-          <GridListTile key={i} onClick={gridClickHandler(tile.buttons)}>
-            <img src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${tile.imageUrl}`} alt={tile.title} />
+      <GridList cellHeight={300} spacing={2} cols={4}>
+        {getMovieList().map((tile, i) => (
+          <GridListTile key={i} onClick={gridClickHandler(tile.id)}>
+            <img
+              onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')}
+              src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${tile.img}`}
+              alt={tile.title}
+            />
             <GridListTileBar
               titlePosition="bottom"
               title={tile.title}
-              subtitle={tile.subTitle}
+              subtitle={tile.director}
               classes={{
                 root: classes.titleBar,
                 title: classes.title
@@ -46,8 +62,11 @@ export const ChatGrid = ({ responseCard, onClick }: Props) => {
 
 const useStyles = makeStyles((theme) => ({
   gridList: {
-    margin: '15px 0'
+    margin: '15px 0',
+    cursor: 'pointer'
   },
   title: {},
   titleBar: {}
 }));
+
+export const ChatGridComponent = memo(ChatGrid);

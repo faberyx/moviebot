@@ -14,29 +14,23 @@ export const PrivateRouteComponent = ({ Component, path, exact = false }: Props)
   useEffect(() => {
     Auth.currentSession()
       .then((data) => {
-        console.log('COGNITO', data);
+        console.log(data.isValid());
         setLoggedIn(true);
       })
-      .catch((err) => console.error(err));
-  }, []);
+      .catch((err) => setLoggedIn(false));
+  }, [path]);
   return (
     <Fragment>
-      {isLoggedIn !== null && (
-        <Route
-          exact={exact}
-          path={path}
-          render={(props: RouteComponentProps) =>
-            isLoggedIn ? (
-              <Component {...props} />
-            ) : (
-              <Redirect
-                to={{
-                  pathname: '/login'
-                }}
-              />
-            )
-          }
-        />
+      {isLoggedIn === true ? (
+        <Route exact={exact} path={path} render={(props: RouteComponentProps) => <Component {...props} />} />
+      ) : (
+        isLoggedIn === false && (
+          <Redirect
+            to={{
+              pathname: '/login'
+            }}
+          />
+        )
       )}
     </Fragment>
   );

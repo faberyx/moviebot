@@ -1,4 +1,4 @@
-import { ResponseCard } from './lexResponse';
+import { ResponseCard, SessionAttributes } from './lexResponse';
 
 export type Message = {
   message?: string;
@@ -7,4 +7,5 @@ export type Message = {
   contentType?: 'PlainText' | 'Composite' | string;
   card?: ResponseCard;
   layout?: 'message' | 'card';
+  sessionAttributes?: SessionAttributes;
 };

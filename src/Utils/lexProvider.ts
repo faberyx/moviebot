@@ -2,7 +2,7 @@ import {
   LexRuntimeServiceClient,
   PostTextCommand,
   DeleteSessionCommand,
-  PostContentCommand,
+  //  PostContentCommand,
   DeleteSessionCommandInput,
   PostTextRequest
 } from '@aws-sdk/client-lex-runtime-service';

@@ -15,21 +15,21 @@ export const ChatSimpleMessage = ({ children, type, loading = false }: Props) =>
   const classes = useStyles(type)();
   return loading ? (
     <Grid container>
-      {type === 'human' && <Grid item xs={4}></Grid>}
-      <Grid item xs={8}>
+      {type === 'human' && <Grid item xs={3}></Grid>}
+      <Grid item xs={9}>
         <div className={classes.bubble}>
           <div className="dot-flashing"> </div>
         </div>
       </Grid>
-      {type === 'human' && <Grid item xs={4}></Grid>}
+      {type === 'human' && <Grid item xs={3}></Grid>}
     </Grid>
   ) : (
     <Grid container>
-      {type === 'human' && <Grid item xs={4}></Grid>}
-      <Grid item xs={8}>
+      {type === 'human' && <Grid item xs={3}></Grid>}
+      <Grid item xs={9}>
         <div className={classes.bubble}>{children}</div>
       </Grid>
-      {type === 'bot' && <Grid item xs={4}></Grid>}
+      {type === 'bot' && <Grid item xs={3}></Grid>}
     </Grid>
   );
 };
