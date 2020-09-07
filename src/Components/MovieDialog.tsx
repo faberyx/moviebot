@@ -15,7 +15,7 @@ import Rating from '@material-ui/lab/Rating';
 import LocalMoviesIcon from '@material-ui/icons/LocalMovies';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import CameraIcon from '@material-ui/icons/Camera';
-import { apiFetch } from '../Utils/restCliet';
+import { apiFetch } from '../Utils/restClient';
 import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader/CardHeader';
 import CardContent from '@material-ui/core/CardContent/CardContent';
@@ -68,24 +68,22 @@ export const MovieDialogComponent = ({ id, onDialogClose }: Props) => {
         <Dialog open onClose={onDialogClose} maxWidth="md">
           <DialogContent className={classes.dialogContent}>
             <div className={classes.dialogData}>
-              <Grid container spacing={10}>
-                <Grid item sm={12} md={4}>
-                  <Hidden smDown>
-                    <div className={classes.imagediv}>
-                      <img
-                        onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')}
-                        src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.img}`}
-                        alt={movie.title}
-                        width="300"
-                        className={classes.image}
-                      />
-                      <div className={classes.rating}>
-                        <Rating name="half-rating" value={movie.vote / 2} precision={0.5} disabled />
-                      </div>
+              <Grid container spacing={4}>
+                <Grid item xs={12} sm={4}>
+                  <div className={classes.imagediv}>
+                    <img
+                      onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')}
+                      src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.img}`}
+                      alt={movie.title}
+                      width="100%"
+                      className={classes.image}
+                    />
+                    <div className={classes.rating}>
+                      <Rating name="half-rating" value={movie.vote / 2} precision={0.5} disabled />
                     </div>
-                  </Hidden>
+                  </div>
                 </Grid>
-                <Grid item xs={12} md={8}>
+                <Grid item xs={12} sm={8}>
                   <Typography variant="h4">{movie.title}</Typography>
                   {movie.originalTitle && movie.originalTitle !== movie.title && <Typography variant="h5">{movie.originalTitle}</Typography>}
                   <Typography variant="caption">{movie.tagline}</Typography>
@@ -143,7 +141,7 @@ const useStyles = (img?: string) =>
       overflow: 'hidden'
     },
     image: {
-      borderRadius: '5px'
+      borderRadius: '10px'
     },
     card: {
       background: 'rgba(0, 0, 0, 0.3)',
@@ -153,7 +151,7 @@ const useStyles = (img?: string) =>
     secondary: {
       color: '#999'
     },
-    imagediv: { width: '350px' },
+    imagediv: {},
     rating: {
       height: '40px',
       width: '300px',

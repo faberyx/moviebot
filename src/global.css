@@ -6,8 +6,19 @@ a:hover {
   text-decoration: underline;
 }
 
+
+*{
+    scrollbar-width: thin;
+    scrollbar-color: #ddd #fff;
+}
+
 body {
   background: #eee;
+  background-position: 'center center';
+  background-size: 'cover'; 
+  background-repeat: 'repeat';
+  background-image: url('/back.jpg');
+  
 }
 
 /* width */

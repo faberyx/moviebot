@@ -137,7 +137,7 @@
         "Timeout": "300",
         "Code": {
           "S3Bucket": "amplify-moviebot-dev-231435-deployment",
-          "S3Key": "amplify-builds/movieBOT-4d536b2b74354d6a2b78-build.zip"
+          "S3Key": "amplify-builds/movieBOT-326661597a72786e4a4f-build.zip"
         }
       }
     },

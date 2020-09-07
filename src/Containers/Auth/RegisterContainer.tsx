@@ -33,6 +33,7 @@ const RegisterContainer = (props: Props) => {
     type: ''
   };
   const classes = useStyles();
+  const [email, setEmail] = useState('');
   const [values, setValues] = useState(formData);
   const [error, setError] = useState(formData);
   const [loading, setLoading] = useState(false);
@@ -49,7 +50,7 @@ const RegisterContainer = (props: Props) => {
 
   const handleClose = (value: typeof registrationData) => (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
     if (value.type === 'redirect') {
-      props.history.push(`/confirm?email=${values.email}`);
+      props.history.push(`/confirm?email=${email}`);
     }
   };
 
@@ -85,6 +86,7 @@ const RegisterContainer = (props: Props) => {
           registered: true,
           type: 'redirect'
         });
+        setEmail(values.email);
       } catch (err) {
         setLoading(false);
         setReg({
@@ -95,13 +97,14 @@ const RegisterContainer = (props: Props) => {
         });
         console.log(err);
       }
+      setValues(formData);
     } else {
       setError(errors);
     }
   };
   return (
     <Container component="main" maxWidth="sm" className={classes.container}>
-      {loading && <LinearProgress color="secondary" />}
+      {loading && <LinearProgress color="primary" />}
       <Paper elevation={3} className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />

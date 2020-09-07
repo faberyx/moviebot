@@ -35,6 +35,7 @@ const LoginContainer = (props: Props) => {
     success: false,
     loggedin: false
   };
+  const [email, setEmail] = useState('');
   const [values, setValues] = useState(formData);
   const [error, setError] = useState(formData);
   const [loading, setLoading] = useState(false);
@@ -49,7 +50,7 @@ const LoginContainer = (props: Props) => {
 
   const handleClose = (value: typeof loginData) => (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
     if (value.type === 'UserNotConfirmedException') {
-      props.history.push(`/confirm?email=${values.email}`);
+      props.history.push(`/confirm?email=${email}`);
     }
     setLogin(loginData);
   };
@@ -73,7 +74,7 @@ const LoginContainer = (props: Props) => {
       try {
         //   /const user =
         await Auth.signIn(values.email, values.password);
-
+        setEmail(values.email);
         setValues(formData);
         window.location.href = '/';
       } catch (err) {
@@ -91,7 +92,7 @@ const LoginContainer = (props: Props) => {
 
   return (
     <Container component="main" maxWidth="sm" className={classes.container}>
-      {loading && <LinearProgress color="secondary" />}
+      {loading && <LinearProgress color="primary" />}
       <Paper elevation={3} className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
@@ -129,7 +130,7 @@ const LoginContainer = (props: Props) => {
             id="password"
             autoComplete="current-password"
           />
-          <FormControlLabel control={<Checkbox value="remember" color="primary" />} label="Remember me" />
+
           <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
             Sign In
           </Button>

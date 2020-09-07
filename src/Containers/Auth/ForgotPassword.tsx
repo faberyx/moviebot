@@ -99,7 +99,7 @@ const ForgotPasswordContainer = (props: Props) => {
   };
   return (
     <Container component="main" maxWidth="sm" className={classes.container}>
-      {loading && <LinearProgress color="secondary" />}
+      {loading && <LinearProgress color="primary" />}
       <Paper elevation={3} className={classes.paper}>
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />

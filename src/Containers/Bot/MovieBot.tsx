@@ -209,7 +209,8 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
     padding: theme.spacing(3, 5),
     height: '85vh',
-    overflow: 'scroll'
+    overflowY: 'auto',
+    overflowX: 'hidden'
   },
   container: {
     marginTop: theme.spacing(5)
