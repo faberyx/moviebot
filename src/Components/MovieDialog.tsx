@@ -19,7 +19,8 @@ import { apiFetch } from '../Utils/restClient';
 import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader/CardHeader';
 import CardContent from '@material-ui/core/CardContent/CardContent';
-import Hidden from '@material-ui/core/Hidden/Hidden';
+import Button from '@material-ui/core/Button';
+import ImageSearchIcon from '@material-ui/icons/ImageSearch';
 
 type Props = {
   id: string;
@@ -79,7 +80,12 @@ export const MovieDialogComponent = ({ id, onDialogClose }: Props) => {
                       className={classes.image}
                     />
                     <div className={classes.rating}>
-                      <Rating name="half-rating" value={movie.vote / 2} precision={0.5} disabled />
+                      <Rating name="half-rating" value={movie.vote / 2} precision={0.5} />
+                    </div>
+                    <div>
+                      <Button variant="outlined" color="secondary" startIcon={<ImageSearchIcon />}>
+                        Find Similar movies
+                      </Button>
                     </div>
                   </div>
                 </Grid>
@@ -157,7 +163,8 @@ const useStyles = (img?: string) =>
       width: '300px',
       background: 'rgba(0, 0, 0, 0.3)',
       borderRadius: '5px',
-      padding: '8px'
+      padding: '8px',
+      margin: theme.spacing(2, 0, 2)
     },
     dialogContent: {
       backgroundPosition: 'right -100px top',

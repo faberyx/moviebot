@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: Lambda function for MovieBOT LEX Service
+Resources:
+  MovieProcessor:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs12.x
+      CodeUri: .
+      Description: Lambda function for MovieBOT LEX Service
+      MemorySize: 128
+      Timeout: 3
+      Role: 'arn:aws:iam::921119069545:role/service-role/MovieProcessor-role-iyqbuy2g'
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-02c8ad3ba4217ac67
+          - sg-04fc38d3c77e19815
+        SubnetIds:
+          - subnet-005d71bf03a92aa0d
+          - subnet-0ef3877c65190ee07
+      Environment:
+        Variables:
+          DB_HOST: moviedb.c3tgw2putqdy.us-east-1.rds.amazonaws.com
+          DB_NAME: moviesdb
+          DB_PASSWORD: 4IMJsW8jF2p0maOhOQLN
+          DB_USER: movieadmin
