@@ -19,9 +19,4 @@ Resources:
         SubnetIds:
           - subnet-005d71bf03a92aa0d
           - subnet-0ef3877c65190ee07
-      Environment:
-        Variables:
-          DB_HOST: moviedb.c3tgw2putqdy.us-east-1.rds.amazonaws.com
-          DB_NAME: moviesdb
-          DB_PASSWORD: 4IMJsW8jF2p0maOhOQLN
-          DB_USER: movieadmin
+ 

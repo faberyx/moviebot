@@ -15,7 +15,7 @@ export enum ApiResponseType {
   Unexpected = 'Unexpected'
 }
 
-const urlBase = 'https://hgtnbafey6.execute-api.us-east-1.amazonaws.com/moviestore/';
+const urlBase = 'https://6uigdx7rgk.execute-api.us-east-1.amazonaws.com/Prod/';
 
 export const apiFetch = async <RS, RQ = {}, O = {}>(
   url: string,

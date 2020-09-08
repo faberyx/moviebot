@@ -1,51 +1,48 @@
-const AWS = require('aws-sdk');
+// @ts-check
+// const AWS = require('aws-sdk');
 const query = require('./queryMovie');
 
-
-
-exports.handler = async(event, context) => {
-
-    const headers = {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Authorization,Content-Type',
-        'Access-Control-Allow-Method': 'GET,POST,OPTIONS',
-    };
-
-    try {
-
-        const id = event.pathParameters.id;
-
-        if (!id) {
-            return {
-                statusCode: 404,
-                body: null,
-                headers,
-            };
-        }
-
-        let data;
-
-        switch (event.resource) {
-            case '/recommended/{id+}':
-                data = await query.getRecommended(id);
-                break;
-            default:
-                data = await query.getMovie(id);
-        }
-
-        return {
-            statusCode: 200,
-            body: JSON.stringify(data),
-            headers,
-        };
-
+/**
+ * Payload  returning from the api
+ * @param {number} statusCode
+ * @param {string} body
+ */
+const payload = (statusCode, body) => {
+  return {
+    statusCode,
+    body,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Authorization,Content-Type',
+      'Access-Control-Allow-Method': 'GET,POST,OPTIONS'
     }
-    catch (err) {
-        return {
-            statusCode: 400,
-            body: err.message,
-            headers,
-        };
+  };
+};
+
+exports.handler = async (event, context) => {
+  try {
+    const id = event.pathParameters.id;
+
+    if (!id) {
+      return payload(404, null);
     }
+
+    let data;
+
+    switch (event.resource) {
+      case '/recommended/{id+}':
+        data = await query.getRecommended(id);
+        break;
+      case '/details/{id+}':
+        data = await query.getMovie(id);
+        break;
+      default:
+        return payload(404, null);
+    }
+
+    return payload(200, JSON.stringify(data));
+  } catch (err) {
+    return payload(500, err.messasge);
+  }
 };

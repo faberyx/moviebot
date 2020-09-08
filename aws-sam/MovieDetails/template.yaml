@@ -1,33 +1,60 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: "AWS::Serverless-2016-10-31"
-Description: API Gateway Lambda service to retrieve movie information form DB
+Description: API Gateway Lambda service to retrieve movie information from DB
 Resources:
+  MoviesApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: "'GET,POST,OPTIONS,PUT'"
+        AllowHeaders: "'Authorization,Content-Type'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: MoviesApiAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: False
+        Authorizers: 
+          MoviesApiAuthorizer:
+            UserPoolArn:  arn:aws:cognito-idp:us-east-1:921119069545:userpool/us-east-1_aizk3GFyC
   MovieDetails:
     Type: "AWS::Serverless::Function"
     Properties:
       Handler: index.handler
       Runtime: nodejs12.x
       CodeUri: .
-      Description: API Gateway Lambda service to retrieve movie information form DB
+      Description: API Gateway Lambda service to retrieve movie information from DB
       MemorySize: 128
       Timeout: 3
       Role: "arn:aws:iam::921119069545:role/service-role/MovieProcessor-role-iyqbuy2g"
       Events:
-        Api1:
+        Details:
           Type: Api
           Properties:
+            RestApiId: !Ref MoviesApi
             Path: "/details/{id+}"
             Method: GET
-        Api2:
+        Recommended:
           Type: Api
           Properties:
+            RestApiId: !Ref MoviesApi
             Path: "/recommended/{id+}"
             Method: GET
-      Environment:
-        Variables:
-          DB_HOST: moviedb.c3tgw2putqdy.us-east-1.rds.amazonaws.com
-          DB_NAME: moviesdb
-          DB_PASSWORD: 4IMJsW8jF2p0maOhOQLN
-          DB_USER: movieadmin
-      Tags:
-        "lambda-console:blueprint": microservice-http-endpoint
+       Tags:
+        "lambda-microservice-http-endpoint"
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+
+  Region:
+    Description: "Region"
+    Value: !Ref AWS::Region
+
+  ApiId:
+    Description: "API ID"
+    Value: !Ref MoviesApi
+
+  ApiUrl:
+    Description: "API endpoint URL for Prod environment"
+    Value: !Sub 'https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
