@@ -7,16 +7,11 @@ Resources:
     Properties:
       Handler: index.handler
       Runtime: nodejs12.x
-      CodeUri: .
+      CodeUri: lambda/
       Description: Lambda function for MovieBOT LEX Service
       MemorySize: 128
       Timeout: 3
       Role: 'arn:aws:iam::921119069545:role/service-role/MovieProcessor-role-iyqbuy2g'
-      VpcConfig:
-        SecurityGroupIds:
-          - sg-02c8ad3ba4217ac67
-          - sg-04fc38d3c77e19815
-        SubnetIds:
-          - subnet-005d71bf03a92aa0d
-          - subnet-0ef3877c65190ee07
- 
+      Environment:
+        Variables:
+          DB_KEY: rds-secret

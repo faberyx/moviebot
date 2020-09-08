@@ -13,12 +13,12 @@
     "currentIntent": {
         "name": "SearchMovie",
         "slots": {
-            "Actor": null,
+            "Actor": "Bale",
             "Decade": null,
             "Director": "nolan",
             "Country": null,
-            "Genre": "horror",
-            "Keyword": "ape"
+            "Genre": "Drama",
+            "Keyword": "homicide"
         },
         "slotDetails": {
             "Actor": null,

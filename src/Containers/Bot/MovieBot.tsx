@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, useEffect, useState, useRef, ChangeEvent, FormEvent, useMemo } from 'react';
+import { createElement, useEffect, useState, useRef, ChangeEvent, FormEvent, useMemo, MouseEvent } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Paper from '@material-ui/core/Paper';
 import Container from '@material-ui/core/Container';
@@ -20,6 +20,7 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import { Message } from '../../interfaces/message';
 import { MessageComposer } from '../../Components/MessageComposer';
 import { MovieDialogComponent } from '../../Components/MovieDialog';
+import { apiFetch } from '../../Utils/restClient';
 
 type Props = RouteComponentProps & {};
 
@@ -71,6 +72,21 @@ const MovieBotContainer = (props: Props) => {
 
   const handleDialogClose = async () => {
     setMovieDetail(undefined);
+  };
+
+  const handleSimilarMovies = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
+    console.log(id);
+    setMovieDetail(undefined);
+    const recommended = await apiFetch(`recommended/${id}`);
+    setInteraction((prevState) =>
+      prevState.slice(0, prevState.length - 1).concat({
+        message: JSON.stringify(recommended),
+        type: 'bot',
+        contentType: 'CustomPayload',
+        layout: 'message',
+        sessionAttributes: { state: 'movie_search_found' }
+      })
+    );
   };
 
   // **************************************************
@@ -176,7 +192,7 @@ const MovieBotContainer = (props: Props) => {
 
   return (
     <Container component="main" maxWidth="md" className={classes.container}>
-      {movieDetail && <MovieDialogComponent onDialogClose={handleDialogClose} id={movieDetail} />}
+      {movieDetail && <MovieDialogComponent onSimilarClick={handleSimilarMovies} onDialogClose={handleDialogClose} id={movieDetail} />}
       <SpeedDial icon={<SpeedDialIcon />} ariaLabel="SpeedDial tooltip example" className={classes.speedDial} onClick={handleToggleDial} open={dialOpen}>
         {actions.map((action) => (
           <SpeedDialAction key={action.name} icon={action.icon} tooltipTitle={action.name} tooltipOpen onClick={handleDial(action.name)} />

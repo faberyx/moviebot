@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, useState, useEffect, Fragment } from 'react';
+import { createElement, useState, useEffect, Fragment, MouseEvent } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -24,6 +24,7 @@ import ImageSearchIcon from '@material-ui/icons/ImageSearch';
 
 type Props = {
   id: string;
+  onSimilarClick: (id: string) => (event: MouseEvent<HTMLButtonElement>) => void;
   onDialogClose: () => void;
 };
 
@@ -35,7 +36,6 @@ type Movie = {
   backdrop: string;
   img: string;
   overview: string;
-  recommended: string;
   release: Date;
   tagline: string;
   vote: number;
@@ -44,7 +44,7 @@ type Movie = {
   originalTitle: string;
 };
 
-export const MovieDialogComponent = ({ id, onDialogClose }: Props) => {
+export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Props) => {
   const [movie, setMovie] = useState<Movie | undefined>();
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export const MovieDialogComponent = ({ id, onDialogClose }: Props) => {
                       <Rating name="half-rating" value={movie.vote / 2} precision={0.5} />
                     </div>
                     <div>
-                      <Button variant="outlined" color="secondary" startIcon={<ImageSearchIcon />}>
+                      <Button variant="outlined" onClick={onSimilarClick(id)} color="secondary" startIcon={<ImageSearchIcon />}>
                         Find Similar movies
                       </Button>
                     </div>

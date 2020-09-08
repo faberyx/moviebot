@@ -31,6 +31,7 @@ const ChatGrid = ({ response, onClick }: Props) => {
   };
 
   const gridClickHandler = (id: string) => (event: MouseEvent<HTMLLIElement>) => {
+    console.log('gridClickHandler', id);
     onClick(id);
   };
 

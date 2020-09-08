@@ -19,9 +19,9 @@ Resources:
   MovieDetails:
     Type: "AWS::Serverless::Function"
     Properties:
+      CodeUri: api/
       Handler: index.handler
       Runtime: nodejs12.x
-      CodeUri: .
       Description: API Gateway Lambda service to retrieve movie information from DB
       MemorySize: 128
       Timeout: 3
@@ -39,9 +39,10 @@ Resources:
             RestApiId: !Ref MoviesApi
             Path: "/recommended/{id+}"
             Method: GET
-       Tags:
-        "lambda-microservice-http-endpoint"
-
+      Environment:
+        Variables:
+          DB_KEY: rds-secret
+        
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
