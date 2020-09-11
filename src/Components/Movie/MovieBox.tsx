@@ -3,10 +3,13 @@ import { createElement, useEffect, useRef, Fragment, useState, useMemo } from 'r
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { MovieGridComponent } from './MovieGrid';
 import { movieListState } from '../../State/movieListState';
 import { MovieDialogComponent } from './MovieDialog';
+import { chatMessageState } from '../../State/chatMessageState';
+import { MovieList } from '../../interfaces/movieList';
+import { apiFetch } from '../../Utils/restClient';
 
 /*
  */
@@ -14,8 +17,9 @@ export const MovieBox = () => {
   // **************************************************
   //   STATE MANAGEMENT
   // **************************************************
-  const [movieList] = useRecoilState(movieListState);
+  const [movieList, setMovieList] = useRecoilState(movieListState);
   const [movieDetail, setMovieDetail] = useState<string | undefined>(undefined);
+  const setInteractionList = useSetRecoilState(chatMessageState);
 
   const movieBox = useRef<HTMLDivElement>();
 
@@ -42,16 +46,16 @@ export const MovieBox = () => {
     setMovieDetail(undefined);
   };
 
-  const handleSimilarMovies = () => async () => {
-    //     // SEND BOT LOADING MESSAGE
-    //     setInteraction((prevState) => prevState.concat({ loading: true, type: 'bot' }));
-    //     // CLOSE THE DETAIL MODAL
-    //     setMovieDetail(undefined);
-    //     const recommended = await apiFetch(`recommended/${id}`);
-    //     setMainList((prevState) => prevState.concat(JSON.stringify(recommended)));
-    //     // SEND BOT LOADING MESSAGE
-    //     setInteraction((prevState) => prevState.concat({ message: 'Here is a list of similar movies I found', type: 'bot' }));
-    //     scroll();
+  const handleSimilarClick = (id: string) => async () => {
+    // SEND BOT LOADING MESSAGE
+    setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
+    // CLOSE THE DETAIL MODAL
+    setMovieDetail(undefined);
+    const recommended = await apiFetch<MovieList[]>(`recommended/${id}`);
+    setMovieList((prevState) => prevState.concat({ movieList: recommended }));
+    // SEND BOT LOADING MESSAGE
+    setInteractionList((prevState) => prevState.concat({ message: 'Here is a list of similar movies I found', type: 'bot' }));
+    //scroll();
   };
 
   const mainData = useMemo(
@@ -67,7 +71,7 @@ export const MovieBox = () => {
 
   return (
     <Fragment>
-      {movieDetail && <MovieDialogComponent onSimilarClick={handleSimilarMovies} onDialogClose={handleDialogClose} id={movieDetail} />}
+      {movieDetail && <MovieDialogComponent onSimilarClick={handleSimilarClick} onDialogClose={handleDialogClose} id={movieDetail} />}
 
       <Paper elevation={3} ref={movieBox} component="div" className={classes.mainContainer}>
         {mainData}

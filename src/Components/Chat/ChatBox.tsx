@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/accessible-emoji */
 /** @jsx createElement */
 import { createElement, useEffect, useRef, Fragment, FormEvent, useMemo, ReactNode } from 'react';
 import Paper from '@material-ui/core/Paper';
@@ -11,7 +12,7 @@ import { sendMessage } from '../../Utils/lexProvider';
 import Chip from '@material-ui/core/Chip/Chip';
 import { LexResponse } from '../../interfaces/lexResponse';
 import { ChatSimpleMessage } from './ChatMessage';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { chatMessageState } from '../../State/chatMessageState';
 import { movieListState } from '../../State/movieListState';
 
@@ -24,7 +25,7 @@ export const ChatBox = () => {
   const inputMsg = useRef<HTMLInputElement>();
   const chatBox = useRef<HTMLDivElement>();
   const [interactionList, setInteractionList] = useRecoilState(chatMessageState);
-  const [, setMovieList] = useRecoilState(movieListState);
+  const setMovieList = useSetRecoilState(movieListState);
 
   const classes = useStyles();
 
@@ -35,7 +36,6 @@ export const ChatBox = () => {
     console.log('ChatBox MOUNT');
 
     const message = (
-      // eslint-disable-next-line jsx-a11y/accessible-emoji
       <Fragment>
         Hello! 👋 This is <strong>MovieBOT</strong> 🤖. Are you ready to find your movie 🎥? Write me what you want to search! 👇
       </Fragment>
@@ -64,7 +64,7 @@ export const ChatBox = () => {
         )
       }
     ]);
-  }, []);
+  }, [classes.divider, setInteractionList]);
 
   // **************************************************
   //  HANDLE RESPONSE FROM LEX
