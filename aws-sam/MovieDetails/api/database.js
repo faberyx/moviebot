@@ -11,7 +11,7 @@ const getSecret = require('./getSecret');
 module.exports.getData = async (query, params, multipleStatements) => {
   const secret = await getSecret();
   const connectionString = JSON.parse(secret);
-  console.log(connectionString);
+
   const connection = mysql.createConnection({
     host: connectionString.host,
     port: connectionString.port,

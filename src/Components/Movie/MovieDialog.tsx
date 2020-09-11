@@ -15,7 +15,7 @@ import Rating from '@material-ui/lab/Rating';
 import LocalMoviesIcon from '@material-ui/icons/LocalMovies';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import CameraIcon from '@material-ui/icons/Camera';
-import { apiFetch } from '../Utils/restClient';
+import { apiFetch } from '../../Utils/restClient';
 import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader/CardHeader';
 import CardContent from '@material-ui/core/CardContent/CardContent';
@@ -80,7 +80,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                       className={classes.image}
                     />
                     <div className={classes.rating}>
-                      <Rating name="half-rating" value={movie.vote / 2} precision={0.5} />
+                      <Rating name="half-rating" value={movie.vote} precision={0.5} max={10} />
                     </div>
                     <div>
                       <Button variant="outlined" onClick={onSimilarClick(id)} color="secondary" startIcon={<ImageSearchIcon />}>
@@ -131,8 +131,8 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
           </DialogContent>
         </Dialog>
       ) : (
-        <Backdrop open>
-          <CircularProgress color="inherit" />
+        <Backdrop open className={classes.backDrop}>
+          <CircularProgress color="primary" />
         </Backdrop>
       )}
     </Fragment>
@@ -148,6 +148,9 @@ const useStyles = (img?: string) =>
     },
     image: {
       borderRadius: '10px'
+    },
+    backDrop: {
+      zIndex: 3
     },
     card: {
       background: 'rgba(0, 0, 0, 0.3)',

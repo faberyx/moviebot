@@ -1,7 +1,9 @@
 import { ResponseCard, SessionAttributes } from './lexResponse';
+import { ReactNode } from 'react';
 
 export type Message = {
-  message?: string;
+  help?: string | ReactNode;
+  message?: string | ReactNode;
   type: 'bot' | 'human';
   loading?: boolean;
   contentType?: 'PlainText' | 'Composite' | string;

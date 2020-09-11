@@ -10,6 +10,8 @@ import blue from '@material-ui/core/colors/blue';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop/Backdrop';
+// RECOIL   STATE MANAGER
+import { RecoilRoot } from 'recoil';
 
 // LAZY IMPORT ROUTES
 const ForgotPasswordContainer = lazy(() => import('../Containers/Auth/ForgotPassword'));
@@ -38,28 +40,30 @@ function Routes() {
     []
   );
   return (
-    <Suspense
-      fallback={
-        <Backdrop open>
-          <CircularProgress color="primary" />
-        </Backdrop>
-      }
-    >
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <ErrorBoundary>
-          <Router>
-            <PrivateRoute exact={true} path="/" Component={MovieBotContainer} />
-            <Route exact={true} path="/login" component={LoginContainer} />
-            <Route exact={true} path="/logout" component={LogoutContainer} />
-            <Route exact={true} path="/register" component={RegisterContainer} />
-            <Route exact={true} path="/forgotpassword" component={ForgotPasswordContainer} />
-            <Route exact={true} path="/resetpassword" component={ResetPasswordContainer} />
-            <Route exact={true} path="/confirm" component={ConfirmEmailContainer} />
-          </Router>
-        </ErrorBoundary>
-      </ThemeProvider>
-    </Suspense>
+    <RecoilRoot>
+      <Suspense
+        fallback={
+          <Backdrop open>
+            <CircularProgress color="primary" />
+          </Backdrop>
+        }
+      >
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <ErrorBoundary>
+            <Router>
+              <PrivateRoute exact={true} path="/" Component={MovieBotContainer} />
+              <Route exact={true} path="/login" component={LoginContainer} />
+              <Route exact={true} path="/logout" component={LogoutContainer} />
+              <Route exact={true} path="/register" component={RegisterContainer} />
+              <Route exact={true} path="/forgotpassword" component={ForgotPasswordContainer} />
+              <Route exact={true} path="/resetpassword" component={ResetPasswordContainer} />
+              <Route exact={true} path="/confirm" component={ConfirmEmailContainer} />
+            </Router>
+          </ErrorBoundary>
+        </ThemeProvider>
+      </Suspense>
+    </RecoilRoot>
   );
 }
 

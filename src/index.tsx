@@ -2,6 +2,7 @@
 import { createElement } from 'react';
 import { render } from 'react-dom';
 import Amplify from 'aws-amplify';
+
 import './global.css';
 
 /** Amplify config */

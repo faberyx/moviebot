@@ -36,10 +36,6 @@
                                 [
                                     {
                                         "Ref": "bucketName"
-                                    },
-                                    "-",
-                                    {
-                                        "Ref": "env"
                                     }
                                 ]
                             ]

@@ -10,19 +10,21 @@
         "@types/react": "^16.9.0",
         "@types/react-dom": "^16.9.0",
         "@types/react-router-dom": "^5.1.5",
-        "aws-amplify": "^3.0.24",
+        "aws-amplify": "^3.1.1",
         "customize-cra": "^1.0.0",
         "customize-cra-react-refresh": "^1.1.0",
-        "jwt-decode": "^2.2.0",
         "react": "^16.13.1",
         "react-app-rewired": "^2.1.6",
         "react-dom": "^16.13.1",
         "react-material-ui-form-validator": "^2.1.1",
         "react-router-dom": "^5.2.0",
         "react-scripts": "3.4.3",
+        "recoil": "^0.0.10",
+        "source-map-explorer": "^2.5.0",
         "typescript": "~3.7.2"
     },
     "scripts": {
+        "stats": "react-scripts build \"--stats\" && webpack-bundle-analyzer build/bundle-stats.json",
         "start": "react-app-rewired start",
         "build": "react-app-rewired build",
         "test": "react-app-rewired test",
@@ -42,5 +44,8 @@
             "last 1 firefox version",
             "last 1 safari version"
         ]
+    },
+    "devDependencies": {
+        "webpack-bundle-analyzer": "^3.8.0"
     }
 }

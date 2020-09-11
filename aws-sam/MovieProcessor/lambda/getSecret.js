@@ -1,5 +1,3 @@
-// https://aws.amazon.com/developers/getting-started/nodejs/
-
 var AWS = require('aws-sdk');
 var client = new AWS.SecretsManager({
   region: 'us-east-1'
