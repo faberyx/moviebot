@@ -142,25 +142,35 @@ const getMovies = async (intentRequest, offset, limit) => {
       return elicitSlot(sessionAttributes, 'SearchMovie', slots, 'Country', `I can't find ${country} country.. can you try again?`);
     }
   }
-
+  const currentOffset = parseInt(limit, 10) + parseInt(offset, 10);
   // Get the list of movie from the database
   const movies = await query.getMovieList(genre, decade, keyword, director, actor, country, releaseTime, offset, limit);
+  if (movies.rows.length > 0) {
+    returnMovies(movies, sessionAttributes, slots, currentOffset);
+  }
 
-  const currentOffset = parseInt(limit, 10) + parseInt(offset, 10);
+  if (intentRequest.inputTranscript) {
+    // Nothing found we try a global search with the content of the message
+    const allmovies = await query.getSearchGlobal(intentRequest.inputTranscript, offset, limit);
+    if (allmovies.rows.length > 0) {
+      returnMovies(movies, sessionAttributes, slots, currentOffset);
+    }
+  }
+
+  // No results from the database, we tell the user no movies are found
+  return close({}, 'Failed', `Couldnt find a movie for you! ...Do you want to retry again?`);
+};
+
+const returnMovies = (movies, sessionAttributes, slots, currentOffset) => {
   let total = parseInt(movies.total, 10) - currentOffset;
   if (total < 0) {
     total = 0;
   }
   console.log('movies>', movies.rows);
-  if (movies.rows.length > 0) {
-    // create a new session containing the slots and the new state in case the user wants to search for more movie later
-    const session = { ...sessionAttributes, state: 'movie_search_found', slots: JSON.stringify(slots), total, offset: currentOffset };
-    console.log('session>', session);
-    return messagePayload(session, 'SearchMovie', {}, movies.rows);
-  }
-
-  // No results from the database, we tell the user no movies are found
-  return close({}, 'Failed', `Couldnt find a movie for you! ...Do you want to retry again?`);
+  // create a new session containing the slots and the new state in case the user wants to search for more movie later
+  const session = { ...sessionAttributes, state: 'movie_search_found', slots: JSON.stringify(slots), total, offset: currentOffset };
+  console.log('session>', session);
+  return messagePayload(session, 'SearchMovie', slots, movies.rows);
 };
 
 // ------------------------------------------------------------------------- Intents -----------------------------------------------------------------------------------

@@ -2,6 +2,8 @@ import {
   LexRuntimeServiceClient,
   PostTextCommand,
   DeleteSessionCommand,
+  PutSessionCommand,
+  PutSessionCommandInput,
   //  PostContentCommand,
   DeleteSessionCommandInput,
   PostTextRequest
@@ -94,6 +96,29 @@ export const deleteSession = async () => {
   };
   try {
     const deleteSession = new DeleteSessionCommand(params);
+    console.log(deleteSession);
+    const data = await client.send(deleteSession);
+    console.log(data);
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+/**
+ * SETS A NEW BOT SESSION
+ */
+export const setSession = async (sessionAttributes: LexAttributes) => {
+  const { client, credentials, botConfig } = await getClient();
+
+  const params: PutSessionCommandInput = {
+    botAlias: botConfig.alias,
+    botName: botConfig.name,
+    userId: credentials.identityId,
+    sessionAttributes
+  };
+  try {
+    const deleteSession = new PutSessionCommand(params);
     console.log(deleteSession);
     const data = await client.send(deleteSession);
     console.log(data);

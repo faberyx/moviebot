@@ -50,13 +50,13 @@ export const MovieBox = () => {
     setMovieDetail(undefined);
   };
 
-  const handleSimilarClick = (id: string) => async () => {
+  const handleSimilarClick = (id: string, title: string) => async () => {
     // SEND BOT LOADING MESSAGE
     setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
     // CLOSE THE DETAIL MODAL
     setMovieDetail(undefined);
     const recommended = await apiFetch<Movie[]>(`recommended/${id}`);
-    setMovieList((prevState) => prevState.concat({ movieList: recommended }));
+    setMovieList((prevState) => prevState.concat({ search: `Similar movies of ${title}`, movieList: recommended }));
     // SEND BOT LOADING MESSAGE
     setInteractionList((prevState) => prevState.concat({ message: 'Here is a list of similar movies I found', type: 'bot' }));
   };
@@ -70,21 +70,11 @@ export const MovieBox = () => {
       });
     }
   };
-  const mainData = useMemo(
-    () =>
-      movieList.map((k, i) => (
-        <Fragment key={`mov_${i}`}>
-          <MovieGridComponent movies={k.movieList} onClick={handleCardClick} />
-          <Divider />
-        </Fragment>
-      )),
-    [movieList]
-  );
+  const mainData = useMemo(() => movieList.map((k, i) => <MovieGridComponent key={`mov_${i}`} movies={k.movieList} search={k.search} onClick={handleCardClick} />), [movieList]);
 
   return (
     <Fragment>
       {movieDetail && <MovieDialogComponent onSimilarClick={handleSimilarClick} onDialogClose={handleDialogClose} id={movieDetail} />}
-
       <Paper elevation={3} ref={movieBox} component="div" className={classes.mainContainer}>
         {mainData}
       </Paper>

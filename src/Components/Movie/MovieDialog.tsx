@@ -24,7 +24,7 @@ import ImageSearchIcon from '@material-ui/icons/ImageSearch';
 
 type Props = {
   id: string;
-  onSimilarClick: (id: string) => (event: MouseEvent<HTMLButtonElement>) => void;
+  onSimilarClick: (id: string, title: string) => (event: MouseEvent<HTMLButtonElement>) => void;
   onDialogClose: () => void;
 };
 
@@ -83,7 +83,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                       <Rating value={movie.vote} precision={0.5} max={10} />
                     </div>
                     <div>
-                      <Button variant="outlined" onClick={onSimilarClick(id)} color="secondary" startIcon={<ImageSearchIcon />}>
+                      <Button variant="outlined" onClick={onSimilarClick(id, movie.title)} color="secondary" startIcon={<ImageSearchIcon />}>
                         Find Similar movies
                       </Button>
                     </div>

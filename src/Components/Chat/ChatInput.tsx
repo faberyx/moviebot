@@ -1,23 +1,24 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 /** @jsx createElement */
-import { ChangeEvent, createElement, FormEvent } from 'react';
+import { ChangeEvent, createElement, FormEvent, MouseEvent } from 'react';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import SendIcon from '@material-ui/icons/Send';
-import ChatIcon from '@material-ui/icons/Chat';
+import RotateLeftIcon from '@material-ui/icons/RotateLeft';
 import { useRecoilState } from 'recoil';
 import { chatInput } from '../../State/chatInput';
 
 type Props = {
   onSubmit: (textMessage: string) => void;
+  onReset: () => void;
 };
 /*
  */
 
-export const ChatInput = ({ onSubmit }: Props) => {
+export const ChatInput = ({ onSubmit, onReset }: Props) => {
   // **************************************************
   //   STATE MANAGEMENT
   // **************************************************
@@ -26,6 +27,11 @@ export const ChatInput = ({ onSubmit }: Props) => {
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     setText(event.target.value);
+  };
+
+  const handleReset = (event: MouseEvent<HTMLButtonElement>) => {
+    setText('');
+    onReset();
   };
 
   // **************************************************
@@ -39,12 +45,12 @@ export const ChatInput = ({ onSubmit }: Props) => {
 
   return (
     <Paper component="form" onSubmit={handleSubmit} className={classes.datainput}>
-      <IconButton className={classes.iconButton} aria-label="menu">
-        <ChatIcon color="secondary" />
+      <IconButton type="button" onClick={handleReset} className={classes.iconButton} aria-label="start new search" title="Start new search">
+        <RotateLeftIcon color="secondary" />
       </IconButton>
+      <Divider className={classes.verticaldivider} orientation="vertical" />
       <InputBase className={classes.input} value={text} onChange={handleChange} autoFocus placeholder="Write a message" inputProps={{ 'aria-label': 'Write a messag' }} />
 
-      <Divider className={classes.verticaldivider} orientation="vertical" />
       <IconButton color="primary" type="submit" className={classes.iconButton} aria-label="directions">
         <SendIcon />
       </IconButton>

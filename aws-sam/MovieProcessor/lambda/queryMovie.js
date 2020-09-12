@@ -50,6 +50,15 @@ const getCondition = (genre, decade, keyword, director, cast, country, releaseTi
 };
 
 /**
+ * Build Query to search all fields based on a string
+ * @param {string} searchGlobal
+ * @returns {string} Query Conditions
+ */
+const getGlobalCondition = (searchGlobal) => {
+  return `${getField('genre', searchGlobal)} ${getField('director', searchGlobal)} ${getField('cast', searchGlobal)} ${getField('title', searchGlobal)} `.trim().substring(4);
+};
+
+/**
  * Retrieves the list of movies based on the slot conditions
  * @param {string} genre
  * @param {string} decade
@@ -71,7 +80,36 @@ module.exports.getMovieList = async (genre, decade, keyword, director, cast, cou
       cast,
       country,
       releaseTime
-    )};SELECT id, title, img, director FROM moviesdb.movies WHERE ${getCondition(genre, decade, keyword, director, cast, country, releaseTime)} ORDER BY popularity desc LIMIT ${limit} OFFSET ${offset};`;
+    )};SELECT id, title, genre, director, country, \`release\`, img, vote FROM moviesdb.movies WHERE ${getCondition(
+      genre,
+      decade,
+      keyword,
+      director,
+      cast,
+      country,
+      releaseTime
+    )} ORDER BY popularity desc LIMIT ${limit} OFFSET ${offset};`;
+    console.log('QUERY_LIST>', query);
+    const data = await db.getData(query, [], true);
+    console.log('ROWS>', data);
+    return { rows: data[1], total: data[0][0].total };
+  } catch (err) {
+    console.error('ERR', err);
+    return null;
+  }
+};
+
+/**
+ * Retrieves the list of movies based on the slot conditions
+ * @param {string} searchGlobal to search
+ * @param {number} offset
+ * @param {number} limit
+ */
+module.exports.getSearchGlobal = async (searchGlobal, offset, limit) => {
+  try {
+    const query = `SELECT COUNT(*) as total FROM moviesdb.movies WHERE ${getGlobalCondition(
+      searchGlobal
+    )};SELECT  id, title, genre, director, country, \`release\`, img,  vote  FROM moviesdb.movies WHERE ${getGlobalCondition(searchGlobal)} ORDER BY popularity desc LIMIT ${limit} OFFSET ${offset};`;
     console.log('QUERY_LIST>', query);
     const data = await db.getData(query, [], true);
     console.log('ROWS>', data);

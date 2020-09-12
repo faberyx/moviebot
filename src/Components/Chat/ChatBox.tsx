@@ -4,7 +4,7 @@ import { createElement, useEffect, useRef, Fragment, useMemo, ReactNode } from '
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { sendMessage } from '../../Utils/lexProvider';
+import { sendMessage, deleteSession } from '../../Utils/lexProvider';
 import Chip from '@material-ui/core/Chip/Chip';
 import { LexResponse } from '../../interfaces/lexResponse';
 import { ChatSimpleMessage } from './ChatMessage';
@@ -81,12 +81,13 @@ export const ChatBox = () => {
     });
   };
 
-  const handleMovieResult = (response: LexResponse) => {
+  const handleMovieResult = (response: LexResponse, message: string) => {
     if (response && response.message && response.sessionAttributes) {
       const m = response.message;
       const s = response.sessionAttributes;
 
-      setMovieList((prevState) => prevState.concat({ movieList: JSON.parse(m) }));
+      // SET MOVIES IN THE LEFT PANEL LIST
+      setMovieList((prevState) => prevState.concat({ search: message, movieList: JSON.parse(m) }));
 
       if (s.total === '0') {
         chatMessage(`Those are all the movies I found for you..`);
@@ -133,7 +134,7 @@ export const ChatBox = () => {
 
     if (response) {
       if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
-        handleMovieResult(response);
+        handleMovieResult(response, message);
       } else {
         // Log chatbot response
         console.log(response);
@@ -151,6 +152,12 @@ export const ChatBox = () => {
     }
 
     scroll();
+  };
+
+  const handleReset = async () => {
+    await deleteSession();
+    setInteractionList([]);
+    setMovieList([]);
   };
 
   const scroll = () => {
@@ -179,7 +186,7 @@ export const ChatBox = () => {
       <Paper elevation={3} component="div" ref={chatBox} className={classes.interactions}>
         {interactions}
       </Paper>
-      <ChatInput onSubmit={handleSubmit} />
+      <ChatInput onSubmit={handleSubmit} onReset={handleReset} />
     </Fragment>
   );
 };
