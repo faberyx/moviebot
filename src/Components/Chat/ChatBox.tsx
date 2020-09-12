@@ -1,13 +1,9 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 /** @jsx createElement */
-import { createElement, useEffect, useRef, Fragment, FormEvent, useMemo, ReactNode } from 'react';
+import { createElement, useEffect, useRef, Fragment, useMemo, ReactNode } from 'react';
 import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import SendIcon from '@material-ui/icons/Send';
-import ChatIcon from '@material-ui/icons/Chat';
 import { sendMessage } from '../../Utils/lexProvider';
 import Chip from '@material-ui/core/Chip/Chip';
 import { LexResponse } from '../../interfaces/lexResponse';
@@ -15,6 +11,8 @@ import { ChatSimpleMessage } from './ChatMessage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { chatMessageState } from '../../State/chatMessageState';
 import { movieListState } from '../../State/movieListState';
+import { DEFAULT_PAGINATION } from '../../Utils/constats';
+import { ChatInput } from './ChatInput';
 
 /*
  */
@@ -22,7 +20,7 @@ export const ChatBox = () => {
   // **************************************************
   //   STATE MANAGEMENT
   // **************************************************
-  const inputMsg = useRef<HTMLInputElement>();
+
   const chatBox = useRef<HTMLDivElement>();
   const [interactionList, setInteractionList] = useRecoilState(chatMessageState);
   const setMovieList = useSetRecoilState(movieListState);
@@ -73,7 +71,7 @@ export const ChatBox = () => {
     console.log(type);
   };
 
-  const chatMessage = (message: string | ReactNode, removeLast = true, type: 'bot' | 'human' = 'bot') => {
+  const chatMessage = (message: string | ReactNode, removeLast = true) => {
     setInteractionList((prevState) => {
       const prev = removeLast ? prevState.slice(0, prevState.length - 1) : prevState;
       return prev.concat({
@@ -96,11 +94,11 @@ export const ChatBox = () => {
       } else {
         chatMessage(
           <Fragment>
-            I found those <strong className={classes.primarycolor}>{s.offset} </strong>movies for you, but there are <strong className={classes.primarycolor}>{s.total}</strong> more results..
+            I found some movies for you, but there still are <strong className={classes.primarycolor}>{s.total}</strong> more results..
           </Fragment>
         );
       }
-      if (s.offset === '4') {
+      if (s.offset === DEFAULT_PAGINATION) {
         chatMessage(
           <Fragment>
             I can show you more results if you ask me to <Chip variant="outlined" color="primary" label="show 8 more results" />. You can refine your results specifying, or you can{' '}
@@ -115,18 +113,11 @@ export const ChatBox = () => {
   // **************************************************
   //  SUBMIT  MESSAGE FROM USER
   // **************************************************
-  const handleSubmit = async (event: FormEvent<any>) => {
-    event.preventDefault();
-    console.log(inputMsg);
-    if (!(inputMsg.current && inputMsg.current.value)) {
+  const handleSubmit = async (message: string) => {
+    if (!message) {
       // ---- ALERT EMPTY  MESSAGE <<
       return;
     }
-    const message = inputMsg.current.value;
-
-    // clear the input
-    inputMsg.current.value = '';
-
     // SEND USER MESSAGE TO THE CHAT
     setInteractionList((prevState) => prevState.concat({ message: message, type: 'human' }));
     // SEND BOT LOADING MESSAGE
@@ -188,17 +179,7 @@ export const ChatBox = () => {
       <Paper elevation={3} component="div" ref={chatBox} className={classes.interactions}>
         {interactions}
       </Paper>
-      <Paper component="form" onSubmit={handleSubmit} className={classes.datainput}>
-        <IconButton className={classes.iconButton} aria-label="menu">
-          <ChatIcon color="secondary" />
-        </IconButton>
-        <InputBase className={classes.input} autoFocus inputRef={inputMsg} placeholder="Write a message" inputProps={{ 'aria-label': 'Write a messag' }} />
-
-        <Divider className={classes.verticaldivider} orientation="vertical" />
-        <IconButton color="primary" type="submit" className={classes.iconButton} aria-label="directions">
-          <SendIcon />
-        </IconButton>
-      </Paper>
+      <ChatInput onSubmit={handleSubmit} />
     </Fragment>
   );
 };
@@ -213,25 +194,11 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 2),
     height: 'calc(100% - 55px)'
   },
-  datainput: {
-    marginTop: theme.spacing(1),
-    display: 'flex',
-    alignItems: 'center'
-  },
-  input: {
-    marginLeft: theme.spacing(1),
-    flex: 1
-  },
-  iconButton: {
-    padding: 10
-  },
+
   primarycolor: {
     color: theme.palette.primary.main
   },
-  verticaldivider: {
-    height: 28,
-    margin: 4
-  },
+
   divider: {
     margin: theme.spacing(1, 0)
   }

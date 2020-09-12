@@ -8,7 +8,7 @@ import { MovieGridComponent } from './MovieGrid';
 import { movieListState } from '../../State/movieListState';
 import { MovieDialogComponent } from './MovieDialog';
 import { chatMessageState } from '../../State/chatMessageState';
-import { MovieList } from '../../interfaces/movieList';
+import { Movie } from '../../interfaces/movie';
 import { apiFetch } from '../../Utils/restClient';
 
 /*
@@ -32,6 +32,10 @@ export const MovieBox = () => {
     console.log('ChatMessage MOUNT');
   }, []);
 
+  useEffect(() => {
+    scroll();
+  }, [movieList]);
+
   // **************************************************
   //   MOVIE GRID AND DETAILS
   // **************************************************
@@ -51,13 +55,21 @@ export const MovieBox = () => {
     setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
     // CLOSE THE DETAIL MODAL
     setMovieDetail(undefined);
-    const recommended = await apiFetch<MovieList[]>(`recommended/${id}`);
+    const recommended = await apiFetch<Movie[]>(`recommended/${id}`);
     setMovieList((prevState) => prevState.concat({ movieList: recommended }));
     // SEND BOT LOADING MESSAGE
     setInteractionList((prevState) => prevState.concat({ message: 'Here is a list of similar movies I found', type: 'bot' }));
-    //scroll();
   };
 
+  const scroll = () => {
+    if (movieBox.current) {
+      movieBox.current.scrollTo({
+        top: movieBox.current.scrollHeight,
+        left: 0,
+        behavior: 'smooth'
+      });
+    }
+  };
   const mainData = useMemo(
     () =>
       movieList.map((k, i) => (

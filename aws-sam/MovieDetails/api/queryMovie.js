@@ -7,7 +7,7 @@ const db = require('./database');
  */
 module.exports.getRecommended = async (id) => {
   try {
-    const query = `SELECT id, title, img, tagline,director  FROM  moviesdb.movies  m WHERE FIND_IN_SET (m.id, (SELECT replace(q.recommended,'|',',')  FROM moviesdb.movies q WHERE q.id = ${mysql.escape(
+    const query = `SELECT id, originalTitle, title, cast, genre, director, country, \`release\`, img, overview, backdrop, recommended, vote, tagline, \`runtime\`  FROM  moviesdb.movies  m WHERE FIND_IN_SET (m.id, (SELECT replace(q.recommended,'|',',')  FROM moviesdb.movies q WHERE q.id = ${mysql.escape(
       id
     )}))`;
     console.log('QUERY_R_SELECT>', query);
@@ -25,9 +25,7 @@ module.exports.getRecommended = async (id) => {
  */
 module.exports.getMovie = async (id) => {
   try {
-    const query = `SELECT originalTitle, title, cast, genre, director, country, \`release\`, img, overview, backdrop, recommended, vote, tagline, \`runtime\` FROM moviesdb.movies WHERE id = ${mysql.escape(
-      id
-    )}`;
+    const query = `SELECT id, originalTitle, title, cast, genre, director, country, \`release\`, img, overview, backdrop, recommended, vote, tagline, \`runtime\` FROM moviesdb.movies WHERE id = ${mysql.escape(id)}`;
     console.log('QUERY_SELECT>', query);
     const rows = await db.getData(query);
     if (rows.length > 0) {

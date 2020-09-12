@@ -4,7 +4,7 @@ const query = require('./queryMovie');
 const utils = require('./utils');
 //const personalizeQuery = require('./personalize');
 
-const defaultMovieCount = 4;
+const defaultMovieCount = 8;
 
 //--- Helpers:  Build responses which match the structure of the necessary dialog actions
 //--- ConfirmationStatus None, Confirmed, or Denied (intent confirmation, if configured)

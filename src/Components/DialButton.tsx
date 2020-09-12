@@ -12,6 +12,7 @@ import { chatMessageState } from '../State/chatMessageState';
 import { movieListState } from '../State/movieListState';
 import { deleteSession } from '../Utils/lexProvider';
 import { RouteComponentProps } from 'react-router-dom';
+import { chatInput } from '../State/chatInput';
 
 const SpeedDialComponent = ({ route }: { route: RouteComponentProps }) => {
   const classes = useStyles();
@@ -19,7 +20,7 @@ const SpeedDialComponent = ({ route }: { route: RouteComponentProps }) => {
 
   const setMovieList = useSetRecoilState(movieListState);
   const setInteractionList = useSetRecoilState(chatMessageState);
-
+  const setText = useSetRecoilState(chatInput);
   const actions = [
     { icon: <SettingsBackupRestoreIcon />, name: 'Reset' },
     { icon: <ExitToAppIcon />, name: 'Logout' },
@@ -33,7 +34,7 @@ const SpeedDialComponent = ({ route }: { route: RouteComponentProps }) => {
         break;
       case 'Reset':
         await deleteSession();
-        // setMessage('');
+        setText('');
         setInteractionList([]);
         setMovieList([]);
         break;

@@ -1,11 +1,5 @@
-export type MovieList = {
-  id: string;
-  title: string;
-  tagline: string;
-  img: string;
-  director: string;
-};
+import { Movie } from './movie';
 
 export type MovieSearch = {
-  movieList: MovieList[];
+  movieList: Movie[];
 };

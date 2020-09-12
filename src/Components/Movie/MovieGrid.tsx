@@ -4,10 +4,10 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { MovieList } from '../../interfaces/movieList';
+import { Movie } from '../../interfaces/movie';
 
 type Props = {
-  movies: MovieList[];
+  movies: Movie[];
   onClick: (id?: string) => void;
 };
 
@@ -23,8 +23,16 @@ const MovieGrid = ({ movies, onClick }: Props) => {
     <div className={classes.gridList}>
       <GridList cellHeight={300} spacing={8} cols={4}>
         {movies.map((tile, i) => (
-          <GridListTile key={i} onClick={gridClickHandler(tile.id)}>
+          <GridListTile
+            key={i}
+            onClick={gridClickHandler(tile.id)}
+            classes={{
+              root: classes.titleBar,
+              tile: classes.tile
+            }}
+          >
             <img onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')} src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${tile.img}`} alt={tile.title} />
+            <div>{tile.release}</div>
             <GridListTileBar
               titlePosition="bottom"
               title={tile.title}
@@ -47,6 +55,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: 'pointer'
   },
   title: {},
+  tile: {},
   titleBar: {}
 }));
 

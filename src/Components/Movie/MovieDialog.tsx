@@ -80,7 +80,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                       className={classes.image}
                     />
                     <div className={classes.rating}>
-                      <Rating name="half-rating" value={movie.vote} precision={0.5} max={10} />
+                      <Rating value={movie.vote} precision={0.5} max={10} />
                     </div>
                     <div>
                       <Button variant="outlined" onClick={onSimilarClick(id)} color="secondary" startIcon={<ImageSearchIcon />}>
@@ -163,8 +163,8 @@ const useStyles = (img?: string) =>
     imagediv: {},
     rating: {
       height: '40px',
-      width: '300px',
-      background: 'rgba(0, 0, 0, 0.3)',
+      width: '100%',
+      background: '#55555577',
       borderRadius: '5px',
       padding: '8px',
       margin: theme.spacing(2, 0, 2)

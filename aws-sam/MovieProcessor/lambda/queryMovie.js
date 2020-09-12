@@ -18,7 +18,7 @@ const getField = (field, value) => {
         query = ` AND \`release\` BETWEEN ${mysql.escape(value + '-01-01')} AND ${mysql.escape(value + 10 + '-01-01')}`;
         break;
       case 'keywords':
-        query = ` AND (lower(\`keywords\`) LIKE ${mysql.escape(value.toLowerCase() + '%')} OR lower(\`keywords\`) LIKE ${mysql.escape('%|' + value.toLowerCase() + '%')})`;
+        query = ` AND (lower(\`keywords\`) LIKE ${mysql.escape(value.replace(/s$/, '').toLowerCase() + '%')} OR lower(\`keywords\`) LIKE ${mysql.escape('%|' + value.replace(/s$/, '').toLowerCase() + '%')})`;
         break;
       default:
         query = ` AND lower(\`${field}\`) LIKE ${mysql.escape('%' + value.toLowerCase() + '%')}`;
@@ -41,10 +41,10 @@ const getField = (field, value) => {
  * @returns {string} Query Conditions
  */
 const getCondition = (genre, decade, keyword, director, cast, country, releaseTime) => {
-  return `${getField('genre', genre)} ${getField('decade', parseInt(decade, 10))} ${getField('keywords', keyword)} ${getField('director', director)} ${getField(
-    'cast',
-    cast
-  )} ${getField('country', country)} ${getField('country', country)} ${getField('release', releaseTime)}`
+  return `${getField('genre', genre)} ${getField('decade', parseInt(decade, 10))} ${getField('keywords', keyword)} ${getField('director', director)} ${getField('cast', cast)} ${getField('country', country)} ${getField(
+    'country',
+    country
+  )} ${getField('release', releaseTime)}`
     .trim()
     .substring(4);
 };
@@ -71,15 +71,7 @@ module.exports.getMovieList = async (genre, decade, keyword, director, cast, cou
       cast,
       country,
       releaseTime
-    )};SELECT id, title, img, director FROM moviesdb.movies WHERE ${getCondition(
-      genre,
-      decade,
-      keyword,
-      director,
-      cast,
-      country,
-      releaseTime
-    )} ORDER BY popularity desc LIMIT ${limit} OFFSET ${offset};`;
+    )};SELECT id, title, img, director FROM moviesdb.movies WHERE ${getCondition(genre, decade, keyword, director, cast, country, releaseTime)} ORDER BY popularity desc LIMIT ${limit} OFFSET ${offset};`;
     console.log('QUERY_LIST>', query);
     const data = await db.getData(query, [], true);
     console.log('ROWS>', data);
