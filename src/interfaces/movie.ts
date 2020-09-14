@@ -15,3 +15,13 @@ export type Movie = {
   id: string;
   originalTitle: string;
 };
+
+export type MovieSlots = {
+  Actor: string;
+  Country: string;
+  Decade: string;
+  Director: string;
+  Genre: string;
+  Keyword: string;
+  ReleaseTime: string;
+};

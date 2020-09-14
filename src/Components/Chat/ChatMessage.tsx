@@ -40,7 +40,7 @@ const LightTooltip = withStyles((theme) => ({
     color: 'rgba(0, 0, 0, 0.87)',
     boxShadow: theme.shadows[1],
     maxWidth: 500,
-    fontSize: '0.9rem'
+    fontSize: '0.8rem'
   }
 }))(Tooltip);
 
@@ -53,13 +53,12 @@ const useStyles = (type: 'bot' | 'human') =>
       right: type === 'human' ? 'unset' : -10
     },
     bubble: {
-      transition: '1s',
       backgroundColor: type === 'human' ? '#f1f1f1' : '#e0e5f1',
       color: '#444',
-      padding: '10px 25px',
+      padding: '10px 10px',
       marginBottom: '24px',
-      fontSize: '0.9rem',
-      lineHeight: '1.7rem',
+      fontSize: '0.8rem',
+      lineHeight: '1.5rem',
       position: 'relative',
       borderRight: type === 'human' ? `5px solid ${theme.palette.secondary.light}` : 0,
       borderLeft: type === 'human' ? 0 : `5px solid ${theme.palette.primary.light}`,

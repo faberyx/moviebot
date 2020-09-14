@@ -1,7 +1,6 @@
 /** @jsx createElement */
 import { createElement, useEffect, useRef, Fragment, useState, useMemo } from 'react';
 import Paper from '@material-ui/core/Paper';
-import Divider from '@material-ui/core/Divider';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { MovieGridComponent } from './MovieGrid';
@@ -56,9 +55,9 @@ export const MovieBox = () => {
     // CLOSE THE DETAIL MODAL
     setMovieDetail(undefined);
     const recommended = await apiFetch<Movie[]>(`recommended/${id}`);
-    setMovieList((prevState) => prevState.concat({ search: `Similar movies of ${title}`, movieList: recommended }));
+    setMovieList((prevState) => prevState.concat({ search: { message: `Similar movies of ${title}`, slots: undefined }, movieList: recommended }));
     // SEND BOT LOADING MESSAGE
-    setInteractionList((prevState) => prevState.concat({ message: 'Here is a list of similar movies I found', type: 'bot' }));
+    setInteractionList((prevState) => prevState.slice(0, prevState.length - 1).concat({ message: 'Here is a list of similar movies I found', type: 'bot' }));
   };
 
   const scroll = () => {
@@ -70,7 +69,10 @@ export const MovieBox = () => {
       });
     }
   };
-  const mainData = useMemo(() => movieList.map((k, i) => <MovieGridComponent key={`mov_${i}`} movies={k.movieList} search={k.search} onClick={handleCardClick} />), [movieList]);
+  const mainData = useMemo(() => {
+    const allSearches = movieList.map((k) => k.search.message);
+    return movieList.map((k, i) => <MovieGridComponent key={`mov_${i}`} movies={k.movieList} previousSearch={allSearches} search={k.search} onClick={handleCardClick} />);
+  }, [movieList]);
 
   return (
     <Fragment>

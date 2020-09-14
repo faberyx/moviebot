@@ -146,14 +146,14 @@ const getMovies = async (intentRequest, offset, limit) => {
   // Get the list of movie from the database
   const movies = await query.getMovieList(genre, decade, keyword, director, actor, country, releaseTime, offset, limit);
   if (movies.rows.length > 0) {
-    returnMovies(movies, sessionAttributes, slots, currentOffset);
+    return returnMovies(movies, sessionAttributes, slots, currentOffset);
   }
 
   if (intentRequest.inputTranscript) {
     // Nothing found we try a global search with the content of the message
     const allmovies = await query.getSearchGlobal(intentRequest.inputTranscript, offset, limit);
     if (allmovies.rows.length > 0) {
-      returnMovies(movies, sessionAttributes, slots, currentOffset);
+      return returnMovies(movies, sessionAttributes, slots, currentOffset);
     }
   }
 
@@ -203,6 +203,24 @@ const askMoreData = async (intentRequest) => {
 };
 
 // -----------------------------------------------
+//  FALLBACK INTENT
+// -----------------------------------------------
+const fallback = async (intentRequest) => {
+  const sessionAttributes = intentRequest.sessionAttributes;
+  const requestAttributes = intentRequest.requestAttributes;
+  const intent = intentRequest.currentIntent;
+  if (intentRequest.inputTranscript) {
+    // Nothing found we try a global search with the content of the message
+    const allmovies = await query.getSearchGlobal(intentRequest.inputTranscript, 0, 4);
+    if (allmovies.rows.length > 0) {
+      return returnMovies(allmovies, sessionAttributes, {}, 4);
+    }
+  }
+  // No results from the database, we tell the user no movies are found
+  return close({}, 'Failed', `Couldnt find a movie for you! ...Do you want to retry again?`);
+};
+
+// -----------------------------------------------
 //  SEARCH MOVIE INTENT
 // -----------------------------------------------
 const searchMovie = async (intentRequest) => {
@@ -247,6 +265,10 @@ const dispatch = async (intentRequest, callback) => {
       return;
     case 'RecommendMovie':
       callback(await recommendMovie(intentRequest));
+      return;
+    case 'Fallback':
+      const responseF = await fallback(intentRequest);
+      callback(responseF);
       return;
     default:
       callback(close(intentRequest.sessionAttributes, 'Fulfilled', 'Well you shouldnt be here.. intent not found!!!'));

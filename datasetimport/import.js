@@ -147,7 +147,7 @@ const insertData = async (id) => {
 
 const updateData = async (data) => {
   const update = new Promise((resolve, reject) => {
-    connection.query('UPDATE movies SET genresearch=? WHERE id=?;', data, (err, rows) => {
+    connection.query('UPDATE movies SET certification=? WHERE id=?;', data, (err, rows) => {
       if (err) {
         console.log('ERROR>', err);
         reject(err);
@@ -167,7 +167,7 @@ const updateData = async (data) => {
 
 const selectData = async () => {
   const select = new Promise((resolve, reject) => {
-    connection.query('select * from movies', (err, rows) => {
+    connection.query('select * from movies ', (err, rows) => {
       if (err) {
         console.log('ERROR>', err);
         reject(err);
@@ -210,6 +210,22 @@ const deleteMovie = async () => {
   return await select;
 };
 
+const getCertification = async (id) => {
+  // @ts-ignore
+  const certification = await axios.get(`https://api.themoviedb.org/3/movie/${id}/release_dates?api_key=adfcb22b23867f298e2c032ea4801456`);
+
+  if (certification && certification.data) {
+    try {
+      const kk = certification.data.results.find((l) => l.iso_3166_1 === 'US').release_dates.find((t) => t.certification);
+
+      return kk.certification;
+    } catch (err) {
+      console.log('ERROR_CERT> ' + id);
+    }
+  }
+  return null;
+};
+
 (async function () {
   // const csvAll = await fs.readFile('./links.csv', 'utf-8');
   // const csvdata = [];
@@ -223,11 +239,13 @@ const deleteMovie = async () => {
 
   bar1.start(movies.length, 0);
 
-  for (let i = 0; i < movies.length; i++) {
+  for (let i = 47137; i < movies.length; i++) {
     const movie = movies[i];
     bar1.update(i);
-    const genre = movie.genre.split('|').slice(0, 2).join('|');
-    await updateData([genre, movie.id]);
+    const certification = await getCertification(movie.id);
+    if (certification) {
+      await updateData([certification, movie.id]);
+    }
     await sleep(15);
   }
 

@@ -80,7 +80,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                       className={classes.image}
                     />
                     <div className={classes.rating}>
-                      <Rating value={movie.vote} precision={0.5} max={10} />
+                      <Rating name="rating" value={movie.vote} precision={0.5} max={10} />
                     </div>
                     <div>
                       <Button variant="outlined" onClick={onSimilarClick(id, movie.title)} color="secondary" startIcon={<ImageSearchIcon />}>
@@ -100,7 +100,9 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                           <LocalMoviesIcon color="secondary" />
                         </ListItemIcon>
                         <ListItemText>
-                          {movie.genre.split('|').join(', ')} - {movie.country} - {getDate(movie.release)} - {movie.runtime} min.
+                          {movie.genre.split('|').join(', ')}
+                          <br />
+                          {movie.country} {getDate(movie.release)} - {movie.runtime} min.
                         </ListItemText>
                       </ListItem>
                       <ListItem>

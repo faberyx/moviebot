@@ -69,7 +69,7 @@ const ConfirmEmailContainer = (props: Props) => {
   //--- CLOSE ALERT BANNER
   const handleClose = (value: typeof confirmationData) => (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
     if (value.type === 'redirect') {
-      props.history.push(`/`);
+      props.history.push(`/login`);
     }
     setConf(confirmationData);
   };
@@ -81,7 +81,7 @@ const ConfirmEmailContainer = (props: Props) => {
         message: 'Code sent successfully! Please check your email..',
         success: true,
         confirmed: true,
-        type: ''
+        type: 'redirect'
       });
     } catch (err) {
       setConf({
@@ -145,16 +145,7 @@ const ConfirmEmailContainer = (props: Props) => {
               <TextField variant="outlined" required fullWidth label="Email Address" value={values.email} disabled />
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                onChange={handleChange('code')}
-                fullWidth
-                label="Enter confirmation code"
-                value={values.code}
-                error={error.code !== ''}
-                helperText={error.code}
-              />
+              <TextField variant="outlined" required onChange={handleChange('code')} fullWidth label="Enter confirmation code" value={values.code} error={error.code !== ''} helperText={error.code} />
             </Grid>
           </Grid>
           <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
@@ -173,7 +164,7 @@ const ConfirmEmailContainer = (props: Props) => {
           </Grid>
         </form>
       </Paper>
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={3000} open={reg.confirmed} TransitionComponent={Slide} onClose={handleClose(reg)}>
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={2000} open={reg.confirmed} TransitionComponent={Slide} onClose={handleClose(reg)}>
         <Alert elevation={6} variant="filled" severity={reg.success ? 'success' : 'error'}>
           <strong>{reg.message}</strong>
         </Alert>

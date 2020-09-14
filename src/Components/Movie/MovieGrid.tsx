@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, MouseEvent, memo } from 'react';
+import { createElement, MouseEvent, memo, Fragment } from 'react';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
@@ -7,13 +7,18 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Movie } from '../../interfaces/movie';
 import PageviewIcon from '@material-ui/icons/Pageview';
 import Chip from '@material-ui/core/Chip/Chip';
+import { SearchMessage } from '../../interfaces/movieList';
+import Tooltip from '@material-ui/core/Tooltip';
+import withStyles from '@material-ui/core/styles/withStyles';
+
 type Props = {
   movies: Movie[];
-  search: string;
+  search: SearchMessage;
+  previousSearch: string[];
   onClick: (id?: string) => void;
 };
 
-const MovieGrid = ({ movies, search, onClick }: Props) => {
+const MovieGrid = ({ movies, search, previousSearch, onClick }: Props) => {
   const classes = useStyles();
 
   const gridClickHandler = (id: string) => (event: MouseEvent<HTMLLIElement>) => {
@@ -21,10 +26,36 @@ const MovieGrid = ({ movies, search, onClick }: Props) => {
     onClick(id);
   };
 
+  const getMessage = (search: SearchMessage) => {
+    if (search.slots) {
+      return (
+        search.slots &&
+        Object.entries(search.slots)
+          .filter(([k, v]) => v)
+          .map(([k, v]) => (
+            <div key={k}>
+              {k}: {v}
+            </div>
+          ))
+      );
+    }
+    return 'No Match found';
+  };
+
   return (
     <div className={classes.gridList}>
       <div className={classes.searchtitle}>
-        <PageviewIcon fontSize="large" /> &nbsp; Search result: &nbsp; <Chip variant="outlined" color="secondary" classes={{ label: classes.searchlabel }} label={search} />
+        <SearchTooltip title={getMessage(search)}>
+          <PageviewIcon fontSize="large" />
+        </SearchTooltip>
+        &nbsp;
+        <Fragment>
+          {previousSearch.map((k, i) => (
+            <SearchTooltip key={i} title={getMessage(search)}>
+              <Chip variant="outlined" size="small" color="secondary" classes={{ label: classes.searchlabel }} label={k} />
+            </SearchTooltip>
+          ))}
+        </Fragment>
       </div>
       <GridList cellHeight={300} spacing={8} cols={4}>
         {movies.map((tile, i) => (
@@ -41,7 +72,7 @@ const MovieGrid = ({ movies, search, onClick }: Props) => {
             <GridListTileBar
               titlePosition="bottom"
               title={tile.title}
-              subtitle={tile.director}
+              subtitle={tile.director.split('|').join(', ')}
               classes={{
                 root: classes.titleBar,
                 title: classes.title
@@ -54,26 +85,37 @@ const MovieGrid = ({ movies, search, onClick }: Props) => {
   );
 };
 
+const SearchTooltip = withStyles((theme) => ({
+  tooltip: {
+    backgroundColor: theme.palette.grey[100],
+    color: 'rgba(0, 0, 0, 0.87)',
+    boxShadow: theme.shadows[1],
+    maxWidth: 500,
+    fontSize: '0.9rem'
+  }
+}))(Tooltip);
+
 const useStyles = makeStyles((theme) => ({
   gridList: {
-    margin: '15px 0',
-    cursor: 'pointer'
+    margin: '15px 0'
   },
   searchtitle: {
     display: 'flex',
     alignItems: 'center',
-    fontSize: '1.2rem',
     width: '100%',
     color: theme.palette.primary.main,
-    background: '#44444488',
+    background: '#0000007a',
     margin: theme.spacing(2, 0),
-    padding: theme.spacing(1, 2)
+    padding: theme.spacing(1, 2),
+    borderRadius: '10px'
   },
   searchlabel: {
-    fontSize: '1.0rem'
+    fontSize: '0.9rem'
   },
   title: {},
-  tile: {},
+  tile: {
+    cursor: 'pointer'
+  },
   titleBar: {}
 }));
 

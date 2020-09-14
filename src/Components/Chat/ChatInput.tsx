@@ -51,7 +51,7 @@ export const ChatInput = ({ onSubmit, onReset }: Props) => {
       <Divider className={classes.verticaldivider} orientation="vertical" />
       <InputBase className={classes.input} value={text} onChange={handleChange} autoFocus placeholder="Write a message" inputProps={{ 'aria-label': 'Write a messag' }} />
 
-      <IconButton color="primary" type="submit" className={classes.iconButton} aria-label="directions">
+      <IconButton color="primary" type="submit" className={classes.iconButton} aria-label="send message" title="Send message">
         <SendIcon />
       </IconButton>
     </Paper>

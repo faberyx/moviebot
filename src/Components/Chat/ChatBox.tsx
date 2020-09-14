@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/accessible-emoji */
 /** @jsx createElement */
 import { createElement, useEffect, useRef, Fragment, useMemo, ReactNode } from 'react';
@@ -11,8 +12,11 @@ import { ChatSimpleMessage } from './ChatMessage';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { chatMessageState } from '../../State/chatMessageState';
 import { movieListState } from '../../State/movieListState';
+import { chatInput } from '../../State/chatInput';
+
 import { DEFAULT_PAGINATION } from '../../Utils/constats';
 import { ChatInput } from './ChatInput';
+import { MovieSlots } from '../../interfaces/movie';
 
 /*
  */
@@ -24,6 +28,7 @@ export const ChatBox = () => {
   const chatBox = useRef<HTMLDivElement>();
   const [interactionList, setInteractionList] = useRecoilState(chatMessageState);
   const setMovieList = useSetRecoilState(movieListState);
+  const setMessage = useSetRecoilState(chatInput);
 
   const classes = useStyles();
 
@@ -32,7 +37,10 @@ export const ChatBox = () => {
   // **************************************************
   useEffect(() => {
     console.log('ChatBox MOUNT');
+    sendWelcomeMessage();
+  }, []);
 
+  const sendWelcomeMessage = () => {
     const message = (
       <Fragment>
         Hello! 👋 This is <strong>MovieBOT</strong> 🤖. Are you ready to find your movie 🎥? Write me what you want to search! 👇
@@ -47,28 +55,50 @@ export const ChatBox = () => {
         help: (
           <Fragment>
             <h4>How to search for a movie? 🎥 </h4>
-            Loking for a genre? <Chip color="primary" label="find an horror movie" />
+            Loking for a genre? <Chip size="small" color="primary" label="find an horror movie" />
             <Divider className={classes.divider} />
-            Loking for a director? <Chip color="primary" label="find a movie of cristopher nolan" />
+            Loking for a director? <Chip size="small" color="primary" label="find a movie of cristopher nolan" />
             <Divider className={classes.divider} />
-            Loking for an actor? <Chip color="primary" label="find a movie with brad pitt" />
+            Loking for an actor? <Chip size="small" color="primary" label="find a movie with brad pitt" />
             <Divider className={classes.divider} />
-            Loking for a specific country? <Chip color="primary" label="find me an italian movie" />
+            Loking for a specific country? <Chip size="small" color="primary" label="find me an italian movie" />
             <Divider className={classes.divider} />
-            Loking for a movie feature? <Chip color="primary" label="find a movie about jedi" />
+            Loking for a movie feature? <Chip size="small" color="primary" label="find a movie about jedi" />
             <Divider className={classes.divider} />
-            ..or you can combine them.. <Chip color="primary" label="find an italian horror movie about zombies" />
+            ..or you can combine them.. <Chip size="small" color="primary" label="find an italian horror movie about zombies" />
           </Fragment>
         )
       }
     ]);
-  }, [classes.divider, setInteractionList]);
+  };
 
   // **************************************************
   //  HANDLE RESPONSE FROM LEX
   // **************************************************
   const handleClickResponse = (type: string) => async () => {
     console.log(type);
+    switch (type) {
+      case 'results':
+        setMessage('show   more results');
+        break;
+      case 'moreresults':
+        setMessage('show 10 more results');
+        break;
+      case 'search':
+        await handleReset();
+        break;
+      case 'actor':
+        setMessage('with <actor>');
+        break;
+      case 'director':
+        setMessage('by <director>');
+        break;
+      case 'time':
+        setMessage('from <last year, 10 years ago, the sixties>');
+        break;
+      default:
+        break;
+    }
   };
 
   const chatMessage = (message: string | ReactNode, removeLast = true) => {
@@ -85,28 +115,44 @@ export const ChatBox = () => {
     if (response && response.message && response.sessionAttributes) {
       const m = response.message;
       const s = response.sessionAttributes;
+      const slots = (response.sessionAttributes && response.sessionAttributes.slots ? JSON.parse(response.sessionAttributes.slots) : '') as MovieSlots;
 
       // SET MOVIES IN THE LEFT PANEL LIST
-      setMovieList((prevState) => prevState.concat({ search: message, movieList: JSON.parse(m) }));
+      setMovieList((prevState) => prevState.concat({ search: { slots, message }, movieList: JSON.parse(m) }));
 
       if (s.total === '0') {
         chatMessage(`Those are all the movies I found for you..`);
+        chatMessage(
+          <Fragment>
+            You can <Chip color="primary" label="start a new search" size="small" onClick={handleClickResponse('search')} /> now!
+          </Fragment>,
+          false
+        );
         // reset session ----
       } else {
         chatMessage(
           <Fragment>
-            I found some movies for you, but there still are <strong className={classes.primarycolor}>{s.total}</strong> more results..
+            I found some movies for you, but there still are <Chip size="small" color="secondary" label={s.total} /> more results.
           </Fragment>
         );
-      }
-      if (s.offset === DEFAULT_PAGINATION) {
         chatMessage(
           <Fragment>
-            I can show you more results if you ask me to <Chip variant="outlined" color="primary" label="show 8 more results" />. You can refine your results specifying, or you can{' '}
-            <Chip variant="outlined" color="primary" label="start a new search" onClick={handleClickResponse('search')} /> to find a different movie
+            I can refine your search if you want to look for a specific <Chip size="small" color="primary" label="actor" onClick={handleClickResponse('actor')} />,{' '}
+            <Chip size="small" color="primary" label="director" onClick={handleClickResponse('director')} />, <Chip size="small" color="primary" label="period of time" onClick={handleClickResponse('time')} /> or what you
+            can think of.. ..
           </Fragment>,
           false
         );
+        if (s.offset === DEFAULT_PAGINATION) {
+          chatMessage(
+            <Fragment>
+              I can <Chip size="small" color="primary" label="show more results" onClick={handleClickResponse('results')} /> or specify how many{' '}
+              <Chip size="small" color="primary" label="show 10 more results" onClick={handleClickResponse('moreresults')} /> or you can{' '}
+              <Chip color="primary" label="start a new search" size="small" onClick={handleClickResponse('search')} />
+            </Fragment>,
+            false
+          );
+        }
       }
     }
   };
@@ -156,14 +202,15 @@ export const ChatBox = () => {
 
   const handleReset = async () => {
     await deleteSession();
-    setInteractionList([]);
+    // setInteractionList([]);
     setMovieList([]);
+    sendWelcomeMessage();
   };
 
   const scroll = () => {
     if (chatBox.current) {
       chatBox.current.scrollTo({
-        top: chatBox.current.scrollHeight,
+        top: chatBox.current.scrollHeight + 100,
         left: 0,
         behavior: 'smooth'
       });
@@ -198,7 +245,7 @@ const useStyles = makeStyles((theme) => ({
   interactions: {
     overflowY: 'auto',
     overflowX: 'hidden',
-    padding: theme.spacing(2, 2),
+    padding: theme.spacing(2, 1),
     height: 'calc(100% - 55px)'
   },
 

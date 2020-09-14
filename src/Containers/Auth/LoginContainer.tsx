@@ -26,6 +26,10 @@ const LoginContainer = (props: Props) => {
     email: '',
     password: ''
   };
+  const userData = {
+    email: '',
+    password: ''
+  };
 
   const loginData = {
     message: '',
@@ -34,7 +38,7 @@ const LoginContainer = (props: Props) => {
     loggedin: false
   };
   const [email, setEmail] = useState('');
-  const [values, setValues] = useState(formData);
+  const [values, setValues] = useState(userData);
   const [error, setError] = useState(formData);
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(loginData);
@@ -143,13 +147,7 @@ const LoginContainer = (props: Props) => {
         </form>
       </Paper>
 
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        autoHideDuration={login.type === 'redirect' ? 1000 : 3000}
-        open={login.loggedin}
-        TransitionComponent={Slide}
-        onClose={handleClose(login)}
-      >
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={login.type === 'redirect' ? 1000 : 3000} open={login.loggedin} TransitionComponent={Slide} onClose={handleClose(login)}>
         <Alert elevation={6} variant="filled" severity={login.success ? 'success' : 'error'}>
           <strong>{login.message}</strong>
         </Alert>

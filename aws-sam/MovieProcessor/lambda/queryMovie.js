@@ -5,23 +5,26 @@ const db = require('./database');
 /**
  * Build the field conditions based on the type
  * @param {string} field
- * @param {any} value
+ * @param {any} fieldvalue
+ * @param {string} condition
  */
-const getField = (field, value) => {
-  if (value) {
+const getField = (field, fieldvalue, condition = 'AND') => {
+  if (fieldvalue) {
     let query = '';
+    // try to cleanup values of useless stuff
+    const value = `${fieldvalue}`.replace(/\ba\b|\bthe\b|\babout\b|\bby\b|\bwith\b|\bof\b|\bfrom\b/gm, '').trim();
     switch (field) {
       case 'release':
-        query = ` AND  \`release\` BETWEEN ${mysql.escape(value.from)} AND ${mysql.escape(value.to)}`;
+        query = ` ${condition}   \`release\` BETWEEN ${mysql.escape(fieldvalue.from)} AND ${mysql.escape(fieldvalue.to)}`;
         break;
       case 'decade':
-        query = ` AND \`release\` BETWEEN ${mysql.escape(value + '-01-01')} AND ${mysql.escape(value + 10 + '-01-01')}`;
+        query = ` ${condition}  \`release\` BETWEEN ${mysql.escape(value + '-01-01')} AND ${mysql.escape(parseInt(value, 10) + 10 + '-01-01')}`;
         break;
       case 'keywords':
-        query = ` AND (lower(\`keywords\`) LIKE ${mysql.escape(value.replace(/s$/, '').toLowerCase() + '%')} OR lower(\`keywords\`) LIKE ${mysql.escape('%|' + value.replace(/s$/, '').toLowerCase() + '%')})`;
+        query = ` ${condition}  (lower(\`keywords\`) LIKE ${mysql.escape(value.replace(/s$/, '').toLowerCase() + '%')} OR lower(\`keywords\`) LIKE ${mysql.escape('%|' + value.replace(/s$/, '').toLowerCase() + '%')})`;
         break;
       default:
-        query = ` AND lower(\`${field}\`) LIKE ${mysql.escape('%' + value.toLowerCase() + '%')}`;
+        query = ` ${condition}  lower(\`${field}\`) LIKE ${mysql.escape('%' + value.toLowerCase() + '%')}`;
         break;
     }
     return query;
@@ -55,7 +58,7 @@ const getCondition = (genre, decade, keyword, director, cast, country, releaseTi
  * @returns {string} Query Conditions
  */
 const getGlobalCondition = (searchGlobal) => {
-  return `${getField('genre', searchGlobal)} ${getField('director', searchGlobal)} ${getField('cast', searchGlobal)} ${getField('title', searchGlobal)} `.trim().substring(4);
+  return `${getField('genre', searchGlobal, 'OR')} ${getField('director', searchGlobal, 'OR')} ${getField('cast', searchGlobal, 'OR')} ${getField('title', searchGlobal, 'OR')} `.trim().substring(4);
 };
 
 /**

@@ -5,7 +5,7 @@ import { PrivateRoute } from './PrivateRoute';
 import { ErrorBoundary } from '../Components/ErrorBoundary';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import orange from '@material-ui/core/colors/orange';
+import purple from '@material-ui/core/colors/purple';
 import blue from '@material-ui/core/colors/blue';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -33,7 +33,7 @@ function Routes() {
           },
           secondary: {
             // This is green.A700 as hex.
-            main: orange[500]
+            main: purple.A200
           }
         }
       }),

@@ -1,6 +1,11 @@
-import { Movie } from './movie';
+import { Movie, MovieSlots } from './movie';
 
 export type MovieSearch = {
   movieList: Movie[];
-  search: string;
+  search: SearchMessage;
+};
+
+export type SearchMessage = {
+  message: string;
+  slots?: MovieSlots;
 };
