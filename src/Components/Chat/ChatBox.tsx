@@ -5,11 +5,11 @@ import { createElement, useEffect, useRef, Fragment, useMemo, ReactNode } from '
 import Paper from '@material-ui/core/Paper';
 import Divider from '@material-ui/core/Divider';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { sendMessage, deleteSession } from '../../Utils/lexProvider';
+import { sendLexMessage, deleteSession, sendLexVoiceMessage } from '../../Utils/lexProvider';
 import Chip from '@material-ui/core/Chip/Chip';
 import { LexResponse } from '../../interfaces/lexResponse';
 import { ChatSimpleMessage } from './ChatMessage';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { chatMessageState } from '../../State/chatMessageState';
 import { movieListState } from '../../State/movieListState';
 import { chatInput } from '../../State/chatInput';
@@ -17,6 +17,8 @@ import { chatInput } from '../../State/chatInput';
 import { DEFAULT_PAGINATION } from '../../Utils/constats';
 import { ChatInput } from './ChatInput';
 import { MovieSlots } from '../../interfaces/movie';
+import { AudioMessage, InputMessage } from '../../interfaces/inputMessage';
+import { audioPlayer } from '../../State/audioPlayer';
 
 /*
  */
@@ -28,7 +30,8 @@ export const ChatBox = () => {
   const chatBox = useRef<HTMLDivElement>();
   const [interactionList, setInteractionList] = useRecoilState(chatMessageState);
   const setMovieList = useSetRecoilState(movieListState);
-  const setMessage = useSetRecoilState(chatInput);
+  const [getMessage, setMessage] = useRecoilState(chatInput);
+  const getAudioPlayer = useRecoilValue(audioPlayer);
 
   const classes = useStyles();
 
@@ -39,6 +42,15 @@ export const ChatBox = () => {
     console.log('ChatBox MOUNT');
     sendWelcomeMessage();
   }, []);
+
+  useEffect(() => {
+    //
+    if (getMessage.message === '') {
+      handleReset();
+      return;
+    }
+    handleMessage(getMessage);
+  }, [getMessage]);
 
   const sendWelcomeMessage = () => {
     const message = (
@@ -79,22 +91,22 @@ export const ChatBox = () => {
     console.log(type);
     switch (type) {
       case 'results':
-        setMessage('show   more results');
+        setMessage({ message: 'show   more results' });
         break;
       case 'moreresults':
-        setMessage('show 10 more results');
+        setMessage({ message: 'show 10 more results' });
         break;
       case 'search':
         await handleReset();
         break;
       case 'actor':
-        setMessage('with <actor>');
+        setMessage({ message: 'with <actor>' });
         break;
       case 'director':
-        setMessage('by <director>');
+        setMessage({ message: 'by <director>' });
         break;
       case 'time':
-        setMessage('from <last year, 10 years ago, the sixties>');
+        setMessage({ message: 'from <last year, 10 years ago, the sixties>' });
         break;
       default:
         break;
@@ -160,13 +172,18 @@ export const ChatBox = () => {
   // **************************************************
   //  SUBMIT  MESSAGE FROM USER
   // **************************************************
-  const handleSubmit = async (message: string) => {
-    if (!message) {
-      // ---- ALERT EMPTY  MESSAGE <<
-      return;
+  const handleMessage = async (input: InputMessage) => {
+    if (input.message) {
+      sendTextMessage(input.message);
     }
+    if (input.audio && input.audio.blob) {
+      sendAudioMessage(input.audio);
+    }
+  };
+
+  const sendTextMessage = async (message: string) => {
     // SEND USER MESSAGE TO THE CHAT
-    setInteractionList((prevState) => prevState.concat({ message: message, type: 'human' }));
+    setInteractionList((prevState) => prevState.concat({ message, type: 'human' }));
     // SEND BOT LOADING MESSAGE
     setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
 
@@ -176,7 +193,7 @@ export const ChatBox = () => {
     }, 21);
 
     // GET THE RESPONSE FROM LEX
-    const response = await sendMessage(message);
+    const response = await sendLexMessage(message);
 
     if (response) {
       if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
@@ -190,8 +207,7 @@ export const ChatBox = () => {
             card: response.responseCard,
             type: 'bot',
             contentType: response.messageFormat,
-            sessionAttributes: response.sessionAttributes,
-            layout: response.responseCard ? 'card' : 'message'
+            sessionAttributes: response.sessionAttributes
           })
         );
       }
@@ -200,9 +216,45 @@ export const ChatBox = () => {
     scroll();
   };
 
+  const sendAudioMessage = async (audio: AudioMessage) => {
+    if (!getAudioPlayer.type) {
+      return;
+    }
+
+    // SEND BOT LOADING MESSAGE
+    setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
+
+    // SCROLL TO BOTTOM OF THE CHATBOX
+    setTimeout(() => {
+      scroll();
+    }, 21);
+
+    // GET THE RESPONSE FROM LEX
+    const response = await sendLexVoiceMessage(audio, getAudioPlayer.type);
+    // Log chatbot response
+    if (response && response.inputTranscript) {
+      chatMessage(`I understood: ${response.inputTranscript}`, true);
+
+      if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
+        handleMovieResult(response, response.inputTranscript);
+      } else {
+        setInteractionList((prevState) =>
+          prevState.concat({
+            message: response.message,
+            type: 'bot',
+            contentType: response.messageFormat,
+            sessionAttributes: response.sessionAttributes,
+            layout: response.responseCard ? 'card' : 'message'
+          })
+        );
+      }
+    }
+    scroll();
+  };
+
   const handleReset = async () => {
     await deleteSession();
-    // setInteractionList([]);
+    setInteractionList([]);
     setMovieList([]);
     sendWelcomeMessage();
   };
@@ -233,7 +285,7 @@ export const ChatBox = () => {
       <Paper elevation={3} component="div" ref={chatBox} className={classes.interactions}>
         {interactions}
       </Paper>
-      <ChatInput onSubmit={handleSubmit} onReset={handleReset} />
+      <ChatInput />
     </Fragment>
   );
 };

@@ -10,6 +10,7 @@ import Chip from '@material-ui/core/Chip/Chip';
 import { SearchMessage } from '../../interfaces/movieList';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 
 type Props = {
   movies: Movie[];
@@ -51,9 +52,12 @@ const MovieGrid = ({ movies, search, previousSearch, onClick }: Props) => {
         &nbsp;
         <Fragment>
           {previousSearch.map((k, i) => (
-            <SearchTooltip key={i} title={getMessage(search)}>
-              <Chip variant="outlined" size="small" color="secondary" classes={{ label: classes.searchlabel }} label={k} />
-            </SearchTooltip>
+            <Fragment key={`${i}_searchbox`}>
+              {i > 0 && <NavigateNextIcon fontSize="small" color="primary" />}
+              <SearchTooltip title={getMessage(search)}>
+                <Chip variant="outlined" size="small" color="secondary" classes={{ label: classes.searchlabel }} label={k} />
+              </SearchTooltip>
+            </Fragment>
           ))}
         </Fragment>
       </div>
@@ -107,7 +111,8 @@ const useStyles = makeStyles((theme) => ({
     background: '#0000007a',
     margin: theme.spacing(2, 0),
     padding: theme.spacing(1, 2),
-    borderRadius: '10px'
+    borderRadius: '10px',
+    overflow: 'hidden'
   },
   searchlabel: {
     fontSize: '0.9rem'

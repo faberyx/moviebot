@@ -1,6 +1,10 @@
 import { atom } from 'recoil';
+import { InputMessage } from '../interfaces/inputMessage';
 
-export const chatInput = atom<string>({
-  key: 'chatInput', // unique ID (with respect to other atoms/selectors)
-  default: '' // default value (aka initial value)
+export const chatInput = atom<InputMessage>({
+  key: 'chatInput',
+  default: {
+    message: undefined,
+    audio: undefined
+  }
 });

@@ -70,8 +70,11 @@ export const MovieBox = () => {
     }
   };
   const mainData = useMemo(() => {
-    const allSearches = movieList.map((k) => k.search.message);
-    return movieList.map((k, i) => <MovieGridComponent key={`mov_${i}`} movies={k.movieList} previousSearch={allSearches} search={k.search} onClick={handleCardClick} />);
+    const allSearches: string[] = [];
+    return movieList.map((k, i) => {
+      allSearches.push(k.search.message);
+      return <MovieGridComponent key={`mov_${i}`} movies={k.movieList} previousSearch={[...allSearches]} search={k.search} onClick={handleCardClick} />;
+    });
   }, [movieList]);
 
   return (

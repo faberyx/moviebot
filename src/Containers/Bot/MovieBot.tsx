@@ -8,6 +8,7 @@ import Grid from '@material-ui/core/Grid/Grid';
 import { ChatBox } from '../../Components/Chat/ChatBox';
 import { MovieBox } from '../../Components/Movie/MovieBox';
 import { DialButton } from '../../Components/DialButton';
+import Hidden from '@material-ui/core/Hidden/Hidden';
 
 type Props = RouteComponentProps & {};
 
@@ -23,10 +24,11 @@ const MovieBotContainer = (props: Props) => {
     <Fragment>
       <Container component="main" maxWidth="lg" className={classes.container}>
         <Grid container spacing={3} className={classes.grid}>
-          <Grid item xs={8} className={classes.grid}>
+          <Grid item xs={12} md={8} className={classes.grid}>
             <MovieBox />
           </Grid>
-          <Grid item xs={4} className={classes.grid}>
+
+          <Grid item md={4} className={classes.grid}>
             <ChatBox />
           </Grid>
         </Grid>

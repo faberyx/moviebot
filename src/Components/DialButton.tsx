@@ -34,7 +34,7 @@ const SpeedDialComponent = ({ route }: { route: RouteComponentProps }) => {
         break;
       case 'Reset':
         await deleteSession();
-        setText('');
+        setText({ message: '' });
         setInteractionList([]);
         setMovieList([]);
         break;

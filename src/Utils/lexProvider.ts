@@ -4,7 +4,8 @@ import {
   DeleteSessionCommand,
   PutSessionCommand,
   PutSessionCommandInput,
-  //  PostContentCommand,
+  PostContentCommand,
+  PostContentCommandInput,
   DeleteSessionCommandInput,
   PostTextRequest
 } from '@aws-sdk/client-lex-runtime-service';
@@ -14,6 +15,7 @@ import awsconfig from '../aws-exports';
 
 import { Credentials, getAmplifyUserAgent } from '@aws-amplify/core';
 import { LexResponse } from '../interfaces/lexResponse';
+import { AudioMessage } from '../interfaces/inputMessage';
 
 export interface LexAttributes {
   [key: string]: string;
@@ -45,7 +47,7 @@ const getClient = async () => {
 /**
  * SENDS A TEXT MESSAGE TO LEX
  */
-export const sendMessage = async (message: string, sessionAttributes?: LexAttributes, requestAttributes?: LexAttributes): Promise<LexResponse | null> => {
+export const sendLexMessage = async (message: string, sessionAttributes?: LexAttributes, requestAttributes?: LexAttributes): Promise<LexResponse | null> => {
   try {
     // GET THE AWS LEX CLIENT
     const { client, credentials, botConfig } = await getClient();
@@ -77,6 +79,73 @@ export const sendMessage = async (message: string, sessionAttributes?: LexAttrib
     console.log('SESSION', response.sessionAttributes);
     console.log('SESSION-SLOTS', response.sessionAttributes && response.sessionAttributes.slots ? JSON.parse(response.sessionAttributes.slots) : '');
     return response;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
+/**
+ * SENDS A VOICE MESSAGE TO LEX
+ */
+export const sendLexVoiceMessage = async (audio: AudioMessage, acceptFormat: string, sessionAttributes?: LexAttributes, requestAttributes?: LexAttributes): Promise<LexResponse | null> => {
+  try {
+    // GET THE AWS LEX CLIENT
+    const { client, credentials, botConfig } = await getClient();
+
+    const mediaType = audio.blob.type;
+    let contentType = mediaType;
+
+    if (mediaType.startsWith('audio/wav')) {
+      contentType = 'audio/x-l16; sample-rate=16000; channel-count=1';
+    } else if (mediaType.startsWith('audio/ogg')) {
+      contentType = `audio/x-cbr-opus-with-preamble; bit-rate=32000; frame-size-milliseconds=20; preamble-size=${audio.offset}`;
+    } else {
+      console.warn('unknown media type in lex client');
+    }
+
+    // MESSAGE REQUEST PARAMS
+    const params: PostContentCommandInput = {
+      botAlias: botConfig.alias,
+      botName: botConfig.name,
+      inputStream: audio.blob,
+      contentType,
+      accept: 'text/plain; charset=utf-8',
+      userId: credentials.identityId
+    };
+
+    // ADDS SESSION ATTRIBUTES TO MESSAGE
+    if (sessionAttributes) {
+      params.sessionAttributes = JSON.stringify(sessionAttributes);
+    }
+
+    // ADDS REQUEST ATTRIBUTES TO MESSAGE
+    if (requestAttributes) {
+      params.requestAttributes = JSON.stringify(requestAttributes);
+    }
+
+    // CREATE POST TEXT COMMAND
+    const postContentCommand = new PostContentCommand(params);
+
+    // AWS LEX API CALL
+    let response = await client.send(postContentCommand);
+
+    const data: LexResponse = {
+      audioStream: response.audioStream,
+      contentType: response.contentType,
+      dialogState: response.dialogState,
+      intentName: response.intentName,
+      inputTranscript: response.inputTranscript,
+      message: response.message,
+      messageFormat: response.messageFormat,
+      sentimentResponse: response.sentimentResponse,
+      sessionAttributes: response.sessionAttributes ? JSON.parse(atob(response.sessionAttributes.toString())) : undefined,
+      sessionId: response.sessionId,
+      slotToElicit: response.slotToElicit,
+      slots: response.slots ? JSON.parse(atob(response.slots.toString())) : undefined
+    };
+    console.log('postContentCommand', data);
+    return data;
   } catch (err) {
     console.error(err);
     return null;
@@ -127,3 +196,41 @@ export const setSession = async (sessionAttributes: LexAttributes) => {
     return null;
   }
 };
+
+/*
+
+postContent(
+    blob,
+    sessionAttributes = {},
+    acceptFormat = 'audio/ogg',
+    offset = 0,
+  ) {
+    const mediaType = blob.type;
+    let contentType = mediaType;
+
+    if (mediaType.startsWith('audio/wav')) {
+      contentType = 'audio/x-l16; sample-rate=16000; channel-count=1';
+    } else if (mediaType.startsWith('audio/ogg')) {
+      contentType =
+      'audio/x-cbr-opus-with-preamble; bit-rate=32000;' +
+        ` frame-size-milliseconds=20; preamble-size=${offset}`;
+    } else {
+      console.warn('unknown media type in lex client');
+    }
+
+    const postContentReq = this.lexRuntimeClient.postContent({
+      accept: acceptFormat,
+      botAlias: this.botAlias,
+      botName: this.botName,
+      userId: this.userId,
+      contentType,
+      inputStream: blob,
+      sessionAttributes,
+    });
+
+    return this.credentials.getPromise()
+      .then(creds => creds && this.initCredentials(creds))
+      .then(() => postContentReq.promise());
+  }
+
+*/

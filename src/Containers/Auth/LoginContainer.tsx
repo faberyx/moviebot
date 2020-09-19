@@ -17,6 +17,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { validateEmail } from '../../Utils/validation';
 import Slide from '@material-ui/core/Slide';
+import logo from '../../assets/logo.png';
 
 type Props = RouteComponentProps & {};
 
@@ -95,14 +96,15 @@ const LoginContainer = (props: Props) => {
   return (
     <Container component="main" maxWidth="sm" className={classes.container}>
       {loading && <LinearProgress color="primary" />}
-      <Paper elevation={3} className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5" style={{ padding: '20px' }}>
-          MovieBOT Sign in
-        </Typography>
-
+      <div className={classes.back}>
+        <Grid container spacing={3}>
+          <Grid item xs={4}>
+            <img src={logo} alt="logo" height="50" />
+          </Grid>
+          <Grid item xs={8}>
+            <h1 className={classes.title}>MovieBOT - LOGIN</h1>
+          </Grid>
+        </Grid>
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <TextField
             variant="outlined"
@@ -145,7 +147,7 @@ const LoginContainer = (props: Props) => {
             </Grid>
           </Grid>
         </form>
-      </Paper>
+      </div>
 
       <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={login.type === 'redirect' ? 1000 : 3000} open={login.loggedin} TransitionComponent={Slide} onClose={handleClose(login)}>
         <Alert elevation={6} variant="filled" severity={login.success ? 'success' : 'error'}>
@@ -160,15 +162,19 @@ const useStyles = makeStyles((theme) => ({
   container: {
     marginTop: theme.spacing(22)
   },
+  back: {
+    background: '#ffffff',
+    padding: theme.spacing(4),
+    borderRadius: '10px'
+  },
   paper: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     padding: '30px 50px'
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main
+  title: {
+    color: theme.palette.primary.main
   },
   form: {
     width: '100%', // Fix IE 11 issue.
