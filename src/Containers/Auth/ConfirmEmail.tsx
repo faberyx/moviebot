@@ -1,23 +1,20 @@
 /** @jsx createElement */
-import { createElement, useState, ChangeEvent, FormEvent, SyntheticEvent, useEffect, MouseEvent } from 'react';
+import { createElement, useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Snackbar from '@material-ui/core/Snackbar';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { SnackbarCloseReason } from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import { Auth } from 'aws-amplify';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { validateCode, validateEmail } from '../../Utils/validation';
 import Slide from '@material-ui/core/Slide';
+import { AuthTitle } from '../../Components/Auth/AuthTilte';
 
 type Props = RouteComponentProps & {};
 
@@ -67,14 +64,14 @@ const ConfirmEmailContainer = (props: Props) => {
   };
 
   //--- CLOSE ALERT BANNER
-  const handleClose = (value: typeof confirmationData) => (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+  const handleClose = (value: typeof confirmationData) => () => {
     if (value.type === 'redirect') {
       props.history.push(`/login`);
     }
     setConf(confirmationData);
   };
 
-  const handleResend = async (event: MouseEvent<HTMLButtonElement>) => {
+  const handleResend = async () => {
     try {
       await Auth.resendSignUp(values.email);
       setConf({
@@ -132,12 +129,7 @@ const ConfirmEmailContainer = (props: Props) => {
     <Container component="main" maxWidth="sm" className={classes.container}>
       {loading && <LinearProgress color="primary" />}
       <Paper elevation={3} className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5" style={{ padding: '20px' }}>
-          Confim Email
-        </Typography>
+        <AuthTitle title="Confirm Email" />
 
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <Grid container spacing={2}>
@@ -180,15 +172,12 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    padding: '30px 50px'
+    alignItems: 'center'
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main
-  },
+
   form: {
     width: '100%', // Fix IE 11 issue.
+    padding: '20px 35px',
     marginTop: theme.spacing(1)
   },
   submit: {

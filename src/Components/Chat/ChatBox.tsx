@@ -39,18 +39,14 @@ export const ChatBox = () => {
   //  USE EFFECT ON COMPONENT MOUNTING
   // **************************************************
   useEffect(() => {
+    console.log('SEND MESSAGE>', getMessage);
+    handleMessage(getMessage);
+  }, [getMessage]);
+
+  useEffect(() => {
     console.log('ChatBox MOUNT');
     sendWelcomeMessage();
   }, []);
-
-  useEffect(() => {
-    //
-    if (getMessage.message === '') {
-      handleReset();
-      return;
-    }
-    handleMessage(getMessage);
-  }, [getMessage]);
 
   const sendWelcomeMessage = () => {
     const message = (
@@ -285,7 +281,7 @@ export const ChatBox = () => {
       <Paper elevation={3} component="div" ref={chatBox} className={classes.interactions}>
         {interactions}
       </Paper>
-      <ChatInput />
+      <ChatInput reset={handleReset} />
     </Fragment>
   );
 };

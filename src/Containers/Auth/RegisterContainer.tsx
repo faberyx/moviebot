@@ -1,22 +1,19 @@
 /** @jsx createElement */
-import { createElement, useState, ChangeEvent, FormEvent, SyntheticEvent } from 'react';
+import { createElement, useState, ChangeEvent, FormEvent } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Snackbar from '@material-ui/core/Snackbar';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { SnackbarCloseReason } from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Auth } from 'aws-amplify';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { validateEmail, validatePassword } from '../../Utils/validation';
 import Slide from '@material-ui/core/Slide';
+import { AuthTitle } from '../../Components/Auth/AuthTilte';
 
 type Props = RouteComponentProps & {};
 
@@ -48,7 +45,7 @@ const RegisterContainer = (props: Props) => {
     setValues({ ...values, [value]: event.target.value });
   };
 
-  const handleClose = (value: typeof registrationData) => (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+  const handleClose = (value: typeof registrationData) => () => {
     if (value.type === 'redirect') {
       props.history.push(`/confirm?email=${email}`);
     }
@@ -106,27 +103,12 @@ const RegisterContainer = (props: Props) => {
     <Container component="main" maxWidth="sm" className={classes.container}>
       {loading && <LinearProgress color="primary" />}
       <Paper elevation={3} className={classes.paper}>
-        <Avatar className={classes.avatar}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5" style={{ padding: '20px' }}>
-          Register to MovieBOT Service
-        </Typography>
+        <AuthTitle title="Register" />
 
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                label="Email Address"
-                onChange={handleChange('email')}
-                value={values.email}
-                error={error.email !== ''}
-                helperText={error.email}
-                autoComplete="email"
-              />
+              <TextField variant="outlined" required fullWidth label="Email Address" onChange={handleChange('email')} value={values.email} error={error.email !== ''} helperText={error.email} autoComplete="email" />
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -166,13 +148,7 @@ const RegisterContainer = (props: Props) => {
           </Grid>
         </form>
       </Paper>
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        autoHideDuration={reg.type === 'redirect' ? 1000 : 3000}
-        open={reg.registered}
-        TransitionComponent={Slide}
-        onClose={handleClose(reg)}
-      >
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={reg.type === 'redirect' ? 1000 : 3000} open={reg.registered} TransitionComponent={Slide} onClose={handleClose(reg)}>
         <Alert elevation={6} variant="filled" severity={reg.success ? 'success' : 'error'}>
           <strong>{reg.message}</strong>
         </Alert>
@@ -188,16 +164,12 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    padding: '30px 50px'
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main
+    alignItems: 'center'
   },
   form: {
     width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1)
+    marginTop: theme.spacing(1),
+    padding: '20px 35px'
   },
   submit: {
     margin: theme.spacing(3, 0, 2)

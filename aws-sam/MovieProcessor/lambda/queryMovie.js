@@ -6,22 +6,24 @@ const db = require('./database');
  * Build the field conditions based on the type
  * @param {string} field
  * @param {any} fieldvalue
- * @param {string} condition
  */
 const getField = (field, fieldvalue, condition = 'AND') => {
   if (fieldvalue) {
     let query = '';
-    // try to cleanup values of useless stuff
+    // try to cleanup values of useless stuff 
     const value = `${fieldvalue}`.replace(/\ba\b|\bthe\b|\babout\b|\bby\b|\bwith\b|\bof\b|\bfrom\b/gm, '').trim();
     switch (field) {
       case 'release':
         query = ` ${condition}   \`release\` BETWEEN ${mysql.escape(fieldvalue.from)} AND ${mysql.escape(fieldvalue.to)}`;
         break;
       case 'decade':
-        query = ` ${condition}  \`release\` BETWEEN ${mysql.escape(value + '-01-01')} AND ${mysql.escape(parseInt(value, 10) + 10 + '-01-01')}`;
+        query = ` ${condition}  \`release\` BETWEEN ${mysql.escape(value + '-01-01')} AND ${mysql.escape(parseInt(value,10) + 10 + '-01-01')}`;
         break;
       case 'keywords':
-        query = ` ${condition}  (lower(\`keywords\`) LIKE ${mysql.escape(value.replace(/s$/, '').toLowerCase() + '%')} OR lower(\`keywords\`) LIKE ${mysql.escape('%|' + value.replace(/s$/, '').toLowerCase() + '%')})`;
+        query = ` ${condition}   MATCH (overview, keywords, title ) AGAINST (${mysql.escape(value)} IN NATURAL LANGUAGE MODE)`;
+        break;
+      case 'genre':
+        query = ` ${condition}   MATCH (genresearch) AGAINST (${mysql.escape(value)} IN NATURAL LANGUAGE MODE)`;
         break;
       default:
         query = ` ${condition}  lower(\`${field}\`) LIKE ${mysql.escape('%' + value.toLowerCase() + '%')}`;
@@ -58,7 +60,7 @@ const getCondition = (genre, decade, keyword, director, cast, country, releaseTi
  * @returns {string} Query Conditions
  */
 const getGlobalCondition = (searchGlobal) => {
-  return `${getField('genre', searchGlobal, 'OR')} ${getField('director', searchGlobal, 'OR')} ${getField('cast', searchGlobal, 'OR')} ${getField('title', searchGlobal, 'OR')} `.trim().substring(4);
+  return `${getField('keywords', searchGlobal )} `.trim().substring(4);
 };
 
 /**
@@ -73,7 +75,7 @@ const getGlobalCondition = (searchGlobal) => {
  * @param {number} offset
  * @param {number} limit
  */
-module.exports.getMovieList = async (genre, decade, keyword, director, cast, country, releaseTime, offset, limit) => {
+module.exports.getMovieList = async(genre, decade, keyword, director, cast, country, releaseTime, offset, limit) => {
   try {
     const query = `SELECT COUNT(*) as total FROM moviesdb.movies WHERE ${getCondition(
       genre,
@@ -94,9 +96,10 @@ module.exports.getMovieList = async (genre, decade, keyword, director, cast, cou
     )} ORDER BY popularity desc LIMIT ${limit} OFFSET ${offset};`;
     console.log('QUERY_LIST>', query);
     const data = await db.getData(query, [], true);
-    console.log('ROWS>', data);
+
     return { rows: data[1], total: data[0][0].total };
-  } catch (err) {
+  }
+  catch (err) {
     console.error('ERR', err);
     return null;
   }
@@ -108,16 +111,17 @@ module.exports.getMovieList = async (genre, decade, keyword, director, cast, cou
  * @param {number} offset
  * @param {number} limit
  */
-module.exports.getSearchGlobal = async (searchGlobal, offset, limit) => {
+module.exports.getSearchGlobal = async(searchGlobal, offset, limit) => {
   try {
     const query = `SELECT COUNT(*) as total FROM moviesdb.movies WHERE ${getGlobalCondition(
       searchGlobal
     )};SELECT  id, title, genre, director, country, \`release\`, img,  vote  FROM moviesdb.movies WHERE ${getGlobalCondition(searchGlobal)} ORDER BY popularity desc LIMIT ${limit} OFFSET ${offset};`;
     console.log('QUERY_LIST>', query);
     const data = await db.getData(query, [], true);
-    console.log('ROWS>', data);
+
     return { rows: data[1], total: data[0][0].total };
-  } catch (err) {
+  }
+  catch (err) {
     console.error('ERR', err);
     return null;
   }

@@ -93,7 +93,7 @@ const messagePayload = (sessionAttributes, intentName, slots, payload, type) => 
 // ---------------------------------------------------------
 //  SEARCH ON A MOVIE BASED ON THE SLOTS CONDITIONS
 // ---------------------------------------------------------
-const getMovies = async (intentRequest, offset, limit) => {
+const getMovies = async(intentRequest, offset, limit) => {
   const sessionAttributes = intentRequest.sessionAttributes;
   const requestAttributes = intentRequest.requestAttributes;
 
@@ -101,6 +101,18 @@ const getMovies = async (intentRequest, offset, limit) => {
 
   // find slots in the recent intent if not found in curremt
   let slots = intent.slots;
+
+  if (sessionAttributes && sessionAttributes.state && sessionAttributes.state === 'movie_search_found') {
+    const sessionSlots = JSON.parse(sessionAttributes.slots);
+    // if slots are the same as before it means nothing was found
+
+    if (utils.shallowEqual(slots, sessionSlots)) {
+      console.log('SLOT_COMPARE> EQUALS', );
+      const session = { ...sessionAttributes, state: 'slot_not_found' };
+      return confirmIntent(session, intent.name, slots, `I didn't really understood ${intentRequest.inputTranscript}.. can you try a different search?`);
+    }
+  }
+
 
   // get the slots from the session if we are coming from a different intent
   if (intent.name !== 'SearchMovie') {
@@ -117,12 +129,14 @@ const getMovies = async (intentRequest, offset, limit) => {
   const keyword = slots.Keyword;
   let releaseTime = slots.ReleaseTime;
 
+
   if (!genre && !decade && !keyword && !director && !actor && !country && !releaseTime) {
     // No slots found....
     console.log('-> NO SLOTS FOUND');
     const session = { ...sessionAttributes, state: 'slot_not_found' };
     return close(session, 'Failed', `Couldn't find a movie for you, you can ask the bot to search another movie for you..`);
   }
+
   // Validate Release date
   if (releaseTime) {
     const releaseDate = new Date(Date.parse(releaseTime));
@@ -131,7 +145,8 @@ const getMovies = async (intentRequest, offset, limit) => {
       to = new Date(to.setFullYear(to.getFullYear() + 1));
       console.log('ReleaseDate>', releaseDate, 'To', to);
       releaseTime = { from: releaseDate.toISOString(), to: to.toISOString() };
-    } else {
+    }
+    else {
       return elicitSlot(sessionAttributes, 'SearchMovie', slots, 'ReleaseTime', `I can't understand this period of time.. can you try again?`);
     }
   }
@@ -166,10 +181,9 @@ const returnMovies = (movies, sessionAttributes, slots, currentOffset) => {
   if (total < 0) {
     total = 0;
   }
-  console.log('movies>', movies.rows);
+  // console.log('movies>', movies.rows);
   // create a new session containing the slots and the new state in case the user wants to search for more movie later
   const session = { ...sessionAttributes, state: 'movie_search_found', slots: JSON.stringify(slots), total, offset: currentOffset };
-  console.log('session>', session);
   return messagePayload(session, 'SearchMovie', slots, movies.rows);
 };
 
@@ -178,22 +192,22 @@ const returnMovies = (movies, sessionAttributes, slots, currentOffset) => {
 // -----------------------------------------------
 //  RECOMMEND MOVIE INTENT
 // -----------------------------------------------
-const recommendMovie = async (intentRequest) => {
+const recommendMovie = async(intentRequest) => {
   console.log(intentRequest);
 };
 
 // -----------------------------------------------
 //  ASK MORE DATA INTENT
 // -----------------------------------------------
-const askMoreData = async (intentRequest) => {
+const askMoreData = async(intentRequest) => {
   const sessionAttributes = intentRequest.sessionAttributes;
   const offset = sessionAttributes && sessionAttributes.offset ? parseInt(sessionAttributes.offset, 10) : 0;
   const intent = intentRequest.currentIntent;
   const slots = intent.slots;
   const limit = slots && slots.Results ? slots.Results : defaultMovieCount;
 
-  if (limit > 40) {
-    return elicitSlot(sessionAttributes, intent.name, slots, 'Results', `You can show max 40 movies per time.. please select a different amount of results..`);
+  if (limit > 30) {
+    return elicitSlot(sessionAttributes, intent.name, slots, 'Results', `You can show max 30 movies per time.. please select a different amount of results..`);
   }
   // increase the session paging
   intentRequest = { ...intentRequest, sessionAttributes: { ...intentRequest.sessionAttributes, offset } };
@@ -205,7 +219,7 @@ const askMoreData = async (intentRequest) => {
 // -----------------------------------------------
 //  FALLBACK INTENT
 // -----------------------------------------------
-const fallback = async (intentRequest) => {
+const fallback = async(intentRequest) => {
   const sessionAttributes = intentRequest.sessionAttributes;
   const requestAttributes = intentRequest.requestAttributes;
   const intent = intentRequest.currentIntent;
@@ -220,10 +234,11 @@ const fallback = async (intentRequest) => {
   return close({}, 'Failed', `Couldnt find a movie for you! ...Do you want to retry again?`);
 };
 
+
 // -----------------------------------------------
 //  SEARCH MOVIE INTENT
 // -----------------------------------------------
-const searchMovie = async (intentRequest) => {
+const searchMovie = async(intentRequest) => {
   let sessionAttributes = intentRequest.sessionAttributes;
   //const intent = intentRequest.currentIntent;
   //const slots = intent.slots;
@@ -232,13 +247,14 @@ const searchMovie = async (intentRequest) => {
     // CHECK THE INTENT SOURCE
     if (intentRequest.invocationSource === 'FulfillmentCodeHook') {
       // set the session paging to 0 -> new search
-      intentRequest = { ...intentRequest, sessionAttributes: {} };
+      // intentRequest = { ...intentRequest, sessionAttributes: {} };
       // QUERY THE MOVIE AND RETURN CARD
       return await getMovies(intentRequest, 0, defaultMovieCount);
     }
     console.log('-> final close');
     return close({ ...sessionAttributes, state: '' }, 'Fulfilled', `nothing to see here...`);
-  } catch (err) {
+  }
+  catch (err) {
     console.log('-> ERROR!!', err);
     return close({ ...sessionAttributes, state: '' }, 'Fulfilled', `UPS...${err.message}`);
   }
@@ -249,7 +265,7 @@ const searchMovie = async (intentRequest) => {
 // -----------------------------------------------
 //  INTENT DISPATCHER
 // -----------------------------------------------
-const dispatch = async (intentRequest, callback) => {
+const dispatch = async(intentRequest, callback) => {
   console.log('Intent Request', intentRequest);
 
   const intent = intentRequest.currentIntent.name;
@@ -283,7 +299,8 @@ exports.handler = (event, context, callback) => {
     dispatch(event, (response) => {
       callback(null, response);
     });
-  } catch (err) {
+  }
+  catch (err) {
     callback(err);
   }
 };

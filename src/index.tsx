@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, Suspense, useMemo } from 'react';
+import { createElement, Suspense } from 'react';
 import { render } from 'react-dom';
 import Amplify from 'aws-amplify';
 import purple from '@material-ui/core/colors/purple';
@@ -29,7 +29,7 @@ const theme = createMuiTheme({
   palette: {
     primary: {
       // Purple and green play nicely together.
-      main: blue[500]
+      main: blue[800]
     },
     secondary: {
       // This is green.A700 as hex.

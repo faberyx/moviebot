@@ -1,23 +1,19 @@
 /** @jsx createElement */
-import { createElement, useState, ChangeEvent, FormEvent, SyntheticEvent } from 'react';
+import { createElement, useState, ChangeEvent, FormEvent } from 'react';
 import { RouteComponentProps, Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
-import Avatar from '@material-ui/core/Avatar';
-import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Snackbar from '@material-ui/core/Snackbar';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { SnackbarCloseReason } from '@material-ui/core/Snackbar';
 import Alert from '@material-ui/lab/Alert';
 import { Auth } from 'aws-amplify';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { validateEmail } from '../../Utils/validation';
 import Slide from '@material-ui/core/Slide';
-import logo from '../../assets/logo.png';
+import { AuthTitle } from '../../Components/Auth/AuthTilte';
 
 type Props = RouteComponentProps & {};
 
@@ -51,7 +47,7 @@ const LoginContainer = (props: Props) => {
     setValues({ ...values, [value]: event.target.value });
   };
 
-  const handleClose = (value: typeof loginData) => (event: SyntheticEvent<any, Event>, reason: SnackbarCloseReason) => {
+  const handleClose = (value: typeof loginData) => () => {
     if (value.type === 'UserNotConfirmedException') {
       props.history.push(`/confirm?email=${email}`);
     }
@@ -96,15 +92,8 @@ const LoginContainer = (props: Props) => {
   return (
     <Container component="main" maxWidth="sm" className={classes.container}>
       {loading && <LinearProgress color="primary" />}
-      <div className={classes.back}>
-        <Grid container spacing={3}>
-          <Grid item xs={4}>
-            <img src={logo} alt="logo" height="50" />
-          </Grid>
-          <Grid item xs={8}>
-            <h1 className={classes.title}>MovieBOT - LOGIN</h1>
-          </Grid>
-        </Grid>
+      <Paper elevation={3} className={classes.paper}>
+        <AuthTitle title="Sign in" />
         <form onSubmit={handleSubmit} className={classes.form} noValidate>
           <TextField
             variant="outlined"
@@ -147,7 +136,7 @@ const LoginContainer = (props: Props) => {
             </Grid>
           </Grid>
         </form>
-      </div>
+      </Paper>
 
       <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={login.type === 'redirect' ? 1000 : 3000} open={login.loggedin} TransitionComponent={Slide} onClose={handleClose(login)}>
         <Alert elevation={6} variant="filled" severity={login.success ? 'success' : 'error'}>
@@ -162,22 +151,21 @@ const useStyles = makeStyles((theme) => ({
   container: {
     marginTop: theme.spacing(22)
   },
-  back: {
-    background: '#ffffff',
-    padding: theme.spacing(4),
-    borderRadius: '10px'
-  },
   paper: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    padding: '30px 50px'
+    backgroundColor: '#fff'
   },
   title: {
-    color: theme.palette.primary.main
+    width: '100%',
+    backgroundImage: `linear-gradient(to right, rgb(0 12 103 / 76%) 150px, rgb(162 219 236 / 39%) 100%);`,
+    borderRadius: '3px',
+    padding: '5px 15px'
   },
   form: {
     width: '100%', // Fix IE 11 issue.
+    padding: '20px 35px',
     marginTop: theme.spacing(1)
   },
   submit: {
