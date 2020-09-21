@@ -12,6 +12,7 @@ type Props = {
 export const PrivateRouteComponent = ({ Component, path, exact = false }: Props): JSX.Element => {
   const [isLoggedIn, setLoggedIn] = useState<boolean | null>(null);
   useEffect(() => {
+    console.log('MOUNT > PRIVATE ROUTE');
     Auth.currentSession()
       .then((data) => {
         console.log(data.isValid());

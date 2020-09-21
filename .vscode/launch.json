@@ -1,6 +1,20 @@
 {
     "configurations": [
-        
+        {
+            "type": "aws-sam",
+            "request": "direct-invoke",
+            "name": "MovieDetails:queryMovie.getWatchlist (nodejs12.x)",
+            "invokeTarget": {
+                "target": "code",
+                "projectRoot": "aws-sam/MovieDetails/api",
+                "lambdaHandler": "queryMovie.getWatchlist"
+            },
+            "lambda": {
+                "runtime": "nodejs12.x",
+                "payload": {},
+                "environmentVariables": {}
+            }
+        },
         {
             "type": "aws-sam",
             "request": "direct-invoke",

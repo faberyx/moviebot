@@ -8,7 +8,12 @@ import Grid from '@material-ui/core/Grid/Grid';
 import { ChatBox } from '../../Components/Chat/ChatBox';
 import { MovieBox } from '../../Components/Movie/MovieBox';
 import { DialButton } from '../../Components/DialButton';
-import Hidden from '@material-ui/core/Hidden/Hidden';
+// import Hidden from '@material-ui/core/Hidden/Hidden';
+import Snackbar from '@material-ui/core/Snackbar/Snackbar';
+import Alert from '@material-ui/lab/Alert/Alert';
+import Slide from '@material-ui/core/Slide/Slide';
+import { useRecoilValue, useResetRecoilState } from 'recoil';
+import { alertState } from '../../State/alert';
 
 type Props = RouteComponentProps & {};
 
@@ -19,6 +24,11 @@ const MovieBotContainer = (props: Props) => {
   //   STATE MANAGEMENT
   // **************************************************
   const classes = useStyles();
+  const alert = useRecoilValue(alertState);
+  const reset = useResetRecoilState(alertState);
+  const handleClose = () => {
+    reset();
+  };
 
   return (
     <Fragment>
@@ -34,6 +44,11 @@ const MovieBotContainer = (props: Props) => {
         </Grid>
       </Container>
       <DialButton route={props} />
+      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={alert.duration} open={alert.isOpen} TransitionComponent={Slide} onClose={handleClose}>
+        <Alert elevation={6} variant="filled" severity={alert.severity}>
+          <strong>{alert.message}</strong>
+        </Alert>
+      </Snackbar>
     </Fragment>
   );
 };

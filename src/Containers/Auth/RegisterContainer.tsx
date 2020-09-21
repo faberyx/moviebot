@@ -1,19 +1,14 @@
 /** @jsx createElement */
-import { createElement, useState, ChangeEvent, FormEvent } from 'react';
+import { createElement, useState, ChangeEvent, FormEvent, useEffect, Fragment } from 'react';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import Snackbar from '@material-ui/core/Snackbar';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Alert from '@material-ui/lab/Alert';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Auth } from 'aws-amplify';
 import { validateEmail, validatePassword } from '../../Utils/validation';
-import Slide from '@material-ui/core/Slide';
 import { AuthTitle } from '../../Components/Auth/AuthTilte';
+import { AuthContainer, AuthData } from '../../Components/Auth/AuthContainer';
 
 type Props = RouteComponentProps & {};
 
@@ -23,10 +18,10 @@ const RegisterContainer = (props: Props) => {
     password: '',
     repeatPassword: ''
   };
-  const registrationData = {
+  const registrationData: AuthData = {
     message: '',
     success: false,
-    registered: false,
+    completed: false,
     type: ''
   };
   const classes = useStyles();
@@ -35,12 +30,13 @@ const RegisterContainer = (props: Props) => {
   const [error, setError] = useState(formData);
   const [loading, setLoading] = useState(false);
   const [reg, setReg] = useState(registrationData);
-
+  useEffect(() => {
+    console.log('>REGISTER MOUNT');
+  }, []);
   const handleChange = (value: string) => (event: ChangeEvent<HTMLInputElement>) => {
     if (error.email || error.password || error.repeatPassword) {
       setError(formData);
     }
-    console.log('>', reg, reg === null);
 
     setValues({ ...values, [value]: event.target.value });
   };
@@ -80,7 +76,7 @@ const RegisterContainer = (props: Props) => {
         setReg({
           message: 'Account created successfully, You have to activate your email now.. Redirecting you in a few!',
           success: true,
-          registered: true,
+          completed: true,
           type: 'redirect'
         });
         setEmail(values.email);
@@ -89,7 +85,7 @@ const RegisterContainer = (props: Props) => {
         setReg({
           message: `There was an error registering the user. ${err.message || 'Please try again..'}`,
           success: false,
-          registered: true,
+          completed: true,
           type: ''
         });
         console.log(err);
@@ -100,77 +96,54 @@ const RegisterContainer = (props: Props) => {
     }
   };
   return (
-    <Container component="main" maxWidth="sm" className={classes.container}>
-      {loading && <LinearProgress color="primary" />}
-      <Paper elevation={3} className={classes.paper}>
-        <AuthTitle title="Register" />
-
-        <form onSubmit={handleSubmit} className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField variant="outlined" required fullWidth label="Email Address" onChange={handleChange('email')} value={values.email} error={error.email !== ''} helperText={error.email} autoComplete="email" />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                onChange={handleChange('password')}
-                fullWidth
-                label="Password"
-                type="password"
-                value={values.password}
-                error={error.password !== ''}
-                helperText={error.password}
-                autoComplete="current-password"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                variant="outlined"
-                required
-                fullWidth
-                onChange={handleChange('repeatPassword')}
-                label="Repeat Password"
-                type="password"
-                value={values.repeatPassword}
-                error={error.repeatPassword !== ''}
-                helperText={error.repeatPassword}
-              />
-            </Grid>
+    <AuthContainer title={<AuthTitle title="Register" />} authData={reg} loading={loading} onSubmit={handleSubmit} onClose={handleClose}>
+      <Fragment>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField variant="outlined" required fullWidth label="Email Address" onChange={handleChange('email')} value={values.email} error={error.email !== ''} helperText={error.email} autoComplete="email" />
           </Grid>
-          <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
-            Sign Up
-          </Button>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Link to="/login">Already have an account? Sign in</Link>
-            </Grid>
+          <Grid item xs={12}>
+            <TextField
+              variant="outlined"
+              required
+              onChange={handleChange('password')}
+              fullWidth
+              label="Password"
+              type="password"
+              value={values.password}
+              error={error.password !== ''}
+              helperText={error.password}
+              autoComplete="current-password"
+            />
           </Grid>
-        </form>
-      </Paper>
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={reg.type === 'redirect' ? 1000 : 3000} open={reg.registered} TransitionComponent={Slide} onClose={handleClose(reg)}>
-        <Alert elevation={6} variant="filled" severity={reg.success ? 'success' : 'error'}>
-          <strong>{reg.message}</strong>
-        </Alert>
-      </Snackbar>
-    </Container>
+          <Grid item xs={12}>
+            <TextField
+              variant="outlined"
+              required
+              fullWidth
+              onChange={handleChange('repeatPassword')}
+              label="Repeat Password"
+              type="password"
+              value={values.repeatPassword}
+              error={error.repeatPassword !== ''}
+              helperText={error.repeatPassword}
+            />
+          </Grid>
+        </Grid>
+        <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
+          Sign Up
+        </Button>
+        <Grid container justify="flex-end">
+          <Grid item>
+            <Link to="/login">Sign In!</Link>
+          </Grid>
+        </Grid>
+      </Fragment>
+    </AuthContainer>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    marginTop: theme.spacing(22)
-  },
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-    padding: '20px 35px'
-  },
   submit: {
     margin: theme.spacing(3, 0, 2)
   }

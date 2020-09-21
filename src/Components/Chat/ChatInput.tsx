@@ -26,8 +26,8 @@ export const ChatInput = ({ reset }: Props) => {
   const input = useRef<HTMLInputElement>();
 
   useEffect(() => {
-    if (input.current) {
-      input.current.value = text.message || '';
+    if (input.current && !text.message) {
+      input.current.value = '';
     }
   }, [text.message]);
 

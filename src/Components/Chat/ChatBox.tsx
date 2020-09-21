@@ -19,6 +19,7 @@ import { ChatInput } from './ChatInput';
 import { MovieSlots } from '../../interfaces/movie';
 import { AudioMessage, InputMessage } from '../../interfaces/inputMessage';
 import { audioPlayer } from '../../State/audioPlayer';
+import { alertState } from '../../State/alert';
 
 /*
  */
@@ -32,6 +33,7 @@ export const ChatBox = () => {
   const setMovieList = useSetRecoilState(movieListState);
   const [getMessage, setMessage] = useRecoilState(chatInput);
   const getAudioPlayer = useRecoilValue(audioPlayer);
+  const setAlert = useSetRecoilState(alertState);
 
   const classes = useStyles();
 
@@ -189,27 +191,33 @@ export const ChatBox = () => {
     }, 21);
 
     // GET THE RESPONSE FROM LEX
-    const response = await sendLexMessage(message);
-
-    if (response) {
-      if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
-        handleMovieResult(response, message);
+    try {
+      const response = await sendLexMessage(message);
+      if (response) {
+        if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
+          handleMovieResult(response, message);
+        } else {
+          // Log chatbot response
+          console.log(response);
+          setInteractionList((prevState) =>
+            prevState.slice(0, prevState.length - 1).concat({
+              message: response.message,
+              card: response.responseCard,
+              type: 'bot',
+              contentType: response.messageFormat,
+              sessionAttributes: response.sessionAttributes
+            })
+          );
+        }
       } else {
-        // Log chatbot response
-        console.log(response);
-        setInteractionList((prevState) =>
-          prevState.slice(0, prevState.length - 1).concat({
-            message: response.message,
-            card: response.responseCard,
-            type: 'bot',
-            contentType: response.messageFormat,
-            sessionAttributes: response.sessionAttributes
-          })
-        );
+        setAlert((current) => ({ ...current, isOpen: true, message: 'Error getting a response from the bot!' }));
       }
-    }
 
-    scroll();
+      scroll();
+    } catch (err) {
+      setAlert((current) => ({ ...current, isOpen: true, message: `Error sendong a message to the bot! ${err.message}` }));
+      return;
+    }
   };
 
   const sendAudioMessage = async (audio: AudioMessage) => {
@@ -224,28 +232,35 @@ export const ChatBox = () => {
     setTimeout(() => {
       scroll();
     }, 21);
+    try {
+      // GET THE RESPONSE FROM LEX
+      const response = await sendLexVoiceMessage(audio, getAudioPlayer.type);
+      // Log chatbot response
+      if (response && response.inputTranscript) {
+        chatMessage(`I understood: ${response.inputTranscript}`, true);
 
-    // GET THE RESPONSE FROM LEX
-    const response = await sendLexVoiceMessage(audio, getAudioPlayer.type);
-    // Log chatbot response
-    if (response && response.inputTranscript) {
-      chatMessage(`I understood: ${response.inputTranscript}`, true);
-
-      if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
-        handleMovieResult(response, response.inputTranscript);
+        if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
+          handleMovieResult(response, response.inputTranscript);
+        } else {
+          setInteractionList((prevState) =>
+            prevState.concat({
+              message: response.message,
+              type: 'bot',
+              contentType: response.messageFormat,
+              sessionAttributes: response.sessionAttributes,
+              layout: response.responseCard ? 'card' : 'message'
+            })
+          );
+        }
       } else {
-        setInteractionList((prevState) =>
-          prevState.concat({
-            message: response.message,
-            type: 'bot',
-            contentType: response.messageFormat,
-            sessionAttributes: response.sessionAttributes,
-            layout: response.responseCard ? 'card' : 'message'
-          })
-        );
+        setAlert((current) => ({ ...current, isOpen: true, message: 'Error getting a response from the bot!' }));
       }
+
+      scroll();
+    } catch (err) {
+      setAlert((current) => ({ ...current, isOpen: true, message: `Error sending a voice message to bot! ${err.message}` }));
+      return;
     }
-    scroll();
   };
 
   const handleReset = async () => {

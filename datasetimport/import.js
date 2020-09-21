@@ -165,6 +165,36 @@ const updateData = async (data) => {
   }
 };
 
+/**
+ * @param {any} id
+ */
+const importRatings = async (id) => {
+  try {
+    const data = [];
+    // @ts-ignore
+    const movie = await axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=adfcb22b23867f298e2c032ea4801456`);
+    // id|title|genre|img|release|vote|country|countryiso|overview|tagline|cast|director|recommended|keywords
+    if (movie && movie.data) {
+      data.push(id, movie.data.vote_average, movie.data.vote_count, movie.data.popularity);
+
+      const select = new Promise((resolve, reject) => {
+        connection.query('INSERT INTO movie_rating (`id`, `vote_average`, `vote_count`, `popularity`)  VALUES (?,?,?,?);', data, (err, rows) => {
+          if (err) {
+            console.log('ERROR>', err);
+            reject(err);
+            return;
+          }
+          resolve(rows);
+        });
+      });
+      return await select;
+    }
+  } catch (err) {
+    console.log('ERROR', err.message);
+  }
+  console.log('ERROR', id);
+};
+
 const selectData = async () => {
   const select = new Promise((resolve, reject) => {
     connection.query('select * from movies ', (err, rows) => {
@@ -239,13 +269,12 @@ const getCertification = async (id) => {
 
   bar1.start(movies.length, 0);
 
-  for (let i = 47137; i < movies.length; i++) {
+  for (let i = 43507; i < movies.length; i++) {
     const movie = movies[i];
     bar1.update(i);
-    const certification = await getCertification(movie.id);
-    if (certification) {
-      await updateData([certification, movie.id]);
-    }
+
+    await importRatings(movie.id);
+
     await sleep(15);
   }
 

@@ -8,7 +8,7 @@ import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import { ErrorBoundary } from './Components/ErrorBoundary';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { ThemeProvider } from '@material-ui/core/styles';
+import { responsiveFontSizes, ThemeProvider } from '@material-ui/core/styles';
 import Backdrop from '@material-ui/core/Backdrop/Backdrop';
 import Routes from './Navigation/Routes';
 import './global.css';
@@ -49,7 +49,7 @@ render(
         </Backdrop>
       }
     >
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={responsiveFontSizes(theme)}>
         <CssBaseline />
         <ErrorBoundary>
           <Routes />

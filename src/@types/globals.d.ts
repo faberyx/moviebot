@@ -7,3 +7,6 @@ declare module '*.mp3' {
 declare module '*.png' {
   export default '' as string;
 }
+declare module '*.svg' {
+  export default '' as string;
+}

@@ -3,7 +3,7 @@ import { createElement } from 'react';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Logo } from '../../assets/logo';
+import logo from '../../assets/logo.svg';
 
 type Props = {
   title: string;
@@ -15,14 +15,14 @@ export const AuthTitle = ({ title, variant = 'h3' }: Props) => {
 
   return (
     <div className={classes.title}>
-      <Grid container alignItems="center">
-        <Grid>
-          <Logo width="90px" />
-        </Grid>
+      <Grid container alignItems="center" classes={{ container: classes.container }}>
         <Grid>
           <Typography variant={variant} style={{ padding: '20px', fontWeight: 'bold', color: '#fff' }}>
             {title}
           </Typography>
+        </Grid>
+        <Grid>
+          <img src={logo} alt="Logo" width="70px" />
         </Grid>
       </Grid>
     </div>
@@ -30,9 +30,16 @@ export const AuthTitle = ({ title, variant = 'h3' }: Props) => {
 };
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    justifyContent: 'center',
+    [theme.breakpoints.down('sm')]: {
+      justifyContent: 'flex-end'
+    }
+  },
   title: {
     width: '100%',
-    backgroundImage: `linear-gradient(to right, rgb(28 54 95 / 69%) 150px, rgb(162 219 236 / 39%) 100%);`,
+    background: `url('/back_small.jpg') #2F2E40 no-repeat`,
+    backgroundSize: 'contain',
     borderTopLeftRadius: '3px',
     borderTopRightRadius: '3px',
     padding: '5px 15px'

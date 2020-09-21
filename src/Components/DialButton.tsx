@@ -49,7 +49,7 @@ const SpeedDialComponent = ({ route }: { route: RouteComponentProps }) => {
     setDialOpen((prevstate) => !prevstate);
   };
   return (
-    <SpeedDial icon={<SpeedDialIcon />} ariaLabel="SpeedDial tooltip example" className={classes.speedDial} onClick={handleToggleDial} open={dialOpen}>
+    <SpeedDial icon={<SpeedDialIcon />} direction="down" ariaLabel="SpeedDial tooltip" className={classes.speedDial} onClick={handleToggleDial} open={dialOpen}>
       {actions.map((action, i) => (
         <SpeedDialAction tooltipPlacement="right" key={`action_${i}`} icon={action.icon} tooltipTitle={action.name} tooltipOpen onClick={handleDial(action.name)} />
       ))}
@@ -63,7 +63,7 @@ const SpeedDialComponent = ({ route }: { route: RouteComponentProps }) => {
 const useStyles = makeStyles((theme) => ({
   speedDial: {
     position: 'absolute',
-    bottom: theme.spacing(2),
+    top: theme.spacing(2),
     left: theme.spacing(2)
   }
 }));

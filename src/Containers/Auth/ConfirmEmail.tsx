@@ -1,20 +1,15 @@
 /** @jsx createElement */
-import { createElement, useState, ChangeEvent, FormEvent, useEffect } from 'react';
+import { createElement, useState, ChangeEvent, FormEvent, useEffect, Fragment } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import Snackbar from '@material-ui/core/Snackbar';
-import LinearProgress from '@material-ui/core/LinearProgress';
-import Alert from '@material-ui/lab/Alert';
 import { Auth } from 'aws-amplify';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { validateCode, validateEmail } from '../../Utils/validation';
-import Slide from '@material-ui/core/Slide';
 import { AuthTitle } from '../../Components/Auth/AuthTilte';
+import { AuthContainer, AuthData } from '../../Components/Auth/AuthContainer';
 
 type Props = RouteComponentProps & {};
 
@@ -23,10 +18,10 @@ const ConfirmEmailContainer = (props: Props) => {
     code: '',
     email: ''
   };
-  const confirmationData = {
+  const confirmationData: AuthData = {
     message: '',
     success: false,
-    confirmed: false,
+    completed: false,
     type: ''
   };
   const classes = useStyles();
@@ -37,19 +32,20 @@ const ConfirmEmailContainer = (props: Props) => {
   const [reg, setConf] = useState(confirmationData);
 
   useEffect(() => {
-    const email = props.location.search.split('=')[1];
-
-    if (!validateEmail(email)) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    const code = urlParams.get('code');
+    if (!email || !validateEmail(email)) {
       setConf({
         message: 'Invalid email!!',
         success: false,
-        confirmed: false,
+        completed: false,
         type: ''
       });
       return;
     }
     setValues({
-      code: '',
+      code: code || '',
       email
     });
   }, [props.location.search]);
@@ -77,14 +73,14 @@ const ConfirmEmailContainer = (props: Props) => {
       setConf({
         message: 'Code sent successfully! Please check your email..',
         success: true,
-        confirmed: true,
+        completed: true,
         type: 'redirect'
       });
     } catch (err) {
       setConf({
         message: `Impossible to send the activation code. ${err.message || 'Please try again..'}`,
         success: false,
-        confirmed: true,
+        completed: true,
         type: err.code || ''
       });
     }
@@ -107,7 +103,7 @@ const ConfirmEmailContainer = (props: Props) => {
         setConf({
           message: 'Account activated successfully! Redirecting you in a few!',
           success: true,
-          confirmed: true,
+          completed: true,
           type: 'redirect'
         });
         setValues(formData);
@@ -116,7 +112,7 @@ const ConfirmEmailContainer = (props: Props) => {
         setConf({
           message: `There was an error activating the user. ${err.message || 'Please try again..'}`,
           success: false,
-          confirmed: true,
+          completed: true,
           type: err.code || ''
         });
         console.log(err);
@@ -126,60 +122,36 @@ const ConfirmEmailContainer = (props: Props) => {
     }
   };
   return (
-    <Container component="main" maxWidth="sm" className={classes.container}>
-      {loading && <LinearProgress color="primary" />}
-      <Paper elevation={3} className={classes.paper}>
-        <AuthTitle title="Confirm Email" />
-
-        <form onSubmit={handleSubmit} className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <TextField variant="outlined" required fullWidth label="Email Address" value={values.email} disabled />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField variant="outlined" required onChange={handleChange('code')} fullWidth label="Enter confirmation code" value={values.code} error={error.code !== ''} helperText={error.code} />
-            </Grid>
+    <AuthContainer title={<AuthTitle title="Confirm Email" />} authData={reg} loading={loading} onSubmit={handleSubmit} onClose={handleClose}>
+      <Fragment>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <TextField variant="outlined" required fullWidth label="Email Address" value={values.email} disabled />
           </Grid>
-          <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
-            Activate
-          </Button>
-
-          <Button type="button" fullWidth variant="contained" color="secondary" onClick={handleResend} disabled={loading} className={classes.submit}>
-            Resend Activation Code
-          </Button>
-          <Grid container justify="flex-end">
-            <Grid item>
-              <Link href="/login" variant="body2">
-                Have you already activated? Sign in
-              </Link>
-            </Grid>
+          <Grid item xs={12}>
+            <TextField variant="outlined" required onChange={handleChange('code')} fullWidth label="Enter confirmation code" value={values.code} error={error.code !== ''} helperText={error.code} />
           </Grid>
-        </form>
-      </Paper>
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} autoHideDuration={2000} open={reg.confirmed} TransitionComponent={Slide} onClose={handleClose(reg)}>
-        <Alert elevation={6} variant="filled" severity={reg.success ? 'success' : 'error'}>
-          <strong>{reg.message}</strong>
-        </Alert>
-      </Snackbar>
-    </Container>
+        </Grid>
+        <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
+          Activate
+        </Button>
+
+        <Button type="button" fullWidth variant="contained" color="secondary" onClick={handleResend} disabled={loading} className={classes.submit}>
+          Resend Activation Code
+        </Button>
+        <Grid container justify="flex-end">
+          <Grid item>
+            <Link href="/login" variant="body2">
+              Sign in
+            </Link>
+          </Grid>
+        </Grid>
+      </Fragment>
+    </AuthContainer>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
-  container: {
-    marginTop: theme.spacing(22)
-  },
-  paper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
-
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    padding: '20px 35px',
-    marginTop: theme.spacing(1)
-  },
   submit: {
     margin: theme.spacing(2, 0, 1)
   }

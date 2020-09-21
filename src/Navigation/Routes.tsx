@@ -1,6 +1,6 @@
 /** @jsx createElement */
 import { createElement, lazy } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { PrivateRoute } from './PrivateRoute';
 
 // LAZY IMPORT ROUTES
@@ -15,13 +15,15 @@ const ConfirmEmailContainer = lazy(() => import('../Containers/Auth/ConfirmEmail
 function Routes() {
   return (
     <Router>
-      <PrivateRoute exact={true} path="/" Component={MovieBotContainer} />
-      <Route exact={true} path="/login" component={LoginContainer} />
-      <Route exact={true} path="/logout" component={LogoutContainer} />
-      <Route exact={true} path="/register" component={RegisterContainer} />
-      <Route exact={true} path="/forgotpassword" component={ForgotPasswordContainer} />
-      <Route exact={true} path="/resetpassword" component={ResetPasswordContainer} />
-      <Route exact={true} path="/confirm" component={ConfirmEmailContainer} />
+      <Switch>
+        <Route exact={true} path="/login" component={LoginContainer} />
+        <Route exact={true} path="/logout" component={LogoutContainer} />
+        <Route exact={true} path="/register" component={RegisterContainer} />
+        <Route exact={true} path="/forgotpassword" component={ForgotPasswordContainer} />
+        <Route exact={true} path="/resetpassword" component={ResetPasswordContainer} />
+        <Route exact={true} path="/confirm" component={ConfirmEmailContainer} />
+        <PrivateRoute exact={true} path="/" Component={MovieBotContainer} />
+      </Switch>
     </Router>
   );
 }
