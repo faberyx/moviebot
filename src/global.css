@@ -27,7 +27,7 @@ a:hover {
 
 *{
     scrollbar-width: thin;
-    scrollbar-color: #ddd #fff;
+    scrollbar-color: #666 #222;
 }
 
 /* width */
@@ -37,15 +37,15 @@ a:hover {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #fff;
+  background: #222;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #ddd;
+  background: #444;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: #666;
 }
