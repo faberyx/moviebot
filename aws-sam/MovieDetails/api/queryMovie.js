@@ -78,8 +78,7 @@ module.exports.addWatchlist = async (userid, movieid) => {
   try {
     const query = 'INSERT INTO `moviesdb`.`user_watchlist` (`user_id`,`movie_id`)VALUES(?,?);';
     console.log('QUERY_SELECT addWatchlist>', query);
-    const rows = await db.getData(query, [userid, movieid]);
-    console.log(rows);
+    await db.getData(query, [userid, movieid]);
     return true;
   } catch (err) {
     return error(err);
@@ -95,8 +94,7 @@ module.exports.removeWatchlist = async (userid, movieid) => {
   try {
     const query = 'DELETE FROM `moviesdb`.`user_watchlist` WHERE `user_id` = ? AND `movie_id` = ?;';
     console.log('QUERY_SELECT removeWatchlist>', query);
-    const rows = await db.getData(query);
-    console.log(rows);
+    await db.getData(query, [userid, movieid]);
     return true;
   } catch (err) {
     return error(err);
@@ -113,8 +111,7 @@ module.exports.addRating = async (userid, movieid, rating) => {
   try {
     const query = 'INSERT INTO `moviesdb`.`user_rating` (`user_id`,`movie_id`, `rating`) VALUES (?,?,?) ON DUPLICATE KEY UPDATE  `rating` = ?;';
     console.log('QUERY_SELECT addRating>', query);
-    const rows = await db.getData(query, [userid, movieid, rating, rating]);
-    console.log(rows);
+    await db.getData(query, [userid, movieid, rating, rating]);
     return true;
   } catch (err) {
     return error(err);

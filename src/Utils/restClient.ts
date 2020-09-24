@@ -1,13 +1,7 @@
 import { Auth } from 'aws-amplify';
 
-export type ApiResponse<RS, O = {}> = {
-  fType?: string;
-  subject?: string;
-  code?: string;
-  why?: string;
-  description?: string;
-  err?: Error;
-  inputData?: O;
+export type ApiResponse<RS> = {
+  error?: string;
 } & RS;
 
 export enum ApiResponseType {
@@ -24,11 +18,11 @@ export const apiFetch = async <RS, RQ = {}, O = {}>(
   payload: RQ | null = null,
   controller: AbortController | null = null,
   isJsonResponse = true
-): Promise<ApiResponse<RS, O>> => {
+): Promise<ApiResponse<RS>> => {
   const retries = 1;
   const retryDelay = 1500;
   const token = await Auth.currentSession();
-  return new Promise<ApiResponse<RS, O>>((resolve, reject) => {
+  return new Promise<ApiResponse<RS>>((resolve, reject) => {
     const wrappedFetch = (attempt: number) => {
       try {
         const headers: Headers = new Headers();
@@ -44,13 +38,13 @@ export const apiFetch = async <RS, RQ = {}, O = {}>(
             isJsonResponse && response.status !== 202
               ? response
                   .json()
-                  .then((data: ApiResponse<RS, O>) => {
+                  .then((data: ApiResponse<RS>) => {
                     resolve(data);
                   })
                   .catch((reason) => {
                     reject(reason);
                   })
-              : resolve({ fType: 'Empty' } as ApiResponse<RS, O>);
+              : resolve({ error: 'empty' } as ApiResponse<RS>);
           })
           .catch((error) => {
             if (attempt < retries) {

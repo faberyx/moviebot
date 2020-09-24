@@ -2,7 +2,6 @@
 import { createElement, Suspense } from 'react';
 import { render } from 'react-dom';
 import Amplify from 'aws-amplify';
-import purple from '@material-ui/core/colors/purple';
 import blue from '@material-ui/core/colors/blue';
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
 import { ErrorBoundary } from './Components/ErrorBoundary';
@@ -28,12 +27,10 @@ Amplify.configure(awsconfig);
 const theme = createMuiTheme({
   palette: {
     primary: {
-      // Purple and green play nicely together.
       main: blue[800]
     },
     secondary: {
-      // This is green.A700 as hex.
-      main: purple.A200
+      main: '#ffcf00'
     }
   }
 });

@@ -100,7 +100,8 @@ const initRecorderHandlers = (recorder, setMicState, setMessage, audio) => {
     console.timeEnd('recording processing time');
     setMicState((prev) => ({ recordState: 'stop', micState: 'off' }));
     const audioUrl = URL.createObjectURL(audioBlob);
-    audio.src = audioUrl;
+    audio.mozSrcObject = audioUrl;
+    // audio.src = audioUrl;
     audio.play();
 
     setMessage({

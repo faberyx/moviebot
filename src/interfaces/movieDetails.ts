@@ -15,4 +15,5 @@ export type MovieDetail = {
   originalTitle: string;
   user_rating: number;
   popularity: number;
+  id: number;
 };

@@ -13,7 +13,7 @@ import Rating from '@material-ui/lab/Rating';
 import LocalMoviesIcon from '@material-ui/icons/LocalMovies';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import CameraIcon from '@material-ui/icons/Camera';
-import { apiFetch } from '../../Utils/restClient';
+import { apiFetch, ApiResponse } from '../../Utils/restClient';
 import Card from '@material-ui/core/Card/Card';
 import CardHeader from '@material-ui/core/CardHeader/CardHeader';
 import CardContent from '@material-ui/core/CardContent/CardContent';
@@ -25,6 +25,7 @@ import { useSetRecoilState } from 'recoil';
 import { alertState } from '../../State/alert';
 import { loaderState } from '../../State/loader';
 import { MovieDetail } from '../../interfaces/movieDetails';
+import { getDate } from '../../Utils/dates';
 
 type Props = {
   id: string;
@@ -55,15 +56,16 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
   const addToWatchlist = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
     setLoading(true);
     try {
-      const result = await apiFetch<boolean, {}>(`addwatchlist/${id}`, 'POST');
-      if (result) {
-        setMovie((prev) => ({ ...prev!, watchlist: true }));
-      } else {
+      const result = await apiFetch<ApiResponse<boolean>>(`addwatchlist/${id}`, 'POST');
+      if (result.error) {
         setAlert((current) => ({ ...current, isOpen: true, message: 'Movie already added to a watchlist!' }));
+      } else {
+        setMovie((prev) => ({ ...prev!, watchlist: true }));
       }
       setLoading(false);
     } catch (err) {
       setLoading(false);
+      setAlert((current) => ({ ...current, isOpen: true, message: 'Error adding movie to watchlist!' }));
     }
   };
 
@@ -83,14 +85,6 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
     } catch (err) {
       setLoading(false);
     }
-  };
-
-  const getDate = (date: Date) => {
-    const d = new Date(date);
-    if (d) {
-      return `${d.getFullYear()}`;
-    }
-    return 'n/a';
   };
 
   const classes = useStyles(movie?.backdrop)();
@@ -116,6 +110,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                         value={movie.user_rating || movie.vote}
                         precision={0.5}
                         max={10}
+                        name="rating"
                         onChange={(event, newValue) => {
                           rateMovie(id, newValue);
                         }}
@@ -216,6 +211,9 @@ const useStyles = (img?: string) =>
       color: '#ddd',
       overflow: 'hidden'
     },
+    userrating: {
+      color: 'red'
+    },
     rateempty: {
       color: '#333'
     },
@@ -223,14 +221,11 @@ const useStyles = (img?: string) =>
       borderRadius: '10px'
     },
     star: {
-      color: '#ffcf00',
+      color: theme.palette.secondary.main,
       position: 'absolute',
       right: 2,
       top: 2,
       fontSize: '48px'
-    },
-    userrating: {
-      color: 'red'
     },
     card: {
       background: 'rgba(0, 0, 0, 0.3)',

@@ -5,7 +5,7 @@ import { useRecoilValue, useResetRecoilState } from 'recoil';
 import { Backdrop, CircularProgress, Snackbar, Slide } from '@material-ui/core';
 import { loaderState } from '../State/loader';
 import { alertState } from '../State/alert';
-import Alert from '@material-ui/lab/Alert/Alert';
+import Alert from '@material-ui/lab/Alert';
 
 const NotificationComponent = () => {
   const isLoading = useRecoilValue(loaderState);

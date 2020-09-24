@@ -5,7 +5,7 @@ import { Auth } from 'aws-amplify';
 
 type Props = {
   Component: FC<RouteComponentProps>;
-  path: string;
+  path?: string | string[];
   exact?: boolean;
 };
 
