@@ -17,7 +17,7 @@ import { chatInput } from '../../State/chatInput';
 import { DEFAULT_PAGINATION } from '../../Utils/constats';
 import { ChatInput } from './ChatInput';
 import { MovieSlots } from '../../interfaces/movie';
-import { AudioMessage, InputMessage } from '../../interfaces/inputMessage';
+import { AudioMessage } from '../../interfaces/inputMessage';
 import { audioPlayer } from '../../State/audioPlayer';
 import { alertState } from '../../State/alert';
 

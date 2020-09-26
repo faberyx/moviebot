@@ -166,7 +166,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                       </ListItem>
                       <ListItem>
                         <Grid container spacing={2} direction="row">
-                          <Grid item xs={6}>
+                          <Grid item sm={6} xs={12}>
                             <Grid container justify="center">
                               <Button variant="outlined" size="small" onClick={onSimilarClick(id, movie.title)} color="secondary" startIcon={<ImageSearchIcon />}>
                                 Find Similar movies
@@ -174,7 +174,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                             </Grid>
                           </Grid>
                           {!movie.watchlist && (
-                            <Grid item xs={6}>
+                            <Grid item sm={6} xs={12}>
                               <Grid container justify="center">
                                 <Button variant="outlined" size="small" onClick={addToWatchlist(id)} color="secondary" startIcon={<MovieIcon />}>
                                   Add to watchlist
@@ -260,8 +260,15 @@ const useStyles = (img?: string) =>
         height: '100%',
         width: '100%',
         position: 'absolute',
-        bottom: 0,
-        right: 0
+        top: 0,
+        left: 0,
+        [theme.breakpoints.down('xs')]: {
+          position: 'fixed',
+          height: 'calc(100% - 56px)',
+          width: 'calc(100% - 56px)',
+          top: 28,
+          left: 28
+        }
       }
     }
   }));

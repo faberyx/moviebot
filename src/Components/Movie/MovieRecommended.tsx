@@ -24,6 +24,7 @@ import Button from '@material-ui/core/Button/Button';
 import Alert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography/Typography';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let recommendedStoreMemo: MovieDetail[] | undefined = undefined;
 
 const MovieRecomnended = () => {

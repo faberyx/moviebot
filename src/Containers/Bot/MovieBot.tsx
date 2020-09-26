@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 /** @jsx createElement */
-import { createElement, Fragment, useState, ChangeEvent, useEffect } from 'react';
+import { createElement, Fragment, ChangeEvent, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Grid from '@material-ui/core/Grid/Grid';
