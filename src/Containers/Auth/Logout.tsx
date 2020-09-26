@@ -3,8 +3,7 @@ import { createElement, useEffect } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
-
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 
 type Props = RouteComponentProps & {};
 

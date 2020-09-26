@@ -1,7 +1,7 @@
 /** @jsx createElement */
 import { createElement, memo, FC, useEffect, useState, Fragment } from 'react';
 import { Route, Redirect, RouteComponentProps } from 'react-router-dom';
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 
 type Props = {
   Component: FC<RouteComponentProps>;

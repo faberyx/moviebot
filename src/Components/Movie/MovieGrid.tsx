@@ -11,6 +11,8 @@ import { SearchMessage } from '../../interfaces/movieList';
 import Tooltip from '@material-ui/core/Tooltip';
 import withStyles from '@material-ui/core/styles/withStyles';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import useMediaQuery from '@material-ui/core/useMediaQuery/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
 
 type Props = {
   movies: Movie[];
@@ -21,10 +23,27 @@ type Props = {
 
 const MovieGrid = ({ movies, search, previousSearch, onClick }: Props) => {
   const classes = useStyles();
+  const theme = useTheme();
+
+  const screenUpXL = useMediaQuery(theme.breakpoints.up('xl'));
+  const screenUpMD = useMediaQuery(theme.breakpoints.up('md'));
+  const screenDownMD = useMediaQuery(theme.breakpoints.down('md'));
 
   const gridClickHandler = (id: string) => (event: MouseEvent<HTMLLIElement>) => {
     console.log('gridClickHandler', id);
     onClick(id);
+  };
+
+  const getScreenWidth = () => {
+    if (screenUpXL) {
+      return 6;
+    } else if (screenUpMD) {
+      return 4;
+    } else if (screenDownMD) {
+      return 2;
+    } else {
+      return 2;
+    }
   };
 
   const getMessage = (search: SearchMessage) => {
@@ -61,14 +80,15 @@ const MovieGrid = ({ movies, search, previousSearch, onClick }: Props) => {
           ))}
         </Fragment>
       </div>
-      <GridList cellHeight={300} spacing={8} cols={4}>
+      <GridList cellHeight={300} spacing={8} cols={getScreenWidth()}>
         {movies.map((tile, i) => (
           <GridListTile
             key={i}
             onClick={gridClickHandler(tile.id)}
             classes={{
               root: classes.titleBar,
-              tile: classes.tile
+              tile: classes.tile,
+              imgFullWidth: classes.imgFullWidth
             }}
           >
             <img onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')} src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${tile.img}`} alt={tile.title} />
@@ -116,6 +136,9 @@ const useStyles = makeStyles((theme) => ({
   },
   searchlabel: {
     fontSize: '0.9rem'
+  },
+  imgFullWidth: {
+    transform: 'translateY(0)'
   },
   title: {},
   tile: {

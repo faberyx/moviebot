@@ -33,7 +33,7 @@ module.exports.getRecommended = async (id) => {
 module.exports.getMovie = async (userid, movieid) => {
   try {
     const query = `
-        SELECT  m.id,  m.originalTitle,  m.title,  m.cast,  m.genre,  m.director,  m.country,  m.\`release\`,  m.img,  m.overview,  m.backdrop,  m.recommended,  m.vote,  m.popularity, m.tagline,
+        SELECT  m.id,  m.originalTitle, m.certification,  m.title,  m.cast,  m.genre,  m.director,  m.country,  m.\`release\`,  m.img,  m.overview,  m.backdrop,  m.recommended,  m.vote,  m.popularity, m.tagline,
                 m.\`runtime\`,  IF(w.movie_id IS NULL, cast(FALSE as json), cast(TRUE as json)) as watchlist, r.rating as user_rating 
         FROM moviesdb.movies m 
         LEFT JOIN moviesdb.user_rating r on r.movie_id = m.id  and r.user_id = ?
@@ -57,7 +57,7 @@ module.exports.getMovie = async (userid, movieid) => {
 module.exports.getWatchlist = async (userid) => {
   try {
     const query = `
-        SELECT  m.id,  m.originalTitle,  m.title,  m.cast,  m.genre,  m.director,  m.country,  m.\`release\`,  m.img,  m.overview,  m.backdrop,  m.recommended,  m.vote,  m.popularity, m.tagline,
+        SELECT  m.id,  m.originalTitle, , m.certification, m.title,  m.cast,  m.genre,  m.director,  m.country,  m.\`release\`,  m.img,  m.overview,  m.backdrop,  m.recommended,  m.vote,  m.popularity, m.tagline,
                 m.\`runtime\`, r.rating as user_rating 
         FROM moviesdb.movies m 
             LEFT JOIN moviesdb.user_rating r on r.movie_id = m.id  and r.user_id = ?

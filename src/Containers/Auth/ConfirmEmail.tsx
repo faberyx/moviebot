@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { validateCode, validateEmail } from '../../Utils/validation';
 import { AuthTitle } from '../../Components/Auth/AuthTilte';

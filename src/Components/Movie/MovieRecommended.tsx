@@ -12,8 +12,7 @@ import { MovieDetail } from '../../interfaces/movieDetails';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Typography from '@material-ui/core/Typography/Typography';
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import StarIcon from '@material-ui/icons/Star';
 import MovieIcon from '@material-ui/icons/Movie';
 import CameraIcon from '@material-ui/icons/Camera';
 import Rating from '@material-ui/lab/Rating';
@@ -23,10 +22,11 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import { getDate } from '../../Utils/dates';
 import Button from '@material-ui/core/Button/Button';
 import Alert from '@material-ui/lab/Alert';
+import Typography from '@material-ui/core/Typography/Typography';
 
-let moviesStoreMemo: MovieDetail[] | undefined = undefined;
+let recommendedStoreMemo: MovieDetail[] | undefined = undefined;
 
-const MovieWishList = () => {
+const MovieRecomnended = () => {
   const classes = useStyles();
   const [movies, setMovies] = useState<MovieDetail[] | undefined>(undefined);
   const setLoading = useSetRecoilState(loaderState);
@@ -44,7 +44,7 @@ const MovieWishList = () => {
       if (!moviesMemo || (movie && movie.length !== moviesMemo.length)) {
         setMovies(movie);
       }
-      moviesStoreMemo = movie;
+      recommendedStoreMemo = movie;
       setLoading(false);
       //
     } catch (err) {
@@ -55,7 +55,7 @@ const MovieWishList = () => {
 
   useEffect(() => {
     console.log('MOUNT MovieWishList>');
-    getMovies(moviesStoreMemo);
+    //  recommendedies(moviesStoreMemo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -80,7 +80,7 @@ const MovieWishList = () => {
       <Paper elevation={3} component="div" className={classes.mainContainer}>
         <div className={classes.titlecontainer}>
           <Typography variant="h4" color="primary">
-            <FavoriteIcon color="secondary" /> Your Movie Wishlist
+            <StarIcon color="secondary" /> Your Recommended Movies
           </Typography>
         </div>
         {movies && movies.length === 0 && (
@@ -239,4 +239,4 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const MovieWishListComponent = memo(MovieWishList);
+export const MovieRecomnendedComponent = memo(MovieRecomnended);

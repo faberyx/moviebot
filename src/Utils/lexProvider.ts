@@ -14,6 +14,7 @@ import {
 import awsconfig from '../aws-exports';
 
 import { Credentials, getAmplifyUserAgent } from '@aws-amplify/core';
+
 import { LexResponse } from '../interfaces/lexResponse';
 import { AudioMessage } from '../interfaces/inputMessage';
 
@@ -144,7 +145,7 @@ export const sendLexVoiceMessage = async (audio: AudioMessage, acceptFormat: str
       slotToElicit: response.slotToElicit,
       slots: response.slots ? JSON.parse(atob(response.slots.toString())) : undefined
     };
-    console.log('postContentCommand', data);
+    console.log('Post RESPONSE', data);
     return data;
   } catch (err) {
     console.error(err);

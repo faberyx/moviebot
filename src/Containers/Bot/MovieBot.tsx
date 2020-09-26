@@ -15,6 +15,9 @@ import MovieIcon from '@material-ui/icons/MovieCreation';
 import StarIcon from '@material-ui/icons/Star';
 import Tab from '@material-ui/core/Tab/Tab';
 import { MovieWishListComponent } from '../../Components/Movie/MovieWishList';
+import { MovieRecomnendedComponent } from '../../Components/Movie/MovieRecommended';
+import { useRecoilState } from 'recoil';
+import { tabsState } from '../../State/tabs';
 
 type Props = RouteComponentProps & {};
 type TabPanelProps = {
@@ -29,12 +32,12 @@ const MovieBotContainer = (props: Props) => {
   //   STATE MANAGEMENT
   // **************************************************
   const classes = useStyles();
-  const [value, setValue] = useState(0);
+  const [tab, setTab] = useRecoilState(tabsState);
 
   const routes = ['/', '/wishlist'];
 
   useEffect(() => {
-    setValue(routes.indexOf(props.location.pathname));
+    setTab(routes.indexOf(props.location.pathname));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.location.pathname]);
 
@@ -49,13 +52,13 @@ const MovieBotContainer = (props: Props) => {
   };
 
   const handleChange = (event: ChangeEvent<{}>, newValue: number) => {
-    setValue(newValue);
+    setTab(newValue);
     props.history.replace(routes[newValue]);
   };
   return (
     <Fragment>
       <div className={classes.tabheader}>
-        <Tabs orientation="vertical" value={value} variant="standard" indicatorColor="primary" textColor="primary" onChange={handleChange} className={classes.tabs}>
+        <Tabs orientation="vertical" value={tab} variant="standard" indicatorColor="primary" textColor="primary" onChange={handleChange} className={classes.tabs}>
           <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<MovieIcon />} title="Movie"></Tab>
           <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<FavoriteIcon />} title="Wishlist"></Tab>
           <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<StarIcon />} title="Ratings"></Tab>
@@ -65,11 +68,14 @@ const MovieBotContainer = (props: Props) => {
       <div className={classes.container}>
         <Grid container spacing={3} className={classes.grid}>
           <Grid item xs={12} md={8} className={classes.grid}>
-            <TabPanel value={value} index={0}>
+            <TabPanel value={tab} index={0}>
               <MovieBox />
             </TabPanel>
-            <TabPanel value={value} index={1}>
+            <TabPanel value={tab} index={1}>
               <MovieWishListComponent />
+            </TabPanel>
+            <TabPanel value={tab} index={2}>
+              <MovieRecomnendedComponent />
             </TabPanel>
           </Grid>
           <Grid item md={4} className={classes.grid}>

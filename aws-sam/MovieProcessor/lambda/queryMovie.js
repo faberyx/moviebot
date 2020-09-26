@@ -2,16 +2,13 @@
 const mysql = require('mysql2');
 const db = require('./database');
 
-/**
- * Prepare the field values to be used in a fulltext search
- * @param {string} fieldvalue
- */
 const cleanValue = (fieldvalue) => {
   const value = `${fieldvalue}`.replace(/\ba\b|\bthe\b|\babout\b|\bby\b|\bwith\b|\bof\b|\bfrom\b/gm, '').trim();
-  const ftValue = `+${value}`
-    .replace(/\band\b\s+/gm, '+')
-    .replace(/\bor\b\s+/gm, ' ')
-    .replace(/\bnot\b\s+/gm, '-')
+  const ftValue = `+"${value}"`
+    .replace(/\band\b\s+/gm, '"+"')
+    .replace(/\bor\b\s+/gm, '" "')
+    .replace(/\bnot\b\s+/gm, '"-"')
+    .replace(/\bwithout\b\s+/gm, '"-"')
     .trim();
   return { value, ftValue };
 };
@@ -34,14 +31,20 @@ const getField = (field, fieldvalue, condition = 'AND') => {
       case 'decade':
         query = ` ${condition}  \`release\` BETWEEN ${mysql.escape(v.value + '-01-01')} AND ${mysql.escape(parseInt(v.value, 10) + 10 + '-01-01')}`;
         break;
+      case 'year':
+        query = ` ${condition}  \`release\` BETWEEN ${mysql.escape(v.value + '-01-01')} AND ${mysql.escape(parseInt(v.value, 10) + 1 + '-01-01')}`;
+        break;
       case 'cast':
         query = ` ${condition}   MATCH (cast) AGAINST (${mysql.escape(v.ftValue)} IN BOOLEAN MODE)`;
         break;
       case 'keywords':
-        query = ` ${condition}   MATCH (overview, keywords, title ) AGAINST (${mysql.escape(v.value)} IN NATURAL LANGUAGE MODE)`;
+        query = ` ${condition}   MATCH (keywords, title ) AGAINST (${mysql.escape(v.ftValue)} IN BOOLEAN MODE)`;
         break;
       case 'genre':
         query = ` ${condition}   MATCH (genresearch) AGAINST (${mysql.escape(v.ftValue)} IN BOOLEAN MODE)`;
+        break;
+      case 'certification':
+        query = ` ${condition}  lower(\`${field}\`) = ${mysql.escape(v.value.toLowerCase())}`;
         break;
       default:
         query = ` ${condition}  lower(\`${field}\`) LIKE ${mysql.escape('%' + v.value.toLowerCase() + '%')}`;
@@ -52,25 +55,16 @@ const getField = (field, fieldvalue, condition = 'AND') => {
   return '';
 };
 
-/**
- * Calculate rank for fulltext search queries
- * @param {string} cast
- * @param {string} genre
- * @param {string} keyword
- */
 const getRank = (cast, genre, keyword) => {
   if (cast) {
     const v = cleanValue(cast);
     return `, MATCH (cast) AGAINST (${mysql.escape(v.ftValue)} IN BOOLEAN MODE) as rank`;
   }
   if (keyword) {
-    const v = cleanValue(cast);
-    return `, MATCH (overview, keywords, title ) AGAINST (${mysql.escape(v.value)} IN NATURAL LANGUAGE MODE) as rank`;
+    const v = cleanValue(keyword);
+    return `, MATCH (keywords, title ) AGAINST (${mysql.escape(v.ftValue)} IN BOOLEAN MODE) as rank`;
   }
-  if (genre) {
-    const v = cleanValue(cast);
-    return `, MATCH (genresearch) AGAINST (${mysql.escape(v.ftValue)} IN BOOLEAN MODE) as rank`;
-  }
+
   return '';
 };
 
@@ -85,11 +79,11 @@ const getRank = (cast, genre, keyword) => {
  * @param {Date} releaseTime
  * @returns {string} Query Conditions
  */
-const getCondition = (genre, decade, keyword, director, cast, country, releaseTime) => {
+const getCondition = (genre, decade, keyword, director, cast, country, releaseTime, year, certification) => {
   return `${getField('genre', genre)} ${getField('decade', parseInt(decade, 10))} ${getField('keywords', keyword)} ${getField('director', director)} ${getField('cast', cast)} ${getField('country', country)} ${getField(
     'country',
     country
-  )} ${getField('release', releaseTime)}`
+  )} ${getField('release', releaseTime)} ${getField('year', year)}  ${getField('certification', certification)}`
     .trim()
     .substring(4);
 };
@@ -115,21 +109,14 @@ const getGlobalCondition = (searchGlobal) => {
  * @param {number} offset
  * @param {number} limit
  */
-module.exports.getMovieList = async (genre, decade, keyword, director, cast, country, releaseTime, offset, limit) => {
+module.exports.getMovieList = async (genre, decade, keyword, director, cast, country, releaseTime, year, certification, offset, limit) => {
   try {
     const rank = getRank(cast, genre, keyword);
+    const condition = getCondition(genre, decade, keyword, director, cast, country, releaseTime, year, certification);
 
-    const query = `SELECT COUNT(*) as total FROM moviesdb.movies WHERE ${getCondition(
-      genre,
-      decade,
-      keyword,
-      director,
-      cast,
-      country,
-      releaseTime
-    )};SELECT id, title, genre, director, country, \`release\`, img, vote ${rank} FROM moviesdb.movies WHERE ${getCondition(genre, decade, keyword, director, cast, country, releaseTime)} ORDER BY ${
-      rank ? 'rank' : 'popularity'
-    } DESC LIMIT ${limit} OFFSET ${offset};`;
+    const query = `
+      SELECT COUNT(*) as total FROM moviesdb.movies WHERE ${condition};
+      SELECT id, title, genre, director, country, \`release\`, img, vote ${rank} FROM moviesdb.movies WHERE ${condition} ORDER BY ${rank ? 'rank' : 'popularity'} DESC LIMIT ${limit} OFFSET ${offset};`;
     console.log('QUERY_LIST>', query);
     const data = await db.getData(query, [], true);
 

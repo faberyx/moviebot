@@ -16,4 +16,5 @@ export type MovieDetail = {
   user_rating: number;
   popularity: number;
   id: number;
+  certification: string;
 };

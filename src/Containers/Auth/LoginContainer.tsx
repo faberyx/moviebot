@@ -4,7 +4,7 @@ import { RouteComponentProps, Link } from 'react-router-dom';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import { Auth } from 'aws-amplify';
+import Auth from '@aws-amplify/auth';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { validateEmail } from '../../Utils/validation';
 import { AuthContainer, AuthData } from '../../Components/Auth/AuthContainer';

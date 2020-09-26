@@ -149,6 +149,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                           {movie.genre.split('|').join(', ')}
                           <br />
                           {movie.country} {getDate(movie.release)} - {movie.runtime} min.
+                          <strong>{movie.certification ? ` - ${movie.certification.toLocaleUpperCase()}` : ''}</strong>
                         </ListItemText>
                       </ListItem>
                       <ListItem>

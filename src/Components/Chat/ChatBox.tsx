@@ -41,9 +41,10 @@ export const ChatBox = () => {
   //  USE EFFECT ON COMPONENT MOUNTING
   // **************************************************
   useEffect(() => {
-    console.log('SEND MESSAGE>', getMessage);
-    handleMessage(getMessage);
-  }, [getMessage]);
+    if (getMessage.audio && getMessage.audio.blob) {
+      sendAudioMessage(getMessage.audio);
+    }
+  }, [getMessage.audio]);
 
   useEffect(() => {
     console.log('ChatBox MOUNT');
@@ -170,16 +171,8 @@ export const ChatBox = () => {
   // **************************************************
   //  SUBMIT  MESSAGE FROM USER
   // **************************************************
-  const handleMessage = async (input: InputMessage) => {
-    if (input.message) {
-      sendTextMessage(input.message);
-    }
-    if (input.audio && input.audio.blob) {
-      sendAudioMessage(input.audio);
-    }
-  };
 
-  const sendTextMessage = async (message: string) => {
+  const handleSubmitMessage = async (message: string) => {
     // SEND USER MESSAGE TO THE CHAT
     setInteractionList((prevState) => prevState.concat({ message, type: 'human' }));
     // SEND BOT LOADING MESSAGE
@@ -220,6 +213,10 @@ export const ChatBox = () => {
     }
   };
 
+  // **************************************************
+  //  SEND THE AUDIO  MESSAGE TO LEX
+  // **************************************************
+
   const sendAudioMessage = async (audio: AudioMessage) => {
     if (!getAudioPlayer.type) {
       return;
@@ -237,8 +234,14 @@ export const ChatBox = () => {
       const response = await sendLexVoiceMessage(audio, getAudioPlayer.type);
       // Log chatbot response
       if (response && response.inputTranscript) {
-        chatMessage(`I understood: ${response.inputTranscript}`, true);
-
+        chatMessage(
+          <Fragment>
+            I understood: <Chip size="small" color="primary" classes={{ colorPrimary: classes.audioLabel }} label={response.inputTranscript} />
+          </Fragment>,
+          true
+        );
+        // SEND BOT LOADING MESSAGE
+        setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
         if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
           handleMovieResult(response, response.inputTranscript);
         } else {
@@ -296,7 +299,7 @@ export const ChatBox = () => {
       <Paper elevation={3} component="div" ref={chatBox} className={classes.interactions}>
         {interactions}
       </Paper>
-      <ChatInput reset={handleReset} />
+      <ChatInput submit={handleSubmitMessage} reset={handleReset} />
     </Fragment>
   );
 };
@@ -311,7 +314,9 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 1),
     height: 'calc(100% - 55px)'
   },
-
+  audioLabel: {
+    background: '#2a693d'
+  },
   primarycolor: {
     color: theme.palette.primary.main
   },

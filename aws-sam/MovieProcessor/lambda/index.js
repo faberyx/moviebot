@@ -4,7 +4,7 @@ const query = require('./queryMovie');
 const utils = require('./utils');
 //const personalizeQuery = require('./personalize');
 
-const defaultMovieCount = 8;
+const defaultMovieCount = 12;
 
 //--- Helpers:  Build responses which match the structure of the necessary dialog actions
 //--- ConfirmationStatus None, Confirmed, or Denied (intent confirmation, if configured)
@@ -93,7 +93,7 @@ const messagePayload = (sessionAttributes, intentName, slots, payload, type) => 
 // ---------------------------------------------------------
 //  SEARCH ON A MOVIE BASED ON THE SLOTS CONDITIONS
 // ---------------------------------------------------------
-const getMovies = async(intentRequest, offset, limit) => {
+const getMovies = async (intentRequest, offset, limit) => {
   const sessionAttributes = intentRequest.sessionAttributes;
   const requestAttributes = intentRequest.requestAttributes;
 
@@ -107,12 +107,11 @@ const getMovies = async(intentRequest, offset, limit) => {
     // if slots are the same as before it means nothing was found
 
     if (utils.shallowEqual(slots, sessionSlots)) {
-      console.log('SLOT_COMPARE> EQUALS', );
+      console.log('SLOT_COMPARE> EQUALS');
       const session = { ...sessionAttributes, state: 'slot_not_found' };
       return confirmIntent(session, intent.name, slots, `I didn't really understood ${intentRequest.inputTranscript}.. can you try a different search?`);
     }
   }
-
 
   // get the slots from the session if we are coming from a different intent
   if (intent.name !== 'SearchMovie') {
@@ -127,10 +126,11 @@ const getMovies = async(intentRequest, offset, limit) => {
   const actor = slots.Actor;
   const decade = slots.Decade;
   const keyword = slots.Keyword;
+  const year = slots.Year;
+  const certification = slots.Certification;
   let releaseTime = slots.ReleaseTime;
 
-
-  if (!genre && !decade && !keyword && !director && !actor && !country && !releaseTime) {
+  if (!genre && !decade && !keyword && !director && !actor && !country && !releaseTime && !year) {
     // No slots found....
     console.log('-> NO SLOTS FOUND');
     const session = { ...sessionAttributes, state: 'slot_not_found' };
@@ -145,8 +145,7 @@ const getMovies = async(intentRequest, offset, limit) => {
       to = new Date(to.setFullYear(to.getFullYear() + 1));
       console.log('ReleaseDate>', releaseDate, 'To', to);
       releaseTime = { from: releaseDate.toISOString(), to: to.toISOString() };
-    }
-    else {
+    } else {
       return elicitSlot(sessionAttributes, 'SearchMovie', slots, 'ReleaseTime', `I can't understand this period of time.. can you try again?`);
     }
   }
@@ -159,7 +158,7 @@ const getMovies = async(intentRequest, offset, limit) => {
   }
   const currentOffset = parseInt(limit, 10) + parseInt(offset, 10);
   // Get the list of movie from the database
-  const movies = await query.getMovieList(genre, decade, keyword, director, actor, country, releaseTime, offset, limit);
+  const movies = await query.getMovieList(genre, decade, keyword, director, actor, country, releaseTime, year, certification, offset, limit);
   if (movies.rows.length > 0) {
     return returnMovies(movies, sessionAttributes, slots, currentOffset);
   }
@@ -190,16 +189,9 @@ const returnMovies = (movies, sessionAttributes, slots, currentOffset) => {
 // ------------------------------------------------------------------------- Intents -----------------------------------------------------------------------------------
 
 // -----------------------------------------------
-//  RECOMMEND MOVIE INTENT
-// -----------------------------------------------
-const recommendMovie = async(intentRequest) => {
-  console.log(intentRequest);
-};
-
-// -----------------------------------------------
 //  ASK MORE DATA INTENT
 // -----------------------------------------------
-const askMoreData = async(intentRequest) => {
+const askMoreData = async (intentRequest) => {
   const sessionAttributes = intentRequest.sessionAttributes;
   const offset = sessionAttributes && sessionAttributes.offset ? parseInt(sessionAttributes.offset, 10) : 0;
   const intent = intentRequest.currentIntent;
@@ -219,7 +211,7 @@ const askMoreData = async(intentRequest) => {
 // -----------------------------------------------
 //  FALLBACK INTENT
 // -----------------------------------------------
-const fallback = async(intentRequest) => {
+const fallback = async (intentRequest) => {
   const sessionAttributes = intentRequest.sessionAttributes;
   const requestAttributes = intentRequest.requestAttributes;
   const intent = intentRequest.currentIntent;
@@ -234,11 +226,10 @@ const fallback = async(intentRequest) => {
   return close({}, 'Failed', `Couldnt find a movie for you! ...Do you want to retry again?`);
 };
 
-
 // -----------------------------------------------
 //  SEARCH MOVIE INTENT
 // -----------------------------------------------
-const searchMovie = async(intentRequest) => {
+const searchMovie = async (intentRequest) => {
   let sessionAttributes = intentRequest.sessionAttributes;
   //const intent = intentRequest.currentIntent;
   //const slots = intent.slots;
@@ -253,8 +244,7 @@ const searchMovie = async(intentRequest) => {
     }
     console.log('-> final close');
     return close({ ...sessionAttributes, state: '' }, 'Fulfilled', `nothing to see here...`);
-  }
-  catch (err) {
+  } catch (err) {
     console.log('-> ERROR!!', err);
     return close({ ...sessionAttributes, state: '' }, 'Fulfilled', `UPS...${err.message}`);
   }
@@ -265,7 +255,7 @@ const searchMovie = async(intentRequest) => {
 // -----------------------------------------------
 //  INTENT DISPATCHER
 // -----------------------------------------------
-const dispatch = async(intentRequest, callback) => {
+const dispatch = async (intentRequest, callback) => {
   console.log('Intent Request', intentRequest);
 
   const intent = intentRequest.currentIntent.name;
@@ -278,9 +268,6 @@ const dispatch = async(intentRequest, callback) => {
     case 'SearchMovie':
       const response = await searchMovie(intentRequest);
       callback(response);
-      return;
-    case 'RecommendMovie':
-      callback(await recommendMovie(intentRequest));
       return;
     case 'Fallback':
       const responseF = await fallback(intentRequest);
@@ -299,8 +286,7 @@ exports.handler = (event, context, callback) => {
     dispatch(event, (response) => {
       callback(null, response);
     });
-  }
-  catch (err) {
+  } catch (err) {
     callback(err);
   }
 };
