@@ -77,8 +77,7 @@ export const sendLexMessage = async (message: string, sessionAttributes?: LexAtt
     // AWS LEX API CALL
     const response = await client.send(postTextCommand);
 
-    console.log('SESSION', response.sessionAttributes);
-    console.log('SESSION-SLOTS', response.sessionAttributes && response.sessionAttributes.slots ? JSON.parse(response.sessionAttributes.slots) : '');
+    console.log('Post RESPONSE', response);
     return response;
   } catch (err) {
     console.error(err);

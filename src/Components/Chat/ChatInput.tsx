@@ -37,18 +37,16 @@ export const ChatInput = ({ reset, submit }: Props) => {
   const keyPressed = (e: KeyboardEvent) => {
     // ---
 
-    if (e.keyCode === Keymap.down) {
+    if (e.keyCode === Keymap.up) {
       if (input.current && history.length > 0 && msgIndex > 0) {
         const ix = msgIndex - 1;
-        console.log(ix);
         input.current.value = history[ix];
         setMsgIndex(ix);
       }
     }
-    if (e.keyCode === Keymap.up) {
+    if (e.keyCode === Keymap.down) {
       if (input.current && history.length > 0 && msgIndex < history.length - 1) {
         const ix = msgIndex + 1;
-        console.log(ix);
         input.current.value = history[ix];
         setMsgIndex(ix);
       }
@@ -84,7 +82,7 @@ export const ChatInput = ({ reset, submit }: Props) => {
   // **************************************************
   const handleSubmit = async (event: FormEvent<any>) => {
     event.preventDefault();
-    if (input.current) {
+    if (input.current && input.current.value) {
       history.push(input.current.value);
       setMessage({ message: '' });
       submit(input.current.value);

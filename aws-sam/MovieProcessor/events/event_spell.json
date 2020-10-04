@@ -1,0 +1,70 @@
+{
+    "messageVersion": "1.0",
+    "invocationSource": "FulfillmentCodeHook",
+    "userId": "ijs54fu9kfmlt4q85c9yxtshm4b2qrak",
+    "sessionAttributes": {},
+    "requestAttributes": null,
+    "bot": {
+        "name": "MovieBot",
+        "alias": "$LATEST",
+        "version": "$LATEST"
+    },
+    "outputDialogMode": "Text",
+    "currentIntent": {
+        "name": "SearchMovie",
+        "slots": {
+            "Actor": null,
+            "Decade": null,
+            "Director": null,
+            "Country": null,
+            "Genre": null,
+            "Keyword": null
+        },
+        "slotDetails": {
+            "Actor": null,
+            "Decade": null,
+            "Director": [
+                null
+            ],
+            "Country": null,
+            "Genre": null,
+            "About": null
+        },
+        "confirmationStatus": "None",
+        "nluIntentConfidenceScore": 0.88
+    },
+    "alternativeIntents": [
+        {
+            "name": "RecommendMovie",
+            "slots": [
+                null
+            ],
+            "slotDetails": [
+                null
+            ],
+            "confirmationStatus": "None",
+            "nluIntentConfidenceScore": 0.63
+        },
+        {
+            "name": "AMAZON.FallbackIntent",
+            "slots": {},
+            "slotDetails": {},
+            "confirmationStatus": "None",
+            "nluIntentConfidenceScore": null
+        },
+        {
+            "name": "Help",
+            "slots": {},
+            "slotDetails": {},
+            "confirmationStatus": "None",
+            "nluIntentConfidenceScore": 0.43
+        }
+    ],
+    "inputTranscript": "find an horor movie wit brad pit",
+    "recentIntentSummaryView": null,
+    "sentimentResponse": {
+        "sentimentLabel": "NEUTRAL",
+        "sentimentScore": "{Positive: 0.1312267,Negative: 0.22644162,Neutral: 0.64227206,Mixed: 5.968055E-5}"
+    },
+    "kendraResponse": null
+}

@@ -1,0 +1,7 @@
+{
+    "name": "moviebot",
+    "version": "0.1.0",
+    "dependencies": {
+        "aws-sdk": "^2.761.0"
+    }
+}

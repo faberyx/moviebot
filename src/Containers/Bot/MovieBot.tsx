@@ -14,7 +14,7 @@ import FavoriteIcon from '@material-ui/icons/Favorite';
 import MovieIcon from '@material-ui/icons/MovieCreation';
 import StarIcon from '@material-ui/icons/Star';
 import Tab from '@material-ui/core/Tab/Tab';
-import { MovieWishListComponent } from '../../Components/Movie/MovieWishList';
+import { MovieWatchListComponent } from '../../Components/Movie/MovieWatchList';
 import { MovieRecomnendedComponent } from '../../Components/Movie/MovieRecommended';
 import { useRecoilState } from 'recoil';
 import { tabsState } from '../../State/tabs';
@@ -60,7 +60,7 @@ const MovieBotContainer = (props: Props) => {
       <div className={classes.tabheader}>
         <Tabs orientation="vertical" value={tab} variant="standard" indicatorColor="primary" textColor="primary" onChange={handleChange} className={classes.tabs}>
           <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<MovieIcon />} title="Movie"></Tab>
-          <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<FavoriteIcon />} title="Wishlist"></Tab>
+          <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<FavoriteIcon />} title="Your Watchlist"></Tab>
           <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<StarIcon />} title="Ratings"></Tab>
         </Tabs>
         <DialButton route={props} />
@@ -72,7 +72,7 @@ const MovieBotContainer = (props: Props) => {
               <MovieBox />
             </TabPanel>
             <TabPanel value={tab} index={1}>
-              <MovieWishListComponent />
+              <MovieWatchListComponent />
             </TabPanel>
             <TabPanel value={tab} index={2}>
               <MovieRecomnendedComponent />

@@ -16,7 +16,6 @@ const NotificationComponent = () => {
   const handleClose = () => {
     reset();
   };
-  console.log('>', alert);
   return (
     <Fragment>
       {isLoading && (

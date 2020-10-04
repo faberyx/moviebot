@@ -51,6 +51,9 @@ export const ChatBox = () => {
     sendWelcomeMessage();
   }, []);
 
+  // ***************************************************************
+  //  SEND THE FIRST WELCOME MESSAGE FROM THE BOT WITH HELP SECTION
+  // ***************************************************************
   const sendWelcomeMessage = () => {
     const message = (
       <Fragment>
@@ -84,31 +87,19 @@ export const ChatBox = () => {
   };
 
   // **************************************************
-  //  HANDLE RESPONSE FROM LEX
+  //  HANDLE CHAT MESSAGES ACTIONS FROM LEX
   // **************************************************
   const handleClickResponse = (type: string) => async () => {
     console.log(type);
     switch (type) {
       case 'results':
-        setMessage({ message: 'show   more results' });
-        break;
-      case 'moreresults':
-        setMessage({ message: 'show 10 more results' });
+        setMessage({ message: `show ${DEFAULT_PAGINATION} more results` });
         break;
       case 'search':
         await handleReset();
         break;
-      case 'actor':
-        setMessage({ message: 'with <actor>' });
-        break;
-      case 'director':
-        setMessage({ message: 'by <director>' });
-        break;
-      case 'time':
-        setMessage({ message: 'from <last year, 10 years ago, the sixties>' });
-        break;
       default:
-        break;
+        setMessage({ message: type });
     }
   };
 
@@ -122,56 +113,9 @@ export const ChatBox = () => {
     });
   };
 
-  const handleMovieResult = (response: LexResponse, message: string) => {
-    if (response && response.message && response.sessionAttributes) {
-      const m = response.message;
-      const s = response.sessionAttributes;
-      const slots = (response.sessionAttributes && response.sessionAttributes.slots ? JSON.parse(response.sessionAttributes.slots) : '') as MovieSlots;
-
-      // SET MOVIES IN THE LEFT PANEL LIST
-      setMovieList((prevState) => prevState.concat({ search: { slots, message }, movieList: JSON.parse(m) }));
-
-      if (s.total === '0') {
-        chatMessage(`Those are all the movies I found for you..`);
-        chatMessage(
-          <Fragment>
-            You can <Chip color="primary" label="start a new search" size="small" onClick={handleClickResponse('search')} /> now!
-          </Fragment>,
-          false
-        );
-        // reset session ----
-      } else {
-        chatMessage(
-          <Fragment>
-            I found some movies for you, but there still are <Chip size="small" color="secondary" label={s.total} /> more results.
-          </Fragment>
-        );
-        chatMessage(
-          <Fragment>
-            I can refine your search if you want to look for a specific <Chip size="small" color="primary" label="actor" onClick={handleClickResponse('actor')} />,{' '}
-            <Chip size="small" color="primary" label="director" onClick={handleClickResponse('director')} />, <Chip size="small" color="primary" label="period of time" onClick={handleClickResponse('time')} /> or what you
-            can think of.. ..
-          </Fragment>,
-          false
-        );
-        if (s.offset === DEFAULT_PAGINATION) {
-          chatMessage(
-            <Fragment>
-              I can <Chip size="small" color="primary" label="show more results" onClick={handleClickResponse('results')} /> or specify how many{' '}
-              <Chip size="small" color="primary" label="show 10 more results" onClick={handleClickResponse('moreresults')} /> or you can{' '}
-              <Chip color="primary" label="start a new search" size="small" onClick={handleClickResponse('search')} />
-            </Fragment>,
-            false
-          );
-        }
-      }
-    }
-  };
-
   // **************************************************
-  //  SUBMIT  MESSAGE FROM USER
+  //  SUBMIT USER MESSAGE
   // **************************************************
-
   const handleSubmitMessage = async (message: string) => {
     // SEND USER MESSAGE TO THE CHAT
     setInteractionList((prevState) => prevState.concat({ message, type: 'human' }));
@@ -179,19 +123,86 @@ export const ChatBox = () => {
     setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
 
     // SCROLL TO BOTTOM OF THE CHATBOX
-    setTimeout(() => {
-      scroll();
-    }, 21);
+    scroll();
 
     // GET THE RESPONSE FROM LEX
     try {
       const response = await sendLexMessage(message);
-      if (response) {
-        if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
-          handleMovieResult(response, message);
-        } else {
-          // Log chatbot response
-          console.log(response);
+      handleLexMessage(response, false, message);
+    } catch (err) {
+      chatMessage('Looks like I had some troubles... ☠️☠️', true);
+      setAlert((current) => ({ ...current, isOpen: true, message: `Error sending a message to the bot! ${err.message}` }));
+      console.error(err);
+      return;
+    }
+  };
+
+  // **************************************************
+  //  SEND THE AUDIO  MESSAGE TO LEX
+  // **************************************************
+  const sendAudioMessage = async (audio: AudioMessage) => {
+    if (!getAudioPlayer.type) {
+      return;
+    }
+    // SEND BOT LOADING MESSAGE
+    setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
+    // SCROLL TO BOTTOM OF THE CHATBOX
+    scroll();
+
+    try {
+      // GET THE RESPONSE FROM LEX
+      const response = await sendLexVoiceMessage(audio, getAudioPlayer.type);
+      handleLexMessage(response, true);
+    } catch (err) {
+      setAlert((current) => ({ ...current, isOpen: true, message: `Error sending a voice message to bot! ${err.message}` }));
+      return;
+    }
+  };
+
+  // **************************************************
+  //  HANDLE LEX RESPONSE
+  // **************************************************
+  const handleLexMessage = (response: LexResponse | null, isAudio: boolean, textMessage = '') => {
+    if (response) {
+      let state = response.sessionAttributes && response.sessionAttributes.state ? response.sessionAttributes.state : '';
+      const message = response.inputTranscript || textMessage;
+
+      if (response.message === 'no_movie_found') {
+        state = 'movie_search_nofound';
+      }
+      console.log('STATE>', state, message);
+      if (isAudio) {
+        chatMessage(
+          <Fragment>
+            I understood: <Chip size="small" color="primary" classes={{ colorPrimary: classes.audioLabel }} label={message} />
+          </Fragment>,
+          true
+        );
+      }
+
+      switch (state) {
+        case 'movie_search_done':
+        case 'movie_search_more':
+          handleMovieResult(response, message, state);
+          break;
+        case 'movie_search_nofound':
+          chatMessage(
+            <Fragment>
+              🤦‍♂️ I couldn't refine your previous search.. you can try a different search.. or you can <Chip color="primary" label="start a new search" size="small" onClick={handleClickResponse('search')} />
+            </Fragment>
+          );
+          break;
+        case 'spell_check':
+          chatMessage(
+            <Fragment>
+              {response.message} 😑
+              <br /> Did you mean... <Chip size="small" color="primary" onClick={handleClickResponse(response.sessionAttributes!.spellcheck)} label={response.sessionAttributes!.spellcheck} /> ?? 🙄
+            </Fragment>,
+            true
+          );
+          break;
+        default:
+          // Default chatbot response
           setInteractionList((prevState) =>
             prevState.slice(0, prevState.length - 1).concat({
               message: response.message,
@@ -201,71 +212,60 @@ export const ChatBox = () => {
               sessionAttributes: response.sessionAttributes
             })
           );
-        }
-      } else {
-        setAlert((current) => ({ ...current, isOpen: true, message: 'Error getting a response from the bot!' }));
+          break;
       }
-
       scroll();
-    } catch (err) {
-      setAlert((current) => ({ ...current, isOpen: true, message: `Error sendong a message to the bot! ${err.message}` }));
-      return;
+    } else {
+      throw Error('no message received..');
     }
   };
 
   // **************************************************
-  //  SEND THE AUDIO  MESSAGE TO LEX
+  // HANDLE MOVIES FOUND IN LEX RESPONSE
   // **************************************************
+  const handleMovieResult = (response: LexResponse, message: string, state: string) => {
+    if (response && response.message && response.sessionAttributes) {
+      const m = response.message;
+      const s = response.sessionAttributes;
 
-  const sendAudioMessage = async (audio: AudioMessage) => {
-    if (!getAudioPlayer.type) {
-      return;
-    }
+      const slots = (response.sessionAttributes && response.sessionAttributes.slots ? JSON.parse(response.sessionAttributes.slots) : '') as MovieSlots;
 
-    // SEND BOT LOADING MESSAGE
-    setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
+      // SET MOVIES IN THE LEFT PANEL LIST
+      setMovieList((prevState) => prevState.concat({ search: { slots, message }, movieList: JSON.parse(m) }));
 
-    // SCROLL TO BOTTOM OF THE CHATBOX
-    setTimeout(() => {
-      scroll();
-    }, 21);
-    try {
-      // GET THE RESPONSE FROM LEX
-      const response = await sendLexVoiceMessage(audio, getAudioPlayer.type);
-      // Log chatbot response
-      if (response && response.inputTranscript) {
-        chatMessage(
-          <Fragment>
-            I understood: <Chip size="small" color="primary" classes={{ colorPrimary: classes.audioLabel }} label={response.inputTranscript} />
-          </Fragment>,
-          true
-        );
-        // SEND BOT LOADING MESSAGE
-        setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
-        if (response.sessionAttributes && response.sessionAttributes.state && response.sessionAttributes.state === 'movie_search_found') {
-          handleMovieResult(response, response.inputTranscript);
-        } else {
-          setInteractionList((prevState) =>
-            prevState.concat({
-              message: response.message,
-              type: 'bot',
-              contentType: response.messageFormat,
-              sessionAttributes: response.sessionAttributes,
-              layout: response.responseCard ? 'card' : 'message'
-            })
+      switch (state) {
+        case 'movie_search_done':
+          chatMessage(`🙂 I found those movies  🎥  for you..`);
+          chatMessage(<Fragment>Looking for another movie? Write me another message and I will help you!</Fragment>, false);
+          break;
+        case 'movie_search_more':
+          chatMessage(
+            <Fragment>
+              I found{' '}
+              <strong>
+                <Chip size="small" color="secondary" label={s.total} />{' '}
+              </strong>
+              movies 🎥..
+            </Fragment>
           );
-        }
-      } else {
-        setAlert((current) => ({ ...current, isOpen: true, message: 'Error getting a response from the bot!' }));
+          chatMessage(
+            <Fragment>
+              I can <Chip size="small" color="primary" label={`show ${DEFAULT_PAGINATION} more results`} onClick={handleClickResponse('results')} /> (or more) to see the rest of the movies.
+              <br /> You can refine your search specifying an actor ora a period of time..
+              <br /> or just <Chip color="primary" label="start a new search" size="small" onClick={handleClickResponse('search')} />
+            </Fragment>,
+            false
+          );
+          break;
+        default:
+          break;
       }
-
-      scroll();
-    } catch (err) {
-      setAlert((current) => ({ ...current, isOpen: true, message: `Error sending a voice message to bot! ${err.message}` }));
-      return;
     }
   };
 
+  // **************************************************
+  // HANDLE UI RESET OF ALL PANELS
+  // **************************************************
   const handleReset = async () => {
     await deleteSession();
     setInteractionList([]);
@@ -274,13 +274,15 @@ export const ChatBox = () => {
   };
 
   const scroll = () => {
-    if (chatBox.current) {
-      chatBox.current.scrollTo({
-        top: chatBox.current.scrollHeight + 100,
-        left: 0,
-        behavior: 'smooth'
-      });
-    }
+    setTimeout(() => {
+      if (chatBox && chatBox.current) {
+        chatBox.current.scrollTo({
+          top: chatBox.current.scrollHeight + 100,
+          left: 0,
+          behavior: 'smooth'
+        });
+      }
+    }, 50);
   };
 
   // console.log(interactionList);

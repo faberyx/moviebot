@@ -1,12 +1,13 @@
-// @ts-check
+// @ts-nocheck
 // @ts-ignore
 const AWS = require('aws-sdk');
-const secret = require('./secretManager');
 
 // --------------- REST  API  Services  -----------------------
 const svc = new AWS.Service({
   endpoint: `https://moviebot.cognitiveservices.azure.com`,
+  region: 'us-east-1',
   convertResponseTypes: false,
+  // @ts-ignore
   apiConfig: {
     metadata: {
       protocol: 'rest-json' // API is JSON-based
@@ -35,17 +36,12 @@ const svc = new AWS.Service({
   }
 });
 
-/**
- * Performs spell check on the provided text
- * @param {string} text
- */
-module.exports.getSpellCheck = async (text) => {
-  const key = await secret.getSpellCheckKey();
+const getSpellCheck = (text) => {
   return new Promise((resolve, reject) => {
     svc.getSpellCheck(
       {
         text,
-        key
+        key: ''
       },
       (err, data) => {
         if (err) {
@@ -67,3 +63,15 @@ module.exports.getSpellCheck = async (text) => {
     );
   });
 };
+
+/**
+ * Checks for eventual spelling errors of the user
+ * @param {string} text
+ */
+// eslint-disable-next-line no-unused-expressions
+(async function () {
+  let t = 'an horror movie with Brad Pitt';
+  const k = await getSpellCheck(t);
+
+  console.log(k);
+})();

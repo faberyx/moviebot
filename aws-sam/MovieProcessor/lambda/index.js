@@ -1,6 +1,6 @@
 // @ts-check
 const query = require('./queryMovie');
-//const restAPI = require('./queryAPI');
+const restAPI = require('./queryAPI');
 const utils = require('./utils');
 //const personalizeQuery = require('./personalize');
 
@@ -90,31 +90,48 @@ const messagePayload = (sessionAttributes, intentName, slots, payload, type) => 
   };
 };
 
+const spellCheckMessage = async (intentRequest) => {
+  const sessionAttributes = intentRequest.sessionAttributes;
+  const userText = intentRequest.inputTranscript;
+  const intent = intentRequest.currentIntent;
+
+  const spell = await restAPI.getSpellCheck(userText);
+
+  console.log('SPELL CHECK ->', spell);
+
+  // Check if there was an error of spelling in the message,
+  // If there might be a corrections show the suggestion message
+  if (spell.isSpellChecked) {
+    const session = { ...sessionAttributes, state: 'spell_check', spellcheck: spell.text };
+    return confirmIntent(session, intent.name, {}, ` I didn't really understand ${intentRequest.inputTranscript}...`);
+  }
+  return null;
+};
+
 // ---------------------------------------------------------
 //  SEARCH ON A MOVIE BASED ON THE SLOTS CONDITIONS
 // ---------------------------------------------------------
 const getMovies = async (intentRequest, offset, limit) => {
   const sessionAttributes = intentRequest.sessionAttributes;
-  const requestAttributes = intentRequest.requestAttributes;
-
+  // const requestAttributes = intentRequest.requestAttributes;
   const intent = intentRequest.currentIntent;
-
+  const state = sessionAttributes ? sessionAttributes.state : undefined;
   // find slots in the recent intent if not found in curremt
   let slots = intent.slots;
 
-  if (sessionAttributes && sessionAttributes.state && sessionAttributes.state === 'movie_search_found') {
+  // check if we have a previous search.. if slots are identincal it means lex couldnt find any new slot in the text ->
+  if (state && (state === 'movie_search_done' || state === 'movie_search_more')) {
+    // get the slots saved in the session from previouse searches
     const sessionSlots = JSON.parse(sessionAttributes.slots);
     // if slots are the same as before it means nothing was found
-
     if (utils.shallowEqual(slots, sessionSlots)) {
-      console.log('SLOT_COMPARE> EQUALS');
-      const session = { ...sessionAttributes, state: 'slot_not_found' };
-      return confirmIntent(session, intent.name, slots, `I didn't really understood ${intentRequest.inputTranscript}.. can you try a different search?`);
+      // Keep the same session and try with another search
+      return confirmIntent(sessionAttributes, intent.name, slots, `no_movie_found`);
     }
   }
 
-  // get the slots from the session if we are coming from a different intent
-  if (intent.name !== 'SearchMovie') {
+  // just get the slots from the session if we are coming from a movie_search_more pagination
+  if (state === 'movie_pagination') {
     slots = JSON.parse(sessionAttributes.slots);
   }
 
@@ -123,21 +140,26 @@ const getMovies = async (intentRequest, offset, limit) => {
   const genre = slots.Genre;
   const director = slots.Director;
   const country = slots.Country;
-  const actor = slots.Actor;
+  const cast = slots.Actor;
   const decade = slots.Decade;
   const keyword = slots.Keyword;
   const year = slots.Year;
   const certification = slots.Certification;
   let releaseTime = slots.ReleaseTime;
 
-  if (!genre && !decade && !keyword && !director && !actor && !country && !releaseTime && !year) {
-    // No slots found....
+  if (!genre && !decade && !keyword && !director && !cast && !country && !releaseTime && !year) {
+    // No slots found.... might be an error or a spelling error in a message
+    const spellCheck = await spellCheckMessage(intentRequest);
+    if (spellCheck) {
+      return spellCheck;
+    }
+    // not a spelling error so.. nothing found for this message!
     console.log('-> NO SLOTS FOUND');
-    const session = { ...sessionAttributes, state: 'slot_not_found' };
-    return close(session, 'Failed', `Couldn't find a movie for you, you can ask the bot to search another movie for you..`);
+    const session = { ...sessionAttributes, state: '' };
+    return close(session, 'Failed', `Couldn't understand what you said.. 😌 maybe you can try a different search 🎥 `);
   }
 
-  // Validate Release date
+  // Validate Release date, return an error if it is an invalid date
   if (releaseTime) {
     const releaseDate = new Date(Date.parse(releaseTime));
     if (utils.checkDate(releaseDate)) {
@@ -146,23 +168,35 @@ const getMovies = async (intentRequest, offset, limit) => {
       console.log('ReleaseDate>', releaseDate, 'To', to);
       releaseTime = { from: releaseDate.toISOString(), to: to.toISOString() };
     } else {
-      return elicitSlot(sessionAttributes, 'SearchMovie', slots, 'ReleaseTime', `I can't understand this period of time.. can you try again?`);
+      return elicitSlot(sessionAttributes, 'SearchMovie', slots, 'ReleaseTime', `I can't understand this period of time ⏱.. can you try again?`);
     }
   }
 
-  // Validate country
+  // Validate country, return an error if it is an unknown country
   if (country) {
     if (!utils.findCountry(country)) {
-      return elicitSlot(sessionAttributes, 'SearchMovie', slots, 'Country', `I can't find ${country} country.. can you try again?`);
+      return elicitSlot(sessionAttributes, 'SearchMovie', slots, 'Country', `I can't find ${country} country  🏴‍☠️.. can you try again?`);
     }
   }
+
+  // calculate current pagination offset
   const currentOffset = parseInt(limit, 10) + parseInt(offset, 10);
+
   // Get the list of movie from the database
-  const movies = await query.getMovieList(genre, decade, keyword, director, actor, country, releaseTime, year, certification, offset, limit);
+  const movies = await query.getMovieList(genre, decade, keyword, director, cast, country, releaseTime, year, certification, offset, limit);
   if (movies.rows.length > 0) {
+    // we found some movies! return the list to frontend
     return returnMovies(movies, sessionAttributes, slots, currentOffset);
   }
 
+  // no movies found form db.. try to check if the message was splled correctly
+  const spellCheck = await spellCheckMessage(intentRequest);
+  if (spellCheck) {
+    return spellCheck;
+  }
+
+  // Nothing found and the sentence is correct, try to find the movie based on the message sent from the user
+  // Search through all movie possible keywords
   if (intentRequest.inputTranscript) {
     // Nothing found we try a global search with the content of the message
     const allmovies = await query.getSearchGlobal(intentRequest.inputTranscript, offset, limit);
@@ -171,8 +205,7 @@ const getMovies = async (intentRequest, offset, limit) => {
     }
   }
 
-  // No results from the database, we tell the user no movies are found
-  return close({}, 'Failed', `Couldnt find a movie for you! ...Do you want to retry again?`);
+  return close({}, 'Failed', `Couldnt find a movie for you 🎥! ...Do you want try a different search? 🚀`);
 };
 
 const returnMovies = (movies, sessionAttributes, slots, currentOffset) => {
@@ -180,9 +213,8 @@ const returnMovies = (movies, sessionAttributes, slots, currentOffset) => {
   if (total < 0) {
     total = 0;
   }
-  // console.log('movies>', movies.rows);
   // create a new session containing the slots and the new state in case the user wants to search for more movie later
-  const session = { ...sessionAttributes, state: 'movie_search_found', slots: JSON.stringify(slots), total, offset: currentOffset };
+  const session = { ...sessionAttributes, state: total < defaultMovieCount ? 'movie_search_done' : 'movie_search_more', slots: JSON.stringify(slots), total, offset: currentOffset };
   return messagePayload(session, 'SearchMovie', slots, movies.rows);
 };
 
@@ -202,7 +234,7 @@ const askMoreData = async (intentRequest) => {
     return elicitSlot(sessionAttributes, intent.name, slots, 'Results', `You can show max 30 movies per time.. please select a different amount of results..`);
   }
   // increase the session paging
-  intentRequest = { ...intentRequest, sessionAttributes: { ...intentRequest.sessionAttributes, offset } };
+  intentRequest = { ...intentRequest, sessionAttributes: { ...intentRequest.sessionAttributes, offset, state: 'movie_pagination' } };
   // QUERY THE MOVIE AND RETURN CARD
   console.log('PAGING>', offset, limit);
   return await getMovies(intentRequest, offset, limit);
@@ -213,8 +245,7 @@ const askMoreData = async (intentRequest) => {
 // -----------------------------------------------
 const fallback = async (intentRequest) => {
   const sessionAttributes = intentRequest.sessionAttributes;
-  const requestAttributes = intentRequest.requestAttributes;
-  const intent = intentRequest.currentIntent;
+
   if (intentRequest.inputTranscript) {
     // Nothing found we try a global search with the content of the message
     const allmovies = await query.getSearchGlobal(intentRequest.inputTranscript, 0, 4);
@@ -222,8 +253,13 @@ const fallback = async (intentRequest) => {
       return returnMovies(allmovies, sessionAttributes, {}, 4);
     }
   }
-  // No results from the database, we tell the user no movies are found
-  return close({}, 'Failed', `Couldnt find a movie for you! ...Do you want to retry again?`);
+  // No results from the database, we tell the user no movies are found and check for spell errors
+  const spellCheck = await spellCheckMessage(intentRequest);
+  if (spellCheck) {
+    return spellCheck;
+  }
+
+  return close({}, 'Failed', `Couldnt find a movie for you!  ☹️ ...Do you want to retry again? 🙄`);
 };
 
 // -----------------------------------------------
@@ -237,16 +273,12 @@ const searchMovie = async (intentRequest) => {
   try {
     // CHECK THE INTENT SOURCE
     if (intentRequest.invocationSource === 'FulfillmentCodeHook') {
-      // set the session paging to 0 -> new search
-      // intentRequest = { ...intentRequest, sessionAttributes: {} };
-      // QUERY THE MOVIE AND RETURN CARD
       return await getMovies(intentRequest, 0, defaultMovieCount);
     }
-    console.log('-> final close');
-    return close({ ...sessionAttributes, state: '' }, 'Fulfilled', `nothing to see here...`);
+    return close({ ...sessionAttributes, state: '' }, 'Fulfilled', `I think I had an error somewhere..💀. You shouldn't really be here 🤨`);
   } catch (err) {
     console.log('-> ERROR!!', err);
-    return close({ ...sessionAttributes, state: '' }, 'Fulfilled', `UPS...${err.message}`);
+    return close({ ...sessionAttributes, state: '' }, 'Fulfilled', `UPS 😬 this looks like an error...${err.message} 🙄`);
   }
 };
 

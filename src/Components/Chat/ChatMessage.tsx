@@ -40,7 +40,7 @@ const LightTooltip = withStyles((theme) => ({
     color: 'rgba(0, 0, 0, 0.87)',
     boxShadow: theme.shadows[1],
     maxWidth: 500,
-    fontSize: '0.8rem'
+    fontSize: '0.9rem'
   }
 }))(Tooltip);
 
@@ -57,7 +57,7 @@ const useStyles = (type: 'bot' | 'human') =>
       color: '#444',
       padding: '10px 10px',
       marginBottom: '24px',
-      fontSize: '0.8rem',
+      fontSize: '0.9rem',
       lineHeight: '1.5rem',
       position: 'relative',
       borderRight: type === 'human' ? `5px solid ${theme.palette.secondary.light}` : 0,

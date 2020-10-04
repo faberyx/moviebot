@@ -1,6 +1,5 @@
 const mysql = require('mysql2');
-const getSecret = require('./getSecret');
-
+const secret = require('./secretManager');
 /**
  * Restrieves data from the database based on the query string
  * @param {string} query
@@ -9,9 +8,8 @@ const getSecret = require('./getSecret');
  */
 
 module.exports.getData = async (query, params, multipleStatements) => {
-  const secret = await getSecret();
-  const connectionString = JSON.parse(secret);
- 
+  const connectionString = await secret.getDBConnection();
+
   const connection = mysql.createConnection({
     host: connectionString.host,
     port: connectionString.port,

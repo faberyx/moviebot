@@ -26,7 +26,7 @@ import Alert from '@material-ui/lab/Alert';
 
 let moviesStoreMemo: MovieDetail[] | undefined = undefined;
 
-const MovieWishList = () => {
+const MovieWatchList = () => {
   const classes = useStyles();
   const [movies, setMovies] = useState<MovieDetail[] | undefined>(undefined);
   const setLoading = useSetRecoilState(loaderState);
@@ -54,7 +54,7 @@ const MovieWishList = () => {
   };
 
   useEffect(() => {
-    console.log('MOUNT MovieWishList>');
+    console.log('MOUNT MovieWatchList>');
     getMovies(moviesStoreMemo);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -80,7 +80,7 @@ const MovieWishList = () => {
       <Paper elevation={3} component="div" className={classes.mainContainer}>
         <div className={classes.titlecontainer}>
           <Typography variant="h4" color="primary">
-            <FavoriteIcon color="secondary" /> Your Movie Wishlist
+            <FavoriteIcon color="secondary" /> Your Movie WatchList
           </Typography>
         </div>
         {movies && movies.length === 0 && (
@@ -91,6 +91,7 @@ const MovieWishList = () => {
           </div>
         )}
         {movies &&
+          movies.length > 0 &&
           movies.map((movie) => (
             <div key={movie.id} className={classes.movieContainer} style={{ backgroundImage: `url('//image.tmdb.org/t/p/w1920_and_h800_multi_faces${movie.backdrop}')` }}>
               <div className={classes.imagecontainer}>
@@ -239,4 +240,4 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const MovieWishListComponent = memo(MovieWishList);
+export const MovieWatchListComponent = memo(MovieWatchList);
