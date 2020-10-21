@@ -10,7 +10,7 @@ import MicIcon from '@material-ui/icons/Mic';
 import MicNoneIcon from '@material-ui/icons/MicNone';
 import MicOffIcon from '@material-ui/icons/MicOff';
 import { useSetRecoilState } from 'recoil';
-import { AudioState } from '../../interfaces/audio';
+import { AudioState } from '../../Interfaces/audio';
 import { audioPlayer } from '../../State/audioPlayer';
 import silentOgg from '../../assets/silent.ogg';
 import silentMp3 from '../../assets/silent.mp3';

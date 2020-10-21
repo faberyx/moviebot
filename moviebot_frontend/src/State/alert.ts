@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { AlertState } from '../interfaces/alertState';
+import { AlertState } from '../Interfaces/alertState';
 
 export const alertState = atom<AlertState>({
   key: 'alertstate',

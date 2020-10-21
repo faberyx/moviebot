@@ -7,7 +7,7 @@ import { MovieGridComponent } from './MovieGrid';
 import { movieListState } from '../../State/movieListState';
 import { MovieDialogComponent } from './MovieDialog';
 import { chatMessageState } from '../../State/chatMessageState';
-import { Movie } from '../../interfaces/movie';
+import { Movie } from '../../Interfaces/movie';
 import { apiFetch } from '../../Utils/restClient';
 
 /*

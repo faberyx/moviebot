@@ -8,7 +8,7 @@ import Card from '@material-ui/core/Card/Card';
 import { alertState } from '../../State/alert';
 import { apiFetch, ApiResponse } from '../../Utils/restClient';
 import { loaderState } from '../../State/loader';
-import { MovieDetail } from '../../interfaces/movieDetails';
+import { MovieDetail } from '../../Interfaces/movieDetails';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';

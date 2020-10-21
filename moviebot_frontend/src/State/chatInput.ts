@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { InputMessage } from '../interfaces/inputMessage';
+import { InputMessage } from '../Interfaces/inputMessage';
 
 export const chatInput = atom<InputMessage>({
   key: 'chatInput',

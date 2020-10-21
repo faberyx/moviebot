@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { MovieSearch } from '../interfaces/movieList';
+import { MovieSearch } from '../Interfaces/movieList';
 
 export const movieListState = atom<MovieSearch[]>({
   key: 'movieListState', // unique ID (with respect to other atoms/selectors)

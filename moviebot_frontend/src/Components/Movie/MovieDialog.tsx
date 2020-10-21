@@ -24,7 +24,7 @@ import StarsIcon from '@material-ui/icons/Stars';
 import { useSetRecoilState } from 'recoil';
 import { alertState } from '../../State/alert';
 import { loaderState } from '../../State/loader';
-import { MovieDetail } from '../../interfaces/movieDetails';
+import { MovieDetail } from '../../Interfaces/movieDetails';
 import { getDate } from '../../Utils/dates';
 
 type Props = {

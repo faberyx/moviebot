@@ -7,7 +7,7 @@ import Divider from '@material-ui/core/Divider';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { sendLexMessage, deleteSession, sendLexVoiceMessage } from '../../Utils/lexProvider';
 import Chip from '@material-ui/core/Chip/Chip';
-import { LexResponse } from '../../interfaces/lexResponse';
+import { LexResponse } from '../../Interfaces/lexResponse';
 import { ChatSimpleMessage } from './ChatMessage';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { chatMessageState } from '../../State/chatMessageState';
@@ -16,8 +16,8 @@ import { chatInput } from '../../State/chatInput';
 
 import { DEFAULT_PAGINATION } from '../../Utils/constats';
 import { ChatInput } from './ChatInput';
-import { MovieSlots } from '../../interfaces/movie';
-import { AudioMessage } from '../../interfaces/inputMessage';
+import { MovieSlots } from '../../Interfaces/movie';
+import { AudioMessage } from '../../Interfaces/inputMessage';
 import { audioPlayer } from '../../State/audioPlayer';
 import { alertState } from '../../State/alert';
 

@@ -34,7 +34,7 @@ const MovieBotContainer = (props: Props) => {
   const classes = useStyles();
   const [tab, setTab] = useRecoilState(tabsState);
 
-  const routes = ['/', '/wishlist'];
+  const routes = ['/', '/watchlist', '/recommendations'];
 
   useEffect(() => {
     setTab(routes.indexOf(props.location.pathname));

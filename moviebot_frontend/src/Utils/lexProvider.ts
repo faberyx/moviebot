@@ -15,8 +15,8 @@ import awsconfig from '../aws-exports';
 
 import { Credentials, getAmplifyUserAgent } from '@aws-amplify/core';
 
-import { LexResponse } from '../interfaces/lexResponse';
-import { AudioMessage } from '../interfaces/inputMessage';
+import { LexResponse } from '../Interfaces/lexResponse';
+import { AudioMessage } from '../Interfaces/inputMessage';
 
 export interface LexAttributes {
   [key: string]: string;

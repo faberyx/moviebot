@@ -8,7 +8,7 @@ import Card from '@material-ui/core/Card/Card';
 import { alertState } from '../../State/alert';
 import { apiFetch, ApiResponse } from '../../Utils/restClient';
 import { loaderState } from '../../State/loader';
-import { MovieDetail } from '../../interfaces/movieDetails';
+import { MovieDetail } from '../../Interfaces/movieDetails';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -40,7 +40,7 @@ const MovieRecomnended = () => {
       setLoading(true);
     }
     try {
-      const movie = await apiFetch<MovieDetail[]>(`watchlist`);
+      const movie = await apiFetch<MovieDetail[]>(`userrecommendation`);
 
       if (!moviesMemo || (movie && movie.length !== moviesMemo.length)) {
         setMovies(movie);
@@ -55,26 +55,9 @@ const MovieRecomnended = () => {
   };
 
   useEffect(() => {
-    console.log('MOUNT MovieWishList>');
-    //  recommendedies(moviesStoreMemo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    console.log('MOUNT MovieReccomended>');
+    getMovies(recommendedStoreMemo);
   }, []);
-
-  const removeFromWatchlist = (id: number) => async () => {
-    setLoading(true);
-    try {
-      const result = await apiFetch<ApiResponse<boolean>, {}>(`removewatchlist/${id}`, 'POST');
-      if (result.error) {
-        setAlert((current) => ({ ...current, isOpen: true, message: 'Error removing movie from watchlist!' }));
-      } else {
-        await getMovies();
-      }
-      setLoading(false);
-    } catch (err) {
-      setAlert((current) => ({ ...current, isOpen: true, message: 'Error removing movie from watchlist!' }));
-      setLoading(false);
-    }
-  };
 
   return (
     <Fragment>
@@ -141,11 +124,6 @@ const MovieRecomnended = () => {
                           onChange={() => {}}
                           classes={movie.user_rating ? { iconFilled: classes.userrating, iconEmpty: classes.rateempty } : { iconEmpty: classes.rateempty }}
                         />
-                      </Grid>
-                      <Grid item md={4} xs={12} classes={{ item: classes.gridbuttonitem }}>
-                        <Button variant="outlined" size="small" onClick={removeFromWatchlist(movie.id)} color="secondary" startIcon={<MovieIcon />}>
-                          Remove
-                        </Button>
                       </Grid>
                     </Grid>
                   </ListItem>
