@@ -1,0 +1,87 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: API Gateway Lambda service to retrieve movie information from DB
+Resources:
+  MoviesApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Cors:
+        AllowMethods: '''GET,POST,OPTIONS'''
+        AllowHeaders: '''Authorization,Content-Type'''
+        AllowOrigin: '''*'''
+      Auth:
+        DefaultAuthorizer: MoviesApiAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          MoviesApiAuthorizer:
+            UserPoolArn: arn:aws:cognito-idp:us-east-1:921119069545:userpool/us-east-1_aizk3GFyC
+  MovieDetails:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: MovieDetails
+      Handler: index.handler
+      Runtime: nodejs12.x
+      Description: API Gateway Lambda service to manage MySQL data
+      MemorySize: 128
+      Timeout: 3
+      Role: arn:aws:iam::921119069545:role/service-role/MovieProcessor-role-iyqbuy2g
+      Events:
+        Details:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MoviesApi
+            Path: /details/{id+}
+            Method: GET
+        Recommended:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MoviesApi
+            Path: /recommended/{id+}
+            Method: GET
+        SetRating:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MoviesApi
+            Path: /setrating/{id+}
+            Method: POST
+        GetWatchlist:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MoviesApi
+            Path: /watchlist
+            Method: GET
+        AddWatchlist:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MoviesApi
+            Path: /addwatchlist/{id+}
+            Method: POST
+        RemoveWatchlist:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MoviesApi
+            Path: /removewatchlist/{id+}
+            Method: POST
+      Environment:
+        Variables:
+          DB_KEY: rds-secret
+Outputs:
+  Region:
+    Description: Region
+    Value:
+      Ref: AWS::Region
+  ApiId:
+    Description: API ID
+    Value:
+      Ref: MoviesApi
+  ApiUrl:
+    Description: API endpoint URL for Prod environment
+    Value:
+      Fn::Sub: https://${MoviesApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
