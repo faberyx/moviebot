@@ -69,6 +69,13 @@ Resources:
               Ref: MoviesApi
             Path: /removewatchlist/{id+}
             Method: POST
+        GetUserRecommendation:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MoviesApi
+            Path: /userrecommendation
+            Method: GET
       Environment:
         Variables:
           DB_KEY: rds-secret

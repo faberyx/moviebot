@@ -31,6 +31,9 @@ module.exports.routes = async (event) => {
       case '/removewatchlist/{id+}':
         data = await query.removeWatchlist(userId, id);
         break;
+      case '/userrecommendation':
+        data = await query.getUserRecommendations(userId);
+        break;
       default:
         // no route found.. return 404
         return helper.payload(404, null);
