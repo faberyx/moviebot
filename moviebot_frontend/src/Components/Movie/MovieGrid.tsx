@@ -87,8 +87,7 @@ const MovieGrid = ({ movies, search, previousSearch, onClick }: Props) => {
             onClick={gridClickHandler(tile.id)}
             classes={{
               root: classes.titleBar,
-              tile: classes.tile,
-              imgFullWidth: classes.imgFullWidth
+              tile: classes.tile
             }}
           >
             <img onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')} src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${tile.img}`} alt={tile.title} />
@@ -137,9 +136,7 @@ const useStyles = makeStyles((theme) => ({
   searchlabel: {
     fontSize: '0.9rem'
   },
-  imgFullWidth: {
-    transform: 'translateY(0)'
-  },
+
   title: {},
   tile: {
     cursor: 'pointer'

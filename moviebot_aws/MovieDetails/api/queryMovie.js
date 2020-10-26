@@ -127,7 +127,7 @@ module.exports.addRating = async (userid, movieid, rating) => {
  */
 module.exports.getUserRecommendations = async (userid) => {
   try {
-    const query = `
+    const query = ` SET @average = (SELECT AVG(rating) AS Average from moviesdb.user_rating  WHERE  user_id = 'caf88b7d-b7be-4f60-8e7b-38d2b841b71c');
                     SELECT  m.id,  m.originalTitle, m.certification, m.title,  m.cast,  m.genre,  m.director,  m.country,  m.\`release\`,  m.img,  m.overview,  m.backdrop,  m.recommended,  
                             m.vote,  m.popularity, m.tagline, m.\`runtime\`
                     FROM  moviesdb.movies m 
@@ -135,13 +135,13 @@ module.exports.getUserRecommendations = async (userid) => {
                                 (SELECT  GROUP_CONCAT(replace(m.recommended,'|',',') )  
                                 FROM moviesdb.movies m  
                                 INNER JOIN moviesdb.user_rating r ON r.movie_id = m.id 
-                                WHERE r.user_id = ?
+                                WHERE r.user_id = ? AND r.rating > @average
                                 LIMIT 4)
                     )
-                    ORDER BY  m.popularity DESC`;
+                    ORDER BY  m.popularity DESC
+                    LIMIT 25`;
     console.log("QUERY_SELECT getUserRecommendations>", query);
-    await db.getData(query, [userid]);
-    return true;
+    return await db.getData(query, [userid], true);
   } catch (err) {
     return error(err);
   }

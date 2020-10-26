@@ -12,7 +12,8 @@ import { MovieDetail } from '../../Interfaces/movieDetails';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
-import StarIcon from '@material-ui/icons/Star';
+import Typography from '@material-ui/core/Typography/Typography';
+import FavoriteIcon from '@material-ui/icons/Favorite';
 import MovieIcon from '@material-ui/icons/Movie';
 import CameraIcon from '@material-ui/icons/Camera';
 import Rating from '@material-ui/lab/Rating';
@@ -22,12 +23,10 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import { getDate } from '../../Utils/dates';
 import Button from '@material-ui/core/Button/Button';
 import Alert from '@material-ui/lab/Alert';
-import Typography from '@material-ui/core/Typography/Typography';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let recommendedStoreMemo: MovieDetail[] | undefined = undefined;
+let moviesStoreMemo: MovieDetail[] | undefined = undefined;
 
-const MovieRecomnendedComponent = () => {
+const MovieRatingsTabComponent = () => {
   const classes = useStyles();
   const [movies, setMovies] = useState<MovieDetail[] | undefined>(undefined);
   const setLoading = useSetRecoilState(loaderState);
@@ -40,12 +39,12 @@ const MovieRecomnendedComponent = () => {
       setLoading(true);
     }
     try {
-      const movie = await apiFetch<MovieDetail[]>(`userrecommendation`);
+      const movie = await apiFetch<MovieDetail[]>(`watchlist`);
 
       if (!moviesMemo || (movie && movie.length !== moviesMemo.length)) {
         setMovies(movie);
       }
-      recommendedStoreMemo = movie;
+      moviesStoreMemo = movie;
       setLoading(false);
       //
     } catch (err) {
@@ -55,26 +54,44 @@ const MovieRecomnendedComponent = () => {
   };
 
   useEffect(() => {
-    console.log('MOUNT MovieReccomended>');
-    getMovies(recommendedStoreMemo);
+    console.log('MOUNT MovieWatchList>');
+    getMovies(moviesStoreMemo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const removeFromWatchlist = (id: number) => async () => {
+    setLoading(true);
+    try {
+      const result = await apiFetch<ApiResponse<boolean>, {}>(`removewatchlist/${id}`, 'POST');
+      if (result.error) {
+        setAlert((current) => ({ ...current, isOpen: true, message: 'Error removing movie from watchlist!' }));
+      } else {
+        await getMovies();
+      }
+      setLoading(false);
+    } catch (err) {
+      setAlert((current) => ({ ...current, isOpen: true, message: 'Error removing movie from watchlist!' }));
+      setLoading(false);
+    }
+  };
 
   return (
     <Fragment>
       <Paper elevation={3} component="div" className={classes.mainContainer}>
         <div className={classes.titlecontainer}>
           <Typography variant="h4" color="secondary">
-            <StarIcon color="secondary" /> Your Recommended Movies
+            <FavoriteIcon color="secondary" /> Your Movie WatchList
           </Typography>
         </div>
         {movies && movies.length === 0 && (
           <div className={classes.titlecontainer}>
             <Alert variant="filled" severity="warning">
-              <strong>No recommended movies for you found..</strong>
+              <strong>No wishlist movies found</strong>
             </Alert>
           </div>
         )}
         {movies &&
+          movies.length > 0 &&
           movies.map((movie) => (
             <div key={movie.id} className={classes.movieContainer} style={{ backgroundImage: `url('//image.tmdb.org/t/p/w1920_and_h800_multi_faces${movie.backdrop}')` }}>
               <div className={classes.imagecontainer}>
@@ -124,6 +141,11 @@ const MovieRecomnendedComponent = () => {
                           onChange={() => {}}
                           classes={movie.user_rating ? { iconFilled: classes.userrating, iconEmpty: classes.rateempty } : { iconEmpty: classes.rateempty }}
                         />
+                      </Grid>
+                      <Grid item md={4} xs={12} classes={{ item: classes.gridbuttonitem }}>
+                        <Button variant="outlined" size="small" onClick={removeFromWatchlist(movie.id)} color="secondary" startIcon={<MovieIcon />}>
+                          Remove
+                        </Button>
                       </Grid>
                     </Grid>
                   </ListItem>
@@ -218,4 +240,4 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export const MovieRecomnended = memo(MovieRecomnendedComponent);
+export const MovieRatingsTab = memo(MovieRatingsTabComponent);

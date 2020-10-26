@@ -22,7 +22,7 @@ function Routes() {
         <Route exact={true} path="/forgotpassword" component={ForgotPasswordContainer} />
         <Route exact={true} path="/resetpassword" component={ResetPasswordContainer} />
         <Route exact={true} path="/confirm" component={ConfirmEmailContainer} />
-        <PrivateRoute exact={true} path={['/', '/watchlist', '/recommendations']} Component={MovieBotContainer} />
+        <PrivateRoute exact={true} path={['/', '/watchlist', '/recommendations', '/help']} Component={MovieBotContainer} />
       </Switch>
     </Router>
   );

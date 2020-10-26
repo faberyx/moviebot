@@ -1,30 +1,25 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 /** @jsx createElement */
-import { createElement, Fragment, ChangeEvent, useEffect } from 'react';
+import { createElement, Fragment, ChangeEvent, useEffect, useRef, ReactNode, useState, RefObject } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Grid from '@material-ui/core/Grid/Grid';
 import { ChatBox } from '../../Components/Chat/ChatBox';
-import { MovieBox } from '../../Components/Movie/MovieBox';
-import { DialButton } from '../../Components/DialButton';
 import { Notification } from '../../Components/Notification';
-// import Hidden from '@material-ui/core/Hidden/Hidden';
-import Tabs from '@material-ui/core/Tabs/Tabs';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import MovieIcon from '@material-ui/icons/MovieCreation';
-import StarIcon from '@material-ui/icons/Star';
-import Tab from '@material-ui/core/Tab/Tab';
-import { MovieWatchListComponent } from '../../Components/Movie/MovieWatchList';
-import { MovieRecomnendedComponent } from '../../Components/Movie/MovieRecommended';
+import { MovieBox } from '../../Components/Movie/MovieBox';
+import { MovieTabs } from '../../Components/Movie/MovieTabs';
 import { useRecoilState } from 'recoil';
 import { tabsState } from '../../State/tabs';
+import { useClickOutside } from '../../Utils/useClickOutside';
+import IconButton from '@material-ui/core/IconButton';
+import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
+import { VerticalTabs } from '../../Components/VerticalTabs';
+import { Help } from '../../Components/HelpComponent';
+import { MovieRecomnended } from '../../Components/Movie/MovieRecommended';
+import { TabPanel } from '../../Components/TabPanel';
 
 type Props = RouteComponentProps & {};
-type TabPanelProps = {
-  children?: React.ReactNode;
-  index: any;
-  value: any;
-};
+
 /*
  */
 const MovieBotContainer = (props: Props) => {
@@ -33,38 +28,40 @@ const MovieBotContainer = (props: Props) => {
   // **************************************************
   const classes = useStyles();
   const [tab, setTab] = useRecoilState(tabsState);
+  const handleChange = (event: ChangeEvent<{}>, newValue: number) => {
+    setTab(newValue);
+    props.history.replace(routes[newValue]);
+  };
+  const [chatToggle, setChatToggle] = useState(false);
 
-  const routes = ['/', '/watchlist', '/recommendations'];
+  const routes = ['/', '/watchlist', '/recommendations', '/help'];
+
+  const ref = useRef<HTMLDivElement>(null);
+
+  useClickOutside<HTMLDivElement | undefined>(ref, (event) => {
+    if (ref && ref.current) {
+      if (window.innerWidth < 960) {
+        ref.current.style.width = '50px';
+        setChatToggle(false);
+      }
+    }
+  });
 
   useEffect(() => {
     setTab(routes.indexOf(props.location.pathname));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.location.pathname]);
 
-  const TabPanel = (props: TabPanelProps) => {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div role="tabpanel" hidden={value !== index} id={`vertical-tabpanel-${index}`} className={classes.grid} {...other}>
-        {value === index && <Fragment>{children}</Fragment>}
-      </div>
-    );
+  const handleToggleMenu = () => {
+    if (ref && ref.current) {
+      ref.current.style.width = chatToggle ? '50px' : '70%';
+    }
+    setChatToggle(!chatToggle);
   };
 
-  const handleChange = (event: ChangeEvent<{}>, newValue: number) => {
-    setTab(newValue);
-    props.history.replace(routes[newValue]);
-  };
   return (
     <Fragment>
-      <div className={classes.tabheader}>
-        <Tabs orientation="vertical" value={tab} variant="standard" indicatorColor="primary" textColor="primary" onChange={handleChange} className={classes.tabs}>
-          <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<MovieIcon />} title="Movie"></Tab>
-          <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<FavoriteIcon />} title="Your Watchlist"></Tab>
-          <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<StarIcon />} title="Ratings"></Tab>
-        </Tabs>
-        <DialButton route={props} />
-      </div>
+      <VerticalTabs routes={routes} route={props} />
       <div className={classes.container}>
         <Grid container spacing={3} className={classes.grid}>
           <Grid item xs={12} md={8} className={classes.grid}>
@@ -72,14 +69,22 @@ const MovieBotContainer = (props: Props) => {
               <MovieBox />
             </TabPanel>
             <TabPanel value={tab} index={1}>
-              <MovieWatchListComponent />
+              <MovieTabs />
             </TabPanel>
             <TabPanel value={tab} index={2}>
-              <MovieRecomnendedComponent />
+              <MovieRecomnended />
+            </TabPanel>
+            <TabPanel value={tab} index={3}>
+              <Help />
             </TabPanel>
           </Grid>
-          <Grid item md={4} className={classes.grid}>
-            <ChatBox />
+          <Grid ref={ref} item md={4} className={classes.chatgrid}>
+            <Fragment>
+              <ChatBox />
+              <IconButton className={classes.openIcon} onClick={handleToggleMenu}>
+                <ArrowForwardIosIcon style={{ transform: chatToggle ? 'rotate(0deg)' : 'rotate(180deg)' }} fontSize="default" />
+              </IconButton>
+            </Fragment>
           </Grid>
         </Grid>
       </div>
@@ -96,27 +101,33 @@ const useStyles = makeStyles((theme) => ({
   grid: {
     height: '100%'
   },
-  tabs: {
-    borderRight: `1px solid ${theme.palette.divider}`,
-    width: '63px',
-    margin: theme.spacing(0, 0, 2, 0)
+  openIcon: {
+    display: 'none',
+    color: '#fff',
+    background: '#1565c0aa',
+    '&:hover': { background: '#0E4686aa' },
+    borderRadius: '500px',
+    [theme.breakpoints.down('sm')]: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      display: 'block'
+    }
   },
-  tab: {
-    minWidth: '60px',
-    color: '#888'
+  chatgrid: {
+    height: '100%',
+    position: 'relative',
+    transition: 'ease-in-out 0.2s',
+    [theme.breakpoints.down('sm')]: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      width: '70%'
+    }
   },
   backDrop: {
     zIndex: 3
   },
-  tabColor: { color: `${theme.palette.secondary.main}!important` },
-
-  tabheader: {
-    position: 'absolute',
-    top: 36,
-    background: '#6666aa55',
-    height: '220px'
-  },
-  tabpanel: { height: '100%' },
   container: {
     marginTop: theme.spacing(4),
     height: 'calc(100% - 55px)',

@@ -314,7 +314,11 @@ const useStyles = makeStyles((theme) => ({
     overflowY: 'auto',
     overflowX: 'hidden',
     padding: theme.spacing(2, 1),
-    height: 'calc(100% - 55px)'
+    height: 'calc(100% - 55px)',
+    background: '#ffffff',
+    [theme.breakpoints.down('sm')]: {
+      background: '#ffffff88'
+    }
   },
   audioLabel: {
     background: '#2a693d'
