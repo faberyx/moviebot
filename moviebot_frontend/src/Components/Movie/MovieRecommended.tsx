@@ -15,12 +15,12 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import StarIcon from '@material-ui/icons/Star';
 import CameraIcon from '@material-ui/icons/Camera';
 import Rating from '@material-ui/lab/Rating';
-
 import LocalMoviesIcon from '@material-ui/icons/LocalMovies';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import { getDate } from '../../Utils/dates';
 import Alert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography/Typography';
+import { Certification } from './Certification';
 
 const MovieRecomnendedComponent = () => {
   const classes = useStyles();
@@ -101,7 +101,7 @@ const MovieRecomnendedComponent = () => {
                       <LocalMoviesIcon color="secondary" />
                     </ListItemIcon>
                     <ListItemText>
-                      {movie.genre.split('|').join(', ')} - {movie.country} {getDate(movie.release)} - {movie.runtime} min. <strong>{movie.certification ? ` - ${movie.certification.toLocaleUpperCase()}` : ''}</strong>
+                      {movie.genre.split('|').join(', ')} - {movie.country} {getDate(movie.release)} - {movie.runtime} min. <Certification rating={movie.certification} />
                     </ListItemText>
                   </ListItem>
                   <Grid container spacing={2} direction="row">

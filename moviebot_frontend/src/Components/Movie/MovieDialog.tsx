@@ -26,6 +26,7 @@ import { alertState } from '../../State/alert';
 import { loaderState } from '../../State/loader';
 import { MovieDetail } from '../../Interfaces/movieDetails';
 import { getDate } from '../../Utils/dates';
+import { Certification } from './Certification';
 
 type Props = {
   id: number;
@@ -149,7 +150,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                           {movie.genre.split('|').join(', ')}
                           <br />
                           {movie.country} {getDate(movie.release)} - {movie.runtime} min.
-                          <strong>{movie.certification ? ` - ${movie.certification.toLocaleUpperCase()}` : ''}</strong>
+                          <Certification rating={movie.certification} />
                         </ListItemText>
                       </ListItem>
                       <ListItem>

@@ -22,6 +22,7 @@ import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import { getDate } from '../../Utils/dates';
 import Button from '@material-ui/core/Button/Button';
 import Alert from '@material-ui/lab/Alert';
+import { Certification } from './Certification';
 
 const MovieWatchListTabComponent = () => {
   const classes = useStyles();
@@ -118,7 +119,8 @@ const MovieWatchListTabComponent = () => {
                       <LocalMoviesIcon color="secondary" />
                     </ListItemIcon>
                     <ListItemText>
-                      {movie.genre.split('|').join(', ')} - {movie.country} {getDate(movie.release)} - {movie.runtime} min. <strong>{movie.certification ? ` - ${movie.certification.toLocaleUpperCase()}` : ''}</strong>
+                      {movie.genre.split('|').join(', ')} - {movie.country} {getDate(movie.release)} - {movie.runtime} min.
+                      <Certification rating={movie.certification} />
                     </ListItemText>
                   </ListItem>
                   <Grid container spacing={2} direction="row">

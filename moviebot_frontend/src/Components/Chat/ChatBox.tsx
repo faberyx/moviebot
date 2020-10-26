@@ -65,23 +65,7 @@ export const ChatBox = () => {
       {
         message,
         type: 'bot',
-        layout: 'message',
-        help: (
-          <Fragment>
-            <h4>How to search for a movie? 🎥 </h4>
-            Loking for a genre? <Chip size="small" color="primary" label="find an horror movie" />
-            <Divider className={classes.divider} />
-            Loking for a director? <Chip size="small" color="primary" label="find a movie of cristopher nolan" />
-            <Divider className={classes.divider} />
-            Loking for an actor? <Chip size="small" color="primary" label="find a movie with brad pitt" />
-            <Divider className={classes.divider} />
-            Loking for a specific country? <Chip size="small" color="primary" label="find me an italian movie" />
-            <Divider className={classes.divider} />
-            Loking for a movie feature? <Chip size="small" color="primary" label="find a movie about jedi" />
-            <Divider className={classes.divider} />
-            ..or you can combine them.. <Chip size="small" color="primary" label="find an italian horror movie about zombies" />
-          </Fragment>
-        )
+        layout: 'message'
       }
     ]);
   };
@@ -325,9 +309,5 @@ const useStyles = makeStyles((theme) => ({
   },
   primarycolor: {
     color: theme.palette.primary.main
-  },
-
-  divider: {
-    margin: theme.spacing(1, 0)
   }
 }));

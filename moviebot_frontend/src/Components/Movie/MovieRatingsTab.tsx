@@ -87,7 +87,7 @@ const MovieRatingsTabComponent = () => {
       <Paper elevation={3} component="div" className={classes.mainContainer}>
         {movies && movies.length === 0 && (
           <Alert variant="filled" severity="warning">
-            <strong>No wishlist movies found</strong>
+            <strong>No Movie ratings found</strong>
           </Alert>
         )}
         {movies && movies.length > 0 && (

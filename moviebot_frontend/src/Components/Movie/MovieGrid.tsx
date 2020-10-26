@@ -79,7 +79,7 @@ const MovieGrid = ({ movies, search, previousSearch, onClick }: Props) => {
           ))}
         </Fragment>
       </div>
-      <GridList cellHeight={300} spacing={8} cols={getScreenWidth()}>
+      <GridList cellHeight={350} spacing={6} cols={getScreenWidth()}>
         {movies.map((tile, i) => (
           <GridListTile
             key={i}

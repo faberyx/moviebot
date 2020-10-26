@@ -1,66 +1,45 @@
 /** @jsx createElement */
 import { createElement, useState, memo, ChangeEvent } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import SpeedDial from '@material-ui/lab/SpeedDial/SpeedDial';
-import SpeedDialAction from '@material-ui/lab/SpeedDialAction/SpeedDialAction';
-import SpeedDialIcon from '@material-ui/lab/SpeedDialIcon';
-import SettingsBackupRestoreIcon from '@material-ui/icons/SettingsBackupRestore';
-import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import { useSetRecoilState, useRecoilState } from 'recoil';
-import { chatMessageState } from '../State/chatMessageState';
-import { movieListState } from '../State/movieListState';
-import { deleteSession } from '../Utils/lexProvider';
+import { useRecoilState } from 'recoil';
 import { RouteComponentProps } from 'react-router-dom';
-import { chatInput } from '../State/chatInput';
 import { tabsState } from '../State/tabs';
 import Tabs from '@material-ui/core/Tabs/Tabs';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import MovieIcon from '@material-ui/icons/MovieCreation';
 import StarIcon from '@material-ui/icons/Star';
 import HelpIcon from '@material-ui/icons/Help';
-
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab from '@material-ui/core/Tab/Tab';
 
 const VerticalTabsComponent = ({ route, routes }: { route: RouteComponentProps; routes: string[] }) => {
   const classes = useStyles();
-  const [dialOpen, setDialOpen] = useState(false);
+  const [, setDialOpen] = useState(false);
   const [tab, setTab] = useRecoilState(tabsState);
-
+  const [open, setOpen] = useState(false);
   const handleChange = (event: ChangeEvent<{}>, newValue: number) => {
+    if (newValue === 4) {
+      setOpen(true);
+      return;
+    }
     setTab(newValue);
     route.history.replace(routes[newValue]);
   };
-  const setMovieList = useSetRecoilState(movieListState);
-  const setInteractionList = useSetRecoilState(chatMessageState);
-  const setText = useSetRecoilState(chatInput);
-  const actions = [
-    { icon: <SettingsBackupRestoreIcon />, name: 'Reset' },
-    { icon: <ExitToAppIcon />, name: 'Logout' },
-    { icon: <HelpOutlineIcon />, name: 'Help' }
-  ];
 
-  const handleDial = (name: string) => async () => {
-    switch (name) {
-      case 'Logout':
-        route.history.push('/logout');
-        break;
-      case 'Reset':
-        await deleteSession();
-        setText({ message: '' });
-        setInteractionList([]);
-        setMovieList([]);
-        break;
-      case 'Help':
-        break;
-      default:
-        break;
-    }
+  const handleClose = () => {
+    setOpen(false);
   };
 
-  const handleToggleDial = () => {
-    setDialOpen((prevstate) => !prevstate);
+  const handleLogoff = () => {
+    route.history.push('/logout');
   };
+
   return (
     <div className={classes.tabheader}>
       <Tabs orientation="vertical" value={tab} variant="standard" indicatorColor="primary" textColor="primary" onChange={handleChange} className={classes.tabs}>
@@ -68,12 +47,25 @@ const VerticalTabsComponent = ({ route, routes }: { route: RouteComponentProps; 
         <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<FavoriteIcon />} title="Your Watchlist"></Tab>
         <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<StarIcon />} title="Your Recommended movies"></Tab>
         <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<HelpIcon />} title="Help"></Tab>
+        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<ExitToAppIcon />} title="Logout"></Tab>
       </Tabs>
-      <SpeedDial icon={<SpeedDialIcon />} ariaLabel="Actions" direction="down" classes={{ fab: classes.speedDial }} onClick={handleToggleDial} open={dialOpen}>
-        {actions.map((action, i) => (
-          <SpeedDialAction tooltipPlacement="right" key={`action_${i}`} icon={action.icon} tooltipTitle={action.name} tooltipOpen onClick={handleDial(action.name)} />
-        ))}
-      </SpeedDial>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle color="primary" id="alert-dialog-title">
+          Logout
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">Are you sure you want to logout from MovieBOT?</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            No
+          </Button>
+          <Button onClick={handleLogoff} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
@@ -82,10 +74,6 @@ const VerticalTabsComponent = ({ route, routes }: { route: RouteComponentProps; 
 //   PAGE STYLES
 // **************************************************
 const useStyles = makeStyles((theme) => ({
-  speedDial: {
-    width: '36px',
-    height: '30px'
-  },
   tabs: {
     borderRight: `1px solid ${theme.palette.divider}`,
     width: '63px',
@@ -103,9 +91,7 @@ const useStyles = makeStyles((theme) => ({
   },
   tabheader: {
     position: 'absolute',
-    top: 36,
-    background: '#6666aa55',
-    height: '220px'
+    top: 36
   },
   tabpanel: { height: '100%' }
 }));
