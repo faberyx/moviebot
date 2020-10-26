@@ -68,6 +68,7 @@ const MovieRecomnendedComponent = () => {
   useEffect(() => {
     console.log('MOUNT MovieReccomended>');
     getMovies();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

@@ -26,8 +26,8 @@ const MovieTabsComponent = () => {
     <Fragment>
       <AppBar position="static" classes={{ root: classes.barRoot }}>
         <Tabs indicatorColor="secondary" textColor="secondary" value={value} onChange={handleChange}>
-          <Tab label="Your Move WatchList" classes={{ root: classes.tab }} icon={<MovieIcon />} />
-          <Tab label="Your Movie Ratings" classes={{ root: classes.tab }} icon={<StarIcon />} />
+          <Tab label="Your Move WatchList" classes={{ wrapper: classes.tab, selected: classes.selected }} icon={<MovieIcon />} />
+          <Tab label="Your Movie Ratings" classes={{ wrapper: classes.tab, selected: classes.selected }} icon={<StarIcon />} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -45,7 +45,12 @@ const useStyles = makeStyles((theme) => ({
     background: 'transparent'
   },
   tab: {
-    color: '#888'
+    color: theme.palette.primary.light
+  },
+  selected: {
+    '& svg, span': {
+      color: theme.palette.secondary.light
+    }
   }
 }));
 

@@ -20,7 +20,6 @@ import Tab from '@material-ui/core/Tab/Tab';
 
 const VerticalTabsComponent = ({ route, routes }: { route: RouteComponentProps; routes: string[] }) => {
   const classes = useStyles();
-  const [, setDialOpen] = useState(false);
   const [tab, setTab] = useRecoilState(tabsState);
   const [open, setOpen] = useState(false);
   const handleChange = (event: ChangeEvent<{}>, newValue: number) => {
@@ -42,7 +41,7 @@ const VerticalTabsComponent = ({ route, routes }: { route: RouteComponentProps; 
 
   return (
     <div className={classes.tabheader}>
-      <Tabs orientation="vertical" value={tab} variant="standard" indicatorColor="primary" textColor="primary" onChange={handleChange} className={classes.tabs}>
+      <Tabs orientation="vertical" value={tab} indicatorColor="secondary" onChange={handleChange} className={classes.tabs}>
         <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<MovieIcon />} title="MovieBOT"></Tab>
         <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<FavoriteIcon />} title="Your Watchlist"></Tab>
         <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<StarIcon />} title="Your Recommended movies"></Tab>

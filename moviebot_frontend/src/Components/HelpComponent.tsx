@@ -5,7 +5,6 @@ import Paper from '@material-ui/core/Paper/Paper';
 import HelpIcon from '@material-ui/icons/Help';
 import Typography from '@material-ui/core/Typography/Typography';
 import Chip from '@material-ui/core/Chip/Chip';
-import Divider from '@material-ui/core/Divider/Divider';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon/ListItemIcon';

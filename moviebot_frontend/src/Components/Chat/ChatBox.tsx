@@ -3,7 +3,6 @@
 /** @jsx createElement */
 import { createElement, useEffect, useRef, Fragment, useMemo, ReactNode } from 'react';
 import Paper from '@material-ui/core/Paper';
-import Divider from '@material-ui/core/Divider';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { sendLexMessage, deleteSession, sendLexVoiceMessage } from '../../Utils/lexProvider';
 import Chip from '@material-ui/core/Chip/Chip';
