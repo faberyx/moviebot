@@ -17,7 +17,7 @@ export const MovieBox = () => {
   //   STATE MANAGEMENT
   // **************************************************
   const [movieList, setMovieList] = useRecoilState(movieListState);
-  const [movieDetail, setMovieDetail] = useState<string | undefined>(undefined);
+  const [movieDetail, setMovieDetail] = useState<number | undefined>(undefined);
   const setInteractionList = useSetRecoilState(chatMessageState);
 
   const movieBox = useRef<HTMLDivElement>();
@@ -39,7 +39,7 @@ export const MovieBox = () => {
   //   MOVIE GRID AND DETAILS
   // **************************************************
 
-  const handleCardClick = async (id?: string) => {
+  const handleCardClick = async (id?: number) => {
     if (id) {
       setMovieDetail(id);
     }
@@ -49,7 +49,7 @@ export const MovieBox = () => {
     setMovieDetail(undefined);
   };
 
-  const handleSimilarClick = (id: string, title: string) => async () => {
+  const handleSimilarClick = (id: number, title: string) => async () => {
     // SEND BOT LOADING MESSAGE
     setInteractionList((prevState) => prevState.concat({ loading: true, type: 'bot' }));
     // CLOSE THE DETAIL MODAL

@@ -1,5 +1,5 @@
 /** @jsx createElement */
-import { createElement, memo, Fragment, useState, useEffect } from 'react';
+import { createElement, memo, Fragment, useState, useEffect, ChangeEvent } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Paper from '@material-ui/core/Paper/Paper';
 import { useSetRecoilState } from 'recoil';
@@ -13,7 +13,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography/Typography';
-import FavoriteIcon from '@material-ui/icons/Favorite';
 import MovieIcon from '@material-ui/icons/Movie';
 import CameraIcon from '@material-ui/icons/Camera';
 import Rating from '@material-ui/lab/Rating';
@@ -24,38 +23,55 @@ import { getDate } from '../../Utils/dates';
 import Button from '@material-ui/core/Button/Button';
 import Alert from '@material-ui/lab/Alert';
 
-let moviesStoreMemo: MovieDetail[] | undefined = undefined;
-
 const MovieWatchListTabComponent = () => {
   const classes = useStyles();
   const [movies, setMovies] = useState<MovieDetail[] | undefined>(undefined);
   const setLoading = useSetRecoilState(loaderState);
   const setAlert = useSetRecoilState(alertState);
 
-  const getMovies = async (moviesMemo?: MovieDetail[]) => {
-    if (moviesMemo) {
-      setMovies(moviesMemo);
-    } else {
-      setLoading(true);
-    }
+  const getMovies = async () => {
+    setLoading(true);
+
     try {
       const movie = await apiFetch<MovieDetail[]>(`watchlist`);
-
-      if (!moviesMemo || (movie && movie.length !== moviesMemo.length)) {
-        setMovies(movie);
-      }
-      moviesStoreMemo = movie;
+      setMovies(movie);
       setLoading(false);
-      //
     } catch (err) {
       setLoading(false);
       setAlert((current) => ({ ...current, isOpen: true, message: 'Error getting information for the selected movie!' }));
     }
   };
 
+  const rateMovie = (id: number) => async (event: ChangeEvent<{}>, rating: number | null) => {
+    if (!rating) {
+      return;
+    }
+    console.log(id);
+    setLoading(true);
+    try {
+      const result = await apiFetch<boolean, {}>(`setrating/${id}`, 'POST', null, { rating });
+
+      if (!result) {
+        setAlert((current) => ({ ...current, isOpen: true, message: 'Movie already rated!' }));
+        setLoading(false);
+        return;
+      }
+      // update movie
+      const movieix = movies?.findIndex((k) => k.id === id);
+      if (movieix !== undefined && movies) {
+        const newMovies = [...movies];
+        newMovies[movieix] = { ...movies[movieix], user_rating: rating };
+        setMovies(newMovies);
+      }
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     console.log('MOUNT MovieWatchList>');
-    getMovies(moviesStoreMemo);
+    getMovies();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -78,11 +94,6 @@ const MovieWatchListTabComponent = () => {
   return (
     <Fragment>
       <Paper elevation={3} component="div" className={classes.mainContainer}>
-        <div className={classes.titlecontainer}>
-          <Typography variant="h4" color="secondary">
-            <FavoriteIcon color="secondary" /> Your Movie WatchList
-          </Typography>
-        </div>
         {movies && movies.length === 0 && (
           <div className={classes.titlecontainer}>
             <Alert variant="filled" severity="warning">
@@ -107,7 +118,7 @@ const MovieWatchListTabComponent = () => {
                       <LocalMoviesIcon color="secondary" />
                     </ListItemIcon>
                     <ListItemText>
-                      {movie.genre.split('|').join(', ')} - {movie.country} {getDate(movie.release)} - {movie.runtime} min. <strong>{movie.certification ? ` - ${movie.certification.toLocaleLowerCase()}` : ''}</strong>
+                      {movie.genre.split('|').join(', ')} - {movie.country} {getDate(movie.release)} - {movie.runtime} min. <strong>{movie.certification ? ` - ${movie.certification.toLocaleUpperCase()}` : ''}</strong>
                     </ListItemText>
                   </ListItem>
                   <Grid container spacing={2} direction="row">
@@ -134,13 +145,14 @@ const MovieWatchListTabComponent = () => {
                     <Grid container spacing={2}>
                       <Grid item md={8} xs={12}>
                         <Rating
-                          name="rating"
+                          name={`rating-${movie.id}`}
                           value={movie.user_rating || movie.vote}
                           precision={0.5}
                           max={10}
-                          onChange={() => {}}
+                          onChange={rateMovie(movie.id)}
                           classes={movie.user_rating ? { iconFilled: classes.userrating, iconEmpty: classes.rateempty } : { iconEmpty: classes.rateempty }}
                         />
+                        {movie.user_rating && <div className={classes.ratedetail}>({movie.user_rating}/10)</div>}
                       </Grid>
                       <Grid item md={4} xs={12} classes={{ item: classes.gridbuttonitem }}>
                         <Button variant="outlined" size="small" onClick={removeFromWatchlist(movie.id)} color="secondary" startIcon={<MovieIcon />}>
@@ -162,12 +174,15 @@ const useStyles = makeStyles((theme) => ({
   mainContainer: {
     overflowY: 'auto',
     overflowX: 'hidden',
-    height: '100%',
+    height: '92%',
     transition: '1s',
     background: 'rgba(0, 0, 0, 0.3)'
   },
   userrating: {
     color: 'red'
+  },
+  rateempty: {
+    color: '#333'
   },
   card: {
     background: 'rgba(0, 0, 0, 0.3)',
@@ -175,8 +190,10 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     margin: theme.spacing(1, 0, 1)
   },
-  rateempty: {
-    color: '#333'
+  ratedetail: {
+    display: 'inline',
+    color: '#999',
+    fontSize: '10px'
   },
   secondary: {
     color: '#999'

@@ -7,12 +7,13 @@ export type Movie = {
   release: Date;
   vote: Date;
   runtime: string;
+  rating: number;
   img: string;
   backdrop: string;
   overview: string;
   recommended: string;
   tagline: string;
-  id: string;
+  id: number;
   originalTitle: string;
 };
 

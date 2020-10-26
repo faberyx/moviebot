@@ -76,6 +76,13 @@ Resources:
               Ref: MoviesApi
             Path: /userrecommendation
             Method: GET
+        GetUserRatings:
+          Type: Api
+          Properties:
+            RestApiId:
+              Ref: MoviesApi
+            Path: /userratings
+            Method: GET
       Environment:
         Variables:
           DB_KEY: rds-secret

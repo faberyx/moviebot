@@ -28,8 +28,8 @@ import { MovieDetail } from '../../Interfaces/movieDetails';
 import { getDate } from '../../Utils/dates';
 
 type Props = {
-  id: string;
-  onSimilarClick: (id: string, title: string) => (event: MouseEvent<HTMLButtonElement>) => void;
+  id: number;
+  onSimilarClick: (id: number, title: string) => (event: MouseEvent<HTMLButtonElement>) => void;
   onDialogClose: () => void;
 };
 
@@ -53,7 +53,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const addToWatchlist = (id: string) => async (event: MouseEvent<HTMLButtonElement>) => {
+  const addToWatchlist = (id: number) => async (event: MouseEvent<HTMLButtonElement>) => {
     setLoading(true);
     try {
       const result = await apiFetch<ApiResponse<boolean>>(`addwatchlist/${id}`, 'POST');
@@ -69,7 +69,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
     }
   };
 
-  const rateMovie = async (id: string, rating: number | null) => {
+  const rateMovie = async (id: number, rating: number | null) => {
     if (!rating) {
       return;
     }

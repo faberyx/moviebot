@@ -45,6 +45,9 @@ module.exports.routes = async (event) => {
       case "/watchlist":
         data = await query.getWatchlist(userId);
         break;
+      case "/userratings":
+        data = await query.getRatings(userId);
+        break;
       case "/userrecommendation":
         data = await query.getUserRecommendations(userId);
         break;

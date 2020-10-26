@@ -98,8 +98,9 @@ const useStyles = makeStyles((theme) => ({
   backDrop: {
     zIndex: 3
   },
-  tabColor: { color: `${theme.palette.secondary.main}!important` },
-
+  tabColor: {
+    color: `${theme.palette.secondary.main}!important`
+  },
   tabheader: {
     position: 'absolute',
     top: 36,

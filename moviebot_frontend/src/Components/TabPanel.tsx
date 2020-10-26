@@ -1,6 +1,6 @@
 /** @jsx createElement */
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { createElement, ReactNode, Fragment } from 'react';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
 type TabPanelProps = {
   children?: ReactNode;

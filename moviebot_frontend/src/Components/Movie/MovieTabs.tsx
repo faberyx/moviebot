@@ -1,7 +1,6 @@
 /** @jsx createElement */
 import { createElement, memo, Fragment, useEffect, useState } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import FavoriteIcon from '@material-ui/icons/Favorite';
 import AppBar from '@material-ui/core/AppBar';
 import MovieIcon from '@material-ui/icons/MovieCreation';
 import StarIcon from '@material-ui/icons/Star';
@@ -26,9 +25,9 @@ const MovieTabsComponent = () => {
   return (
     <Fragment>
       <AppBar position="static" classes={{ root: classes.barRoot }}>
-        <Tabs value={value} onChange={handleChange} textColor="secondary">
-          <Tab label="Your Move WatchList" icon={<MovieIcon />} />
-          <Tab label="Your Movie Ratings" icon={<StarIcon />} />
+        <Tabs indicatorColor="secondary" textColor="secondary" value={value} onChange={handleChange}>
+          <Tab label="Your Move WatchList" classes={{ root: classes.tab }} icon={<MovieIcon />} />
+          <Tab label="Your Movie Ratings" classes={{ root: classes.tab }} icon={<StarIcon />} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>
@@ -44,6 +43,9 @@ const MovieTabsComponent = () => {
 const useStyles = makeStyles((theme) => ({
   barRoot: {
     background: 'transparent'
+  },
+  tab: {
+    color: '#888'
   }
 }));
 

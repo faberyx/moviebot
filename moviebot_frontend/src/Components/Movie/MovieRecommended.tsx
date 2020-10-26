@@ -1,62 +1,73 @@
 /** @jsx createElement */
-import { createElement, memo, Fragment, useState, useEffect } from 'react';
+import { createElement, memo, Fragment, useState, useEffect, ChangeEvent } from 'react';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Paper from '@material-ui/core/Paper/Paper';
 import { useSetRecoilState } from 'recoil';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card/Card';
 import { alertState } from '../../State/alert';
-import { apiFetch, ApiResponse } from '../../Utils/restClient';
+import { apiFetch } from '../../Utils/restClient';
 import { loaderState } from '../../State/loader';
 import { MovieDetail } from '../../Interfaces/movieDetails';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import StarIcon from '@material-ui/icons/Star';
-import MovieIcon from '@material-ui/icons/Movie';
 import CameraIcon from '@material-ui/icons/Camera';
 import Rating from '@material-ui/lab/Rating';
 
 import LocalMoviesIcon from '@material-ui/icons/LocalMovies';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 import { getDate } from '../../Utils/dates';
-import Button from '@material-ui/core/Button/Button';
 import Alert from '@material-ui/lab/Alert';
 import Typography from '@material-ui/core/Typography/Typography';
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-let recommendedStoreMemo: MovieDetail[] | undefined = undefined;
 
 const MovieRecomnendedComponent = () => {
   const classes = useStyles();
   const [movies, setMovies] = useState<MovieDetail[] | undefined>(undefined);
   const setLoading = useSetRecoilState(loaderState);
+
   const setAlert = useSetRecoilState(alertState);
 
-  const getMovies = async (moviesMemo?: MovieDetail[]) => {
-    if (moviesMemo) {
-      setMovies(moviesMemo);
-    } else {
-      setLoading(true);
-    }
+  const getMovies = async () => {
+    setLoading(true);
     try {
       const movie = await apiFetch<MovieDetail[]>(`userrecommendation`);
-
-      if (!moviesMemo || (movie && movie.length !== moviesMemo.length)) {
-        setMovies(movie);
-      }
-      recommendedStoreMemo = movie;
+      setMovies(movie);
       setLoading(false);
-      //
     } catch (err) {
       setLoading(false);
       setAlert((current) => ({ ...current, isOpen: true, message: 'Error getting information for the selected movie!' }));
     }
   };
+  const rateMovie = (id: number) => async (event: ChangeEvent<{}>, rating: number | null) => {
+    console.log(id);
+    if (!rating) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const result = await apiFetch<boolean, {}>(`setrating/${id}`, 'POST', null, { rating });
 
+      if (!result) {
+        setAlert((current) => ({ ...current, isOpen: true, message: 'Movie already rated!' }));
+        setLoading(false);
+        return;
+      } // update movie
+      const movieix = movies?.findIndex((k) => k.id === id);
+      if (movieix !== undefined && movies) {
+        const newMovies = [...movies];
+        newMovies[movieix] = { ...movies[movieix], user_rating: rating };
+        setMovies(newMovies);
+      }
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     console.log('MOUNT MovieReccomended>');
-    getMovies(recommendedStoreMemo);
+    getMovies();
   }, []);
 
   return (
@@ -90,7 +101,7 @@ const MovieRecomnendedComponent = () => {
                       <LocalMoviesIcon color="secondary" />
                     </ListItemIcon>
                     <ListItemText>
-                      {movie.genre.split('|').join(', ')} - {movie.country} {getDate(movie.release)} - {movie.runtime} min. <strong>{movie.certification ? ` - ${movie.certification.toLocaleLowerCase()}` : ''}</strong>
+                      {movie.genre.split('|').join(', ')} - {movie.country} {getDate(movie.release)} - {movie.runtime} min. <strong>{movie.certification ? ` - ${movie.certification.toLocaleUpperCase()}` : ''}</strong>
                     </ListItemText>
                   </ListItem>
                   <Grid container spacing={2} direction="row">
@@ -117,13 +128,14 @@ const MovieRecomnendedComponent = () => {
                     <Grid container spacing={2}>
                       <Grid item md={8} xs={12}>
                         <Rating
-                          name="rating"
+                          name={`rating-${movie.id}`}
                           value={movie.user_rating || movie.vote}
                           precision={0.5}
                           max={10}
-                          onChange={() => {}}
+                          onChange={rateMovie(movie.id)}
                           classes={movie.user_rating ? { iconFilled: classes.userrating, iconEmpty: classes.rateempty } : { iconEmpty: classes.rateempty }}
                         />
+                        {movie.user_rating && <div className={classes.ratedetail}>({movie.user_rating}/10)</div>}
                       </Grid>
                     </Grid>
                   </ListItem>
@@ -144,20 +156,25 @@ const useStyles = makeStyles((theme) => ({
     transition: '1s',
     background: 'rgba(0, 0, 0, 0.3)'
   },
-  userrating: {
-    color: 'red'
-  },
   card: {
     background: 'rgba(0, 0, 0, 0.3)',
     color: '#eee',
     width: '100%',
     margin: theme.spacing(1, 0, 1)
   },
+  userrating: {
+    color: 'red'
+  },
   rateempty: {
     color: '#333'
   },
   secondary: {
     color: '#999'
+  },
+  ratedetail: {
+    display: 'inline',
+    color: '#999',
+    fontSize: '10px'
   },
   gridbuttonitem: {
     display: 'flex',

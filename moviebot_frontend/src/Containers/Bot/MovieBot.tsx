@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/accessible-emoji */
 /** @jsx createElement */
-import { createElement, Fragment, ChangeEvent, useEffect, useRef, ReactNode, useState, RefObject } from 'react';
+import { createElement, Fragment, useEffect, useRef, useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Grid from '@material-ui/core/Grid/Grid';
@@ -28,17 +28,11 @@ const MovieBotContainer = (props: Props) => {
   // **************************************************
   const classes = useStyles();
   const [tab, setTab] = useRecoilState(tabsState);
-  const handleChange = (event: ChangeEvent<{}>, newValue: number) => {
-    setTab(newValue);
-    props.history.replace(routes[newValue]);
-  };
   const [chatToggle, setChatToggle] = useState(false);
-
   const routes = ['/', '/watchlist', '/recommendations', '/help'];
-
   const ref = useRef<HTMLDivElement>(null);
 
-  useClickOutside<HTMLDivElement | undefined>(ref, (event) => {
+  useClickOutside<HTMLDivElement | undefined>(ref, () => {
     if (ref && ref.current) {
       if (window.innerWidth < 960) {
         ref.current.style.width = '50px';

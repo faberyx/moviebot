@@ -127,7 +127,7 @@ module.exports.addRating = async (userid, movieid, rating) => {
  */
 module.exports.getUserRecommendations = async (userid) => {
   try {
-    const query = ` SET @average = (SELECT AVG(rating) AS Average from moviesdb.user_rating  WHERE  user_id = 'caf88b7d-b7be-4f60-8e7b-38d2b841b71c');
+    const query = ` SET @average = (SELECT AVG(rating) AS Average from moviesdb.user_rating  WHERE  user_id = ?);
                     SELECT  m.id,  m.originalTitle, m.certification, m.title,  m.cast,  m.genre,  m.director,  m.country,  m.\`release\`,  m.img,  m.overview,  m.backdrop,  m.recommended,  
                             m.vote,  m.popularity, m.tagline, m.\`runtime\`
                     FROM  moviesdb.movies m 
@@ -141,7 +141,25 @@ module.exports.getUserRecommendations = async (userid) => {
                     ORDER BY  m.popularity DESC
                     LIMIT 25`;
     console.log("QUERY_SELECT getUserRecommendations>", query);
-    return await db.getData(query, [userid], true);
+    const result = await db.getData(query, [userid, userid], true);
+    // returns only the second query result
+    return result[1];
+  } catch (err) {
+    return error(err);
+  }
+};
+/**
+ * REtrieve user ratings
+ * @param {number} userid
+ */
+module.exports.getRatings = async (userid) => {
+  try {
+    const query = `SELECT  m.id, m.title, m.director, m.img, r.rating  
+                   FROM  moviesdb.movies m 
+                   INNER JOIN moviesdb.user_rating r on r.movie_id = m.id  and r.user_id = ?
+                  `;
+    console.log("QUERY_SELECT getRatings>", query);
+    return await db.getData(query, [userid]);
   } catch (err) {
     return error(err);
   }
