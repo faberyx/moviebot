@@ -22,7 +22,7 @@ const HelpComponent = () => {
 
   return (
     <Fragment>
-      <Paper elevation={3} component="div" className={classes.mainContainer}>
+      <Paper data-testid="help-page" elevation={3} component="div" className={classes.mainContainer}>
         <Typography variant="h4" color="secondary" className={classes.titlecontainer}>
           <HelpIcon color="secondary" /> How to use your MovieBOT 🤖
         </Typography>
@@ -47,7 +47,8 @@ const HelpComponent = () => {
             <ListItemText
               primary={
                 <Fragment>
-                  Looking for a director? <Chip clickable onClick={() => setMessage({ message: 'find a movie by Christopher Nolan' })} size="small" color="primary" label="find a movie by Christopher Nolan" />
+                  Looking for a director?{' '}
+                  <Chip data-testid="help-director" clickable onClick={() => setMessage({ message: 'find a movie by Christopher Nolan' })} size="small" color="primary" label="find a movie by Christopher Nolan" />
                 </Fragment>
               }
             />
@@ -59,7 +60,7 @@ const HelpComponent = () => {
             <ListItemText
               primary={
                 <Fragment>
-                  Looking for an actor? <Chip clickable size="small" color="primary" onClick={() => setMessage({ message: 'find a movie with brad pitt' })} label="find a movie with brad pitt" />
+                  Looking for an actor? <Chip data-testid="help-actor" clickable size="small" color="primary" onClick={() => setMessage({ message: 'find a movie with brad pitt' })} label="find a movie with brad pitt" />
                 </Fragment>
               }
             />

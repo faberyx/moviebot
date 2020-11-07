@@ -2,7 +2,7 @@
 import { MailSlurp } from 'mailslurp-client';
 
 describe('Login Tests', () => {
-  it.skip('User can reset a forgotten password', () => {
+  it('User can reset a forgotten password', () => {
     //
     cy.visit('/forgotpassword');
     const mailslurp = new MailSlurp({ apiKey: '7da1b76d69e5975f79eee0695d55baf2fed4b42f2dee029ecd6bc4fa0ddf1f09' });
@@ -40,7 +40,7 @@ describe('Login Tests', () => {
     });
 
     cy.get('[data-testid=password]>div>input').type(loginPassword).should('have.value', loginPassword);
-    cy.get('[data-testid=password-repeat]>div>input').type(loginPassword).should('have.value', loginPassword);
+    cy.get('[data-testid=repeat-password]>div>input').type(loginPassword).should('have.value', loginPassword);
 
     //
     // CLICK THE RESET BUTTON BUTTON

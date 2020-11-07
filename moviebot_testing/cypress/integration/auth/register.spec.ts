@@ -2,7 +2,7 @@
 import { MailSlurp } from 'mailslurp-client';
 
 describe('Registration Tests', () => {
-  it.skip('User can register', () => {
+  it('User can register', () => {
     //
     cy.visit('/register');
 
@@ -85,7 +85,7 @@ describe('Registration Tests', () => {
     });
   });
 
-  it.skip('User cannot register with invalid email', () => {
+  it('User cannot register with invalid email', () => {
     cy.visit('/register');
     const registerEmail = `test.com`;
     const registerPassword = '&Password99';

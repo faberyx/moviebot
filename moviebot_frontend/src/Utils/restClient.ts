@@ -22,17 +22,18 @@ export const apiFetch = async <RS, RQ = {}, O = {}>(
   const retries = 1;
   const retryDelay = 1500;
   const token = await Auth.currentSession();
+  console.log(token);
   return new Promise<ApiResponse<RS>>((resolve, reject) => {
     const wrappedFetch = (attempt: number) => {
       try {
-        const headers: Headers = new Headers();
-        headers.append('Authorization', token.getIdToken().getJwtToken());
         window
           .fetch(urlBase + url + (params || ''), {
             body: payload ? JSON.stringify(payload) : null,
             method: method || 'GET',
             signal: controller?.signal,
-            headers
+            headers: {
+              Authorization: token.getIdToken().getJwtToken()
+            }
           })
           .then((response: Response) => {
             isJsonResponse && response.status !== 202

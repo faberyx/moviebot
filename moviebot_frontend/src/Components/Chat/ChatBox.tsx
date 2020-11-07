@@ -171,7 +171,8 @@ export const ChatBox = () => {
         case 'movie_search_nofound':
           chatMessage(
             <Fragment>
-              🤦‍♂️ I couldn't refine your previous search.. you can try a different search.. or you can <Chip color="primary" label="start a new search" size="small" onClick={handleClickResponse('search')} />
+              🤦‍♂️ I couldn't refine your previous search.. you can try a different search.. or you can{' '}
+              <Chip color="primary" data-testid="resetsearch-button" label="start a new search" size="small" onClick={handleClickResponse('search')} />
             </Fragment>
           );
           break;

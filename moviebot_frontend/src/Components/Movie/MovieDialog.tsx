@@ -94,7 +94,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
     <Fragment>
       {movie && (
         <Dialog open onClose={onDialogClose} maxWidth="md">
-          <DialogContent className={classes.dialogContent}>
+          <DialogContent className={classes.dialogContent} data-testid="moviedetails-dialog">
             <div className={classes.dialogData}>
               <Grid container spacing={4}>
                 <Grid item xs={12} sm={4}>
@@ -131,7 +131,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                         </Grid>
                         <Grid item xs={4}>
                           <div> Your Rating </div>
-                          <strong>{movie.user_rating || 'n/a'}</strong>
+                          <strong data-testid="moviedetail-rating">{movie.user_rating || 'n/a'}</strong>
                         </Grid>
                       </Grid>
                     </div>
@@ -180,7 +180,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                           {!movie.watchlist && (
                             <Grid item sm={6} xs={12}>
                               <Grid container justify="center">
-                                <Button variant="outlined" size="small" data-testid="moviedetail-similarmovie-watchlist" onClick={addToWatchlist(id)} color="secondary" startIcon={<MovieIcon />}>
+                                <Button variant="outlined" size="small" data-testid="moviedetail-watchlist-button" onClick={addToWatchlist(id)} color="secondary" startIcon={<MovieIcon />}>
                                   Add to watchlist
                                 </Button>
                               </Grid>
@@ -202,7 +202,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
               </Grid>
             </div>
           </DialogContent>
-          {movie.watchlist && <StarsIcon className={classes.star} />}
+          {movie.watchlist && <StarsIcon data-testid="watchlisted" className={classes.star} />}
         </Dialog>
       )}
     </Fragment>

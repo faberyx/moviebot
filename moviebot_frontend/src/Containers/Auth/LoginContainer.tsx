@@ -9,6 +9,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { validateEmail } from '../../Utils/validation';
 import { AuthContainer, AuthData } from '../../Components/Auth/AuthContainer';
 import { AuthTitle } from '../../Components/Auth/AuthTilte';
+import { deleteSession } from '../../Utils/lexProvider';
 
 type Props = RouteComponentProps & {};
 
@@ -66,10 +67,11 @@ const LoginContainer = (props: Props) => {
     if (error.email === '' && error.password === '') {
       setLoading(true);
       try {
-        //   /const user =
         await Auth.signIn(values.email, values.password);
         setEmail(values.email);
         setValues(formData);
+        // RESET FROM THE PREVIOUS SESSION
+        await deleteSession();
         window.location.href = '/';
       } catch (err) {
         console.log(err);

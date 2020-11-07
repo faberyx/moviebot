@@ -26,8 +26,8 @@ const MovieTabsComponent = () => {
     <Fragment>
       <AppBar position="static" classes={{ root: classes.barRoot }}>
         <Tabs indicatorColor="secondary" textColor="secondary" value={value} onChange={handleChange}>
-          <Tab label="Your Move WatchList" classes={{ wrapper: classes.tab, selected: classes.selected }} icon={<MovieIcon />} />
-          <Tab label="Your Movie Ratings" classes={{ wrapper: classes.tab, selected: classes.selected }} icon={<StarIcon />} />
+          <Tab data-testid="page-watchlist-tab" label="Your Move WatchList" classes={{ wrapper: classes.tab, selected: classes.selected }} icon={<MovieIcon />} />
+          <Tab data-testid="page-rating-tab" label="Your Movie Ratings" classes={{ wrapper: classes.tab, selected: classes.selected }} icon={<StarIcon />} />
         </Tabs>
       </AppBar>
       <TabPanel value={value} index={0}>

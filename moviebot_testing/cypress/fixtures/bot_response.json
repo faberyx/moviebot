@@ -1,0 +1,34 @@
+{
+    "alternativeIntents": [],
+    "botVersion": "$LATEST",
+    "dialogState": "ConfirmIntent",
+    "intentName": "SearchMovie",
+    "message": "[{\"id\":529149,\"title\":\"Darlin'\",\"genre\":\"Horror|Mystery\",\"director\":\"Pollyanna McIntosh\",\"country\":\"United States\",\"release\":\"2020-07-10T00:00:00.000Z\",\"img\":\"/hnNjlXAQan8WdNtQMfdldAGoqMF.jpg\",\"vote\":4.1},{\"id\":474350,\"title\":\"It Chapter Two\",\"genre\":\"Horror|Fantasy\",\"director\":\"Andy Muschietti\",\"country\":\"United States\",\"release\":\"2019-09-04T00:00:00.000Z\",\"img\":\"/zfE0R94v1E8cuKAerbskfD3VfUt.jpg\",\"vote\":6.9},{\"id\":550412,\"title\":\"The Legend of Halloween Jack\",\"genre\":\"Horror\",\"director\":\"Andrew Jones\",\"country\":\"\",\"release\":\"2020-07-21T00:00:00.000Z\",\"img\":\"/1PHkDuVYkuuOdcNDRJT3g7LfNXi.jpg\",\"vote\":6.8},{\"id\":338967,\"title\":\"Zombieland: Double Tap\",\"genre\":\"Horror|Action|Comedy\",\"director\":\"Ruben Fleischer\",\"country\":\"United States\",\"release\":\"2019-10-09T00:00:00.000Z\",\"img\":\"/dtRbVsUb5O12WWO54SRpiMtHKC0.jpg\",\"vote\":7},{\"id\":555974,\"title\":\"Brahms: The Boy II\",\"genre\":\"Horror|Mystery|Thriller\",\"director\":\"William Brent Bell\",\"country\":\"United States\",\"release\":\"2020-02-20T00:00:00.000Z\",\"img\":\"/tIpGQ9uuII7QVFF0GHCFTJFfXve.jpg\",\"vote\":6.3},{\"id\":521029,\"title\":\"Annabelle Comes Home\",\"genre\":\"Horror|Thriller|Mystery\",\"director\":\"Gary Dauberman\",\"country\":\"United States\",\"release\":\"2019-06-26T00:00:00.000Z\",\"img\":\"/qWsHMrbg9DsBY3bCMk9jyYCRVRs.jpg\",\"vote\":6.4},{\"id\":396535,\"title\":\"Train to Busan\",\"genre\":\"Action|Horror|Thriller\",\"director\":\"Yeon Sang-ho\",\"country\":\"South Korea\",\"release\":\"2016-07-20T00:00:00.000Z\",\"img\":\"/2oRRTPNtozgPhOa9CYZiVl4GRQ5.jpg\",\"vote\":7.7},{\"id\":511987,\"title\":\"Crawl\",\"genre\":\"Thriller|Horror|Drama\",\"director\":\"Alexandre Aja\",\"country\":\"Serbia\",\"release\":\"2019-07-11T00:00:00.000Z\",\"img\":\"/mKxpYRIrCZLxZjNqpocJ2RdQW8v.jpg\",\"vote\":6.3},{\"id\":447332,\"title\":\"A Quiet Place\",\"genre\":\"Horror|Drama|Science Fiction\",\"director\":\"John Krasinski\",\"country\":\"United States\",\"release\":\"2018-04-03T00:00:00.000Z\",\"img\":\"/nAU74GmpUk7t5iklEp3bufwDq4n.jpg\",\"vote\":7.3},{\"id\":501170,\"title\":\"Doctor Sleep\",\"genre\":\"Horror|Drama|Fantasy|Thriller\",\"director\":\"Mike Flanagan\",\"country\":\"United States\",\"release\":\"2019-10-30T00:00:00.000Z\",\"img\":\"/p69QzIBbN06aTYqRRiCOY1emNBh.jpg\",\"vote\":7.1},{\"id\":439079,\"title\":\"The Nun\",\"genre\":\"Horror|Mystery|Thriller\",\"director\":\"Corin Hardy\",\"country\":\"United States\",\"release\":\"2018-09-05T00:00:00.000Z\",\"img\":\"/sFC1ElvoKGdHJIWRpNB3xWJ9lJA.jpg\",\"vote\":5.8},{\"id\":485811,\"title\":\"Redcon-1\",\"genre\":\"Action|Horror\",\"director\":\"Chee Keong Cheung\",\"country\":\"United Kingdom\",\"release\":\"2018-09-07T00:00:00.000Z\",\"img\":\"/vVPrWngVJ2cfYAncBedQty69Dlf.jpg\",\"vote\":5.7}]",
+    "messageFormat": "CustomPayload",
+    "nluIntentConfidence": null,
+    "responseCard": null,
+    "sentimentResponse": {
+        "sentimentLabel": "NEUTRAL",
+        "sentimentScore": "{Positive: 0.0010350887,Negative: 0.32341352,Neutral: 0.6750711,Mixed: 4.8029915E-4}"
+    },
+    "sessionAttributes": {
+        "offset": "12",
+        "slots": "{\"Exclude\":null,\"Year\":null,\"Keyword\":null,\"ReleaseTime\":null,\"Decade\":null,\"Actor\":null,\"Director\":null,\"Country\":null,\"Genre\":\"Horror\",\"Certification\":null}",
+        "state": "movie_search_more",
+        "total": "5539"
+    },
+    "sessionId": "2020-11-07T11:14:19.943Z-vTeVgIOA",
+    "slotToElicit": null,
+    "slots": {
+        "Actor": null,
+        "Certification": null,
+        "Country": null,
+        "Decade": null,
+        "Director": null,
+        "Exclude": null,
+        "Genre": "Horror",
+        "Keyword": null,
+        "ReleaseTime": null,
+        "Year": null
+    }
+}
