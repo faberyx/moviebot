@@ -73,7 +73,7 @@ const MovieRecomnendedComponent = () => {
 
   return (
     <Fragment>
-      <Paper elevation={3} component="div" className={classes.mainContainer}>
+      <Paper elevation={3} component="div" className={classes.mainContainer} data-testid={`movierecommended-box`}>
         <div className={classes.titlecontainer}>
           <Typography variant="h4" color="secondary">
             <StarIcon color="secondary" /> Your Recommended Movies
@@ -87,13 +87,15 @@ const MovieRecomnendedComponent = () => {
           </div>
         )}
         {movies &&
-          movies.map((movie) => (
-            <div key={movie.id} className={classes.movieContainer} style={{ backgroundImage: `url('//image.tmdb.org/t/p/w1920_and_h800_multi_faces${movie.backdrop}')` }}>
+          movies.map((movie, i) => (
+            <div data-testid={`movierecommended-tile-${i}`} key={movie.id} className={classes.movieContainer} style={{ backgroundImage: `url('//image.tmdb.org/t/p/w1920_and_h800_multi_faces${movie.backdrop}')` }}>
               <div className={classes.imagecontainer}>
                 <img onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')} src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.img}`} alt={movie.title} className={classes.image} />
               </div>
               <div className={classes.detailsContainer}>
-                <Typography variant="h4">{movie.title}</Typography>
+                <Typography data-testid={`movierecommended-tile-${i}-title`} variant="h4">
+                  {movie.title}
+                </Typography>
                 {movie.originalTitle && movie.originalTitle !== movie.title && <Typography variant="body1">{movie.originalTitle}</Typography>}
 
                 <Card className={classes.card}>

@@ -94,19 +94,23 @@ const ForgotPasswordContainer = (props: Props) => {
       <Fragment>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField variant="outlined" required fullWidth onChange={handleChange('email')} label="Email Address" value={values.email} />
+            <TextField variant="outlined" data-testid="email" required fullWidth onChange={handleChange('email')} label="Email Address" value={values.email} />
           </Grid>
         </Grid>
 
-        <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
+        <Button type="submit" data-testid="resetpassword-button" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
           Reset Passowrd
         </Button>
         <Grid container justify="flex-end">
           <Grid item xs>
-            <Link to="/login">I have my password!</Link>
+            <Link data-testid="link-logon" to="/login">
+              I have my password!
+            </Link>
           </Grid>
           <Grid item>
-            <Link to={`/resetpassword${values.email ? `email = ${values.email}` : ''}`}>I have a code!</Link>
+            <Link data-testid="link-resetpassword" to={`/resetpassword${values.email ? `email = ${values.email}` : ''}`}>
+              I have a code!
+            </Link>
           </Grid>
         </Grid>
       </Fragment>

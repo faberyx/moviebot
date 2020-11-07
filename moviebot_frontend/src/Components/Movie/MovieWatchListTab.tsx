@@ -94,7 +94,7 @@ const MovieWatchListTabComponent = () => {
 
   return (
     <Fragment>
-      <Paper elevation={3} component="div" className={classes.mainContainer}>
+      <Paper elevation={3} component="div" className={classes.mainContainer} data-testid={`moviewatchlistbox`}>
         {movies && movies.length === 0 && (
           <div className={classes.titlecontainer}>
             <Alert variant="filled" severity="warning">
@@ -104,13 +104,15 @@ const MovieWatchListTabComponent = () => {
         )}
         {movies &&
           movies.length > 0 &&
-          movies.map((movie) => (
-            <div key={movie.id} className={classes.movieContainer} style={{ backgroundImage: `url('//image.tmdb.org/t/p/w1920_and_h800_multi_faces${movie.backdrop}')` }}>
+          movies.map((movie, i) => (
+            <div data-testid={`moviewatchlistbox-tile-${i}`} key={movie.id} className={classes.movieContainer} style={{ backgroundImage: `url('//image.tmdb.org/t/p/w1920_and_h800_multi_faces${movie.backdrop}')` }}>
               <div className={classes.imagecontainer}>
                 <img onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')} src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${movie.img}`} alt={movie.title} className={classes.image} />
               </div>
               <div className={classes.detailsContainer}>
-                <Typography variant="h4">{movie.title}</Typography>
+                <Typography variant="h4" data-testid={`moviewatchlistbox-tile-${i}-title`}>
+                  {movie.title}
+                </Typography>
                 {movie.originalTitle && movie.originalTitle !== movie.title && <Typography variant="body1">{movie.originalTitle}</Typography>}
 
                 <Card className={classes.card}>

@@ -272,7 +272,7 @@ export const ChatBox = () => {
   const interactions = useMemo(
     () =>
       interactionList.map((k, i) => (
-        <ChatSimpleMessage type={k.type} key={`itc_${i}`} loading={k.loading} help={k.help}>
+        <ChatSimpleMessage data-testid={`chatinteraction-${i}`} type={k.type} key={`itc_${i}`} loading={k.loading} help={k.help}>
           {k.message}
         </ChatSimpleMessage>
       )),
@@ -281,7 +281,7 @@ export const ChatBox = () => {
 
   return (
     <Fragment>
-      <Paper elevation={3} component="div" ref={chatBox} className={classes.interactions}>
+      <Paper elevation={3} data-testid="chatinteractions" component="div" ref={chatBox} className={classes.interactions}>
         {interactions}
       </Paper>
       <ChatInput submit={handleSubmitMessage} reset={handleReset} />

@@ -100,7 +100,18 @@ const RegisterContainer = (props: Props) => {
       <Fragment>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField variant="outlined" required fullWidth label="Email Address" onChange={handleChange('email')} value={values.email} error={error.email !== ''} helperText={error.email} autoComplete="email" />
+            <TextField
+              variant="outlined"
+              data-testid="email"
+              required
+              fullWidth
+              label="Email Address"
+              onChange={handleChange('email')}
+              value={values.email}
+              error={error.email !== ''}
+              helperText={error.email}
+              autoComplete="email"
+            />
           </Grid>
           <Grid item xs={12}>
             <TextField
@@ -108,6 +119,7 @@ const RegisterContainer = (props: Props) => {
               required
               onChange={handleChange('password')}
               fullWidth
+              data-testid="password"
               label="Password"
               type="password"
               value={values.password}
@@ -121,6 +133,7 @@ const RegisterContainer = (props: Props) => {
               variant="outlined"
               required
               fullWidth
+              data-testid="repeat-password"
               onChange={handleChange('repeatPassword')}
               label="Repeat Password"
               type="password"
@@ -130,12 +143,14 @@ const RegisterContainer = (props: Props) => {
             />
           </Grid>
         </Grid>
-        <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
+        <Button type="submit" fullWidth variant="contained" data-testid="register-button" color="primary" disabled={loading} className={classes.submit}>
           Sign Up
         </Button>
         <Grid container justify="flex-end">
           <Grid item>
-            <Link to="/login">Sign In!</Link>
+            <Link to="/login" data-testid="link-login">
+              Sign In!
+            </Link>
           </Grid>
         </Grid>
       </Fragment>

@@ -1,0 +1,9 @@
+{
+    "chromeWebSecurity": false,
+    "baseUrl": "https://www.moviefindr.site/",
+    "defaultCommandTimeout": 10000,
+    "requestTimeout": 20000,
+    "experimentalNetworkStubbing": true,
+    "experimentalFetchPolyfill": true,
+    "video": false
+}

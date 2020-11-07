@@ -91,18 +91,19 @@ const MovieRatingsTabComponent = () => {
           </Alert>
         )}
         {movies && movies.length > 0 && (
-          <GridList cellHeight={400} spacing={2} cols={getScreenWidth()}>
+          <GridList cellHeight={400} spacing={2} cols={getScreenWidth()} data-testid={`movieratingbox`}>
             {movies.map((tile, i) => (
-              <GridListTile key={i}>
+              <GridListTile key={i} data-testid={`movieratin-tile-${i}`}>
                 <img onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')} src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${tile.img}`} alt={tile.title} />
 
                 <GridListTileBar
+                  data-testid={`movieratin-tile-${i}-title`}
                   titlePosition="bottom"
                   classes={{ rootSubtitle: classes.titleBar }}
                   title={tile.title}
                   subtitle={
                     <Fragment>
-                      <Rating name={`rating-${tile.id}`} value={tile.rating} size="small" precision={0.5} max={10} onChange={rateMovie(tile.id)} />
+                      <Rating data-testid={`movieratin-tile-${i}-rating`} name={`rating-${tile.id}`} value={tile.rating} size="small" precision={0.5} max={10} onChange={rateMovie(tile.id)} />
                       {tile.rating && <div className={classes.ratedetail}>({tile.rating}/10)</div>}
                     </Fragment>
                   }

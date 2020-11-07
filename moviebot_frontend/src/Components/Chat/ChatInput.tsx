@@ -99,13 +99,13 @@ export const ChatInput = ({ reset, submit }: Props) => {
     <Paper component="form" onSubmit={handleSubmit} className={classes.datainput}>
       <ChatMicrophone />
       <Divider className={classes.verticaldivider} orientation="vertical" />
-      <InputBase inputRef={input} className={classes.input} autoFocus placeholder="Write a message" inputProps={{ 'aria-label': 'Write a message' }} />
+      <InputBase inputRef={input} data-testid="chat-input" className={classes.input} autoFocus placeholder="Write a message" inputProps={{ 'aria-label': 'Write a message' }} />
       <Divider className={classes.verticaldivider} orientation="vertical" />
-      <IconButton type="submit" className={classes.iconButton} aria-label="Submit" title="Submit">
+      <IconButton type="submit" className={classes.iconButton} data-testid="sendchat-button" aria-label="Submit" title="Submit">
         <SendIcon color="primary" />
       </IconButton>
       <Divider className={classes.verticaldivider} orientation="vertical" />
-      <IconButton type="button" onClick={handleReset} className={classes.iconButton} aria-label="start new search" title="Start new search">
+      <IconButton type="button" data-testid="resetchat-button" onClick={handleReset} className={classes.iconButton} aria-label="start new search" title="Start new search">
         <RotateLeftIcon color="primary" />
       </IconButton>
     </Paper>

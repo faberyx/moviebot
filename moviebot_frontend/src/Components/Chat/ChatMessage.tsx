@@ -17,11 +17,11 @@ type Props = {
 export const ChatSimpleMessage = ({ children, type, help, loading = false }: Props) => {
   const classes = useStyles(type)();
   return loading ? (
-    <div className={classes.bubble}>
+    <div className={classes.bubble} data-testid="chatbubble-loading">
       <div className="dot-flashing"> </div>
     </div>
   ) : (
-    <div className={classes.bubble}>
+    <div className={classes.bubble} data-testid={`chatbubble-text-${type}`}>
       {children}
       {help && (
         <div className={classes.help}>

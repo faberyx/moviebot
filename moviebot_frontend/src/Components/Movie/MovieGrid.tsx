@@ -79,9 +79,10 @@ const MovieGrid = ({ movies, search, previousSearch, onClick }: Props) => {
           ))}
         </Fragment>
       </div>
-      <GridList cellHeight={350} spacing={6} cols={getScreenWidth()}>
+      <GridList cellHeight={350} spacing={6} cols={getScreenWidth()} data-testid="movies-grid">
         {movies.map((tile, i) => (
           <GridListTile
+            data-testid={`movies-tile-${i}`}
             key={i}
             onClick={gridClickHandler(tile.id)}
             classes={{
@@ -89,8 +90,8 @@ const MovieGrid = ({ movies, search, previousSearch, onClick }: Props) => {
             }}
           >
             <img onError={(event) => (event.target as any).setAttribute('src', '/noimage.jpg')} src={`https://image.tmdb.org/t/p/w300_and_h450_bestv2${tile.img}`} alt={tile.title} />
-            <div>{tile.release}</div>
-            <GridListTileBar classes={{ rootSubtitle: classes.titleBar }} titlePosition="bottom" title={tile.title} subtitle={tile.director.split('|').join(', ')} />
+            <div data-testid={`movies-tile-${i}-release`}>{tile.release}</div>
+            <GridListTileBar data-testid={`movies-tile-${i}-title`} classes={{ rootSubtitle: classes.titleBar }} titlePosition="bottom" title={tile.title} subtitle={tile.director.split('|').join(', ')} />
           </GridListTile>
         ))}
       </GridList>

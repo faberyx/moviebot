@@ -112,6 +112,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                         precision={0.5}
                         max={10}
                         name="rating"
+                        data-testid="moviedetail-rating-button"
                         onChange={(event, newValue) => {
                           rateMovie(id, newValue);
                         }}
@@ -137,7 +138,9 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                   </div>
                 </Grid>
                 <Grid item xs={12} sm={8}>
-                  <Typography variant="h4">{movie.title}</Typography>
+                  <Typography variant="h4" data-testid="moviedetail-title">
+                    {movie.title}
+                  </Typography>
                   {movie.originalTitle && movie.originalTitle !== movie.title && <Typography variant="h5">{movie.originalTitle}</Typography>}
                   <Typography variant="caption">{movie.tagline}</Typography>
                   <Card className={classes.card}>
@@ -157,19 +160,19 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                         <ListItemIcon>
                           <CameraIcon color="secondary" />
                         </ListItemIcon>
-                        <ListItemText secondaryTypographyProps={{ className: classes.secondary }} primary="Director" secondary={movie.director.split('|').join(', ')} />
+                        <ListItemText secondaryTypographyProps={{ className: classes.secondary }} data-testid="moviedetail-director" primary="Director" secondary={movie.director.split('|').join(', ')} />
                       </ListItem>
                       <ListItem>
                         <ListItemIcon>
                           <RecentActorsIcon color="secondary" />
                         </ListItemIcon>
-                        <ListItemText secondaryTypographyProps={{ className: classes.secondary }} primary="Cast" secondary={movie.cast.split('|').join(', ')} />
+                        <ListItemText secondaryTypographyProps={{ className: classes.secondary }} data-testid="moviedetail-cast" primary="Cast" secondary={movie.cast.split('|').join(', ')} />
                       </ListItem>
                       <ListItem>
                         <Grid container spacing={2} direction="row">
                           <Grid item sm={6} xs={12}>
                             <Grid container justify="center">
-                              <Button variant="outlined" size="small" onClick={onSimilarClick(id, movie.title)} color="secondary" startIcon={<ImageSearchIcon />}>
+                              <Button variant="outlined" data-testid="moviedetail-similarmovie-button" size="small" onClick={onSimilarClick(id, movie.title)} color="secondary" startIcon={<ImageSearchIcon />}>
                                 Find Similar movies
                               </Button>
                             </Grid>
@@ -177,7 +180,7 @@ export const MovieDialogComponent = ({ id, onSimilarClick, onDialogClose }: Prop
                           {!movie.watchlist && (
                             <Grid item sm={6} xs={12}>
                               <Grid container justify="center">
-                                <Button variant="outlined" size="small" onClick={addToWatchlist(id)} color="secondary" startIcon={<MovieIcon />}>
+                                <Button variant="outlined" size="small" data-testid="moviedetail-similarmovie-watchlist" onClick={addToWatchlist(id)} color="secondary" startIcon={<MovieIcon />}>
                                   Add to watchlist
                                 </Button>
                               </Grid>

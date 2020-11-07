@@ -42,11 +42,11 @@ const VerticalTabsComponent = ({ route, routes }: { route: RouteComponentProps; 
   return (
     <div className={classes.tabheader}>
       <Tabs orientation="vertical" value={tab} indicatorColor="secondary" onChange={handleChange} className={classes.tabs}>
-        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<MovieIcon />} title="MovieBOT"></Tab>
-        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<FavoriteIcon />} title="Your Watchlist"></Tab>
-        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<StarIcon />} title="Your Recommended movies"></Tab>
-        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<HelpIcon />} title="Help"></Tab>
-        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<ExitToAppIcon />} title="Logout"></Tab>
+        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<MovieIcon />} title="MovieBOT" data-testid="movie-tab"></Tab>
+        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<FavoriteIcon />} data-testid="watchlist-tab" title="Your Watchlist"></Tab>
+        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<StarIcon />} data-testid="recommended-tab" title="Your Recommended movies"></Tab>
+        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<HelpIcon />} data-testid="help-tab" title="Help"></Tab>
+        <Tab classes={{ root: classes.tab, selected: classes.tabColor }} icon={<ExitToAppIcon />} data-testid="logout-tab" title="Logout"></Tab>
       </Tabs>
 
       <Dialog open={open} onClose={handleClose}>
@@ -57,10 +57,10 @@ const VerticalTabsComponent = ({ route, routes }: { route: RouteComponentProps; 
           <DialogContentText id="alert-dialog-description">Are you sure you want to logout from MovieBOT?</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} color="primary">
+          <Button onClick={handleClose} color="primary" data-testid="logout-no">
             No
           </Button>
-          <Button onClick={handleLogoff} color="primary" autoFocus>
+          <Button onClick={handleLogoff} color="primary" autoFocus data-testid="logout-ok">
             Yes
           </Button>
         </DialogActions>

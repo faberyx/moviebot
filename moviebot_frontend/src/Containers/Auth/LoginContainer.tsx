@@ -94,6 +94,7 @@ const LoginContainer = (props: Props) => {
           onChange={handleChange('email')}
           fullWidth
           id="email"
+          data-testid="email"
           value={values.email}
           error={error.email !== ''}
           helperText={error.email}
@@ -106,6 +107,7 @@ const LoginContainer = (props: Props) => {
           margin="normal"
           required
           fullWidth
+          data-testid="password"
           value={values.password}
           error={error.password !== ''}
           helperText={error.password}
@@ -116,15 +118,19 @@ const LoginContainer = (props: Props) => {
           autoComplete="current-password"
         />
 
-        <Button type="submit" fullWidth variant="contained" color="primary" className={classes.submit}>
+        <Button type="submit" data-testid="login-button" fullWidth variant="contained" color="primary" className={classes.submit}>
           Sign In
         </Button>
         <Grid container>
           <Grid item xs>
-            <Link to="/forgotpassword">Forgot password?</Link>
+            <Link data-testid="link-forgetpassword" to="/forgotpassword">
+              Forgot password?
+            </Link>
           </Grid>
           <Grid item>
-            <Link to="/register">Register!</Link>
+            <Link data-testid="link-register" to="/register">
+              Register!
+            </Link>
           </Grid>
         </Grid>
       </Fragment>

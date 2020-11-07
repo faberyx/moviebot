@@ -126,22 +126,32 @@ const ConfirmEmailContainer = (props: Props) => {
       <Fragment>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <TextField variant="outlined" required fullWidth label="Email Address" value={values.email} disabled />
+            <TextField variant="outlined" data-testid="email" cdata-testid="emai" required fullWidth label="Email Address" value={values.email} disabled />
           </Grid>
           <Grid item xs={12}>
-            <TextField variant="outlined" required onChange={handleChange('code')} fullWidth label="Enter confirmation code" value={values.code} error={error.code !== ''} helperText={error.code} />
+            <TextField
+              variant="outlined"
+              data-testid="confirmationcode"
+              required
+              onChange={handleChange('code')}
+              fullWidth
+              label="Enter confirmation code"
+              value={values.code}
+              error={error.code !== ''}
+              helperText={error.code}
+            />
           </Grid>
         </Grid>
-        <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
+        <Button type="submit" fullWidth variant="contained" data-testid="activate-button" color="primary" disabled={loading} className={classes.submit}>
           Activate
         </Button>
 
-        <Button type="button" fullWidth variant="contained" color="secondary" onClick={handleResend} disabled={loading} className={classes.submit}>
+        <Button type="button" fullWidth variant="contained" data-testid="resend-button" color="secondary" onClick={handleResend} disabled={loading} className={classes.submit}>
           Resend Activation Code
         </Button>
         <Grid container justify="flex-end">
           <Grid item>
-            <Link href="/login" variant="body2">
+            <Link href="/login" data-testid="link-login" variant="body2">
               Sign in
             </Link>
           </Grid>

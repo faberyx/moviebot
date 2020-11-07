@@ -79,8 +79,8 @@ export const MovieBox = () => {
 
   return (
     <Fragment>
-      {movieDetail && <MovieDialogComponent onSimilarClick={handleSimilarClick} onDialogClose={handleDialogClose} id={movieDetail} />}
-      <Paper elevation={3} ref={movieBox} component="div" className={classes.mainContainer}>
+      {movieDetail && <MovieDialogComponent data-testid="moviedetails-dialog" onSimilarClick={handleSimilarClick} onDialogClose={handleDialogClose} id={movieDetail} />}
+      <Paper elevation={3} ref={movieBox} data-testid="moviebox" component="div" className={classes.mainContainer}>
         {mainData}
       </Paper>
     </Fragment>

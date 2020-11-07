@@ -130,6 +130,7 @@ const ResetPasswordContainer = (props: Props) => {
               error={error.email !== ''}
               disabled={values.email !== ''}
               helperText={error.email}
+              data-testid="email"
               autoComplete="email"
             />
           </Grid>
@@ -143,6 +144,7 @@ const ResetPasswordContainer = (props: Props) => {
               value={values.code}
               error={error.code !== ''}
               helperText={error.code}
+              data-testid="verification-code"
               autoComplete="code"
             />
           </Grid>
@@ -154,6 +156,7 @@ const ResetPasswordContainer = (props: Props) => {
               fullWidth
               label="Password"
               type="password"
+              data-testid="password"
               value={values.password}
               error={error.password !== ''}
               helperText={error.password}
@@ -167,6 +170,7 @@ const ResetPasswordContainer = (props: Props) => {
               fullWidth
               onChange={handleChange('repeatPassword')}
               label="Repeat Password"
+              data-testid="repeat-password"
               type="password"
               value={values.repeatPassword}
               error={error.repeatPassword !== ''}
@@ -174,12 +178,14 @@ const ResetPasswordContainer = (props: Props) => {
             />
           </Grid>
         </Grid>
-        <Button type="submit" fullWidth variant="contained" color="primary" disabled={loading} className={classes.submit}>
+        <Button type="submit" fullWidth variant="contained" data-testid="reset-button" color="primary" disabled={loading} className={classes.submit}>
           Sign Up
         </Button>
         <Grid container justify="flex-end">
           <Grid item>
-            <Link to="/login">Sign In!</Link>
+            <Link to="/login" data-testid="link-login">
+              Sign In!
+            </Link>
           </Grid>
         </Grid>
       </Fragment>
