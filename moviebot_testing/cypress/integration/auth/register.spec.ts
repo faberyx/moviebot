@@ -6,8 +6,7 @@ describe('Registration Tests', () => {
     //
     cy.visit('/register');
 
-    const registerPassword = '&Password99';
-    const mailslurp = new MailSlurp({ apiKey: '7da1b76d69e5975f79eee0695d55baf2fed4b42f2dee029ecd6bc4fa0ddf1f09' });
+    const mailslurp = new MailSlurp({ apiKey });
 
     //
     // CREATE AN INBOX FOR MAILSLURP CLIENT

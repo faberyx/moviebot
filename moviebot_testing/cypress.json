@@ -1,6 +1,6 @@
 {
     "chromeWebSecurity": false,
-    "baseUrl": "https://localhost:3001/",
+    "baseUrl": "https://www.moviefindr.site/",
     "defaultCommandTimeout": 10000,
     "requestTimeout": 20000,
     "video": false,
