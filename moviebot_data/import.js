@@ -11,7 +11,7 @@ const connection = mysql.createConnection({
   host: "moviedb.c3tgw2putqdy.us-east-1.rds.amazonaws.com",
   user: "movieadmin",
   database: "moviesdb",
-  password: "4IMJsW8jF2p0maOhOQLN",
+  password: "__",
 });
 
 function sleep(ms) {
